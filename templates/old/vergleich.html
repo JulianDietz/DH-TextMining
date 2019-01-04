@@ -1,0 +1,289 @@
+{% extends 'index.html' %}
+{% block title %}Vergleich{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Vergleiche </h1>
+            <h3>Create your Corpus!</h3>
+            <p>Stellen Sie sich an dieser Stelle die Korpora zusammen, die Sie gerne analysieren möchten. </p> <br>
+        </div>
+
+
+        <!--linke Spalte: Korpus 1-->
+        <div class="col-lg-6">
+            <form role="form">
+                <div class="form-group">
+                    <!--Quelle-->
+                    <label>Wählen Sie eine Quelle:</label>
+                    <select class="form-control">
+                        <option>Omics-Journals</option>
+                        <option>Eigener Upload</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <!--Kategorie-->
+                    <label>Kategorie</label>
+                    <select id="categorie" class="form-control">
+                        <option>-</option>
+                        {% for kategorie in categories %}
+                            <option>{{ kategorie }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+                <div class="form-group">
+                 <!--Journals-->
+                 <label>Journales</label>
+                    <br>
+                    <div class="check-element" id="labeljournales">
+                    </div>
+                </div>
+
+            <!--Autor-Freitextsuche-->
+            <div class="form-group">
+                <label>Möchten Sie nach einem bestimmten Autor filtern?</label>
+                <form>
+                    <input type="search" list="authors" class="freitextsuche">
+                        <datalist id="authors">
+                            {% for author in authors %}
+                             <option>{{ author }}</option>
+                            {% endfor%}
+                        </datalist>
+                </form>
+            </div>
+
+                <div class="form-group">
+                    <!--Länder-->
+                    <label>Möchten Sie ihr Korpus nach einem Land filtern?</label>
+                    <select class="form-control">
+                        {% for country in countries %}
+                            <option>{{ country }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <!--Impact Factor-->
+                    <label>Wollen Sie Ihr Korpus auf einen bestimmten Impact-Factor reduzieren?</label>
+                    <select class="form-control">
+                        <option>-</option>
+                        <option>größer als 2.5</option> <!--#TODO Mittelwert berechnen!-->
+                        <option>kleiner als 2.5</option>
+                        {% for impact in impactfactor %}
+                            <option>{{ impact }}</option>
+                        {% endfor %}
+                        <option>{{ meanimpact }}</option>
+                    </select>
+                </div>
+
+                        <!--Keyword-Freitextsuche-->
+            <div class="form-group">
+                <label>Möchten Sie nach einem bestimmten Keyword filtern?</label>
+                <form>
+                    <input type="search" list="authors" class="freitextsuche">
+                        <datalist id="keywords">
+                             <option value="it">
+                             <option value="computer science">
+                             {% for keyword in keywords %}
+                                <option>{{ keyword }}</option>
+                            {% endfor %}
+                        </datalist>
+                </form>
+            </div>
+            </form>
+
+            <p>Ihr Korpus besteht aus folgenden Papern:</p>
+            <ul>
+                <li>Paper xaz</li>
+                <li>Paper abc</li>
+            </ul>
+        </div>
+
+
+    <!--rechte Spalte: Korpus 2 -->
+
+            <div class="col-lg-6">
+            <form role="form">
+                <div class="form-group">
+                    <!--Quelle-->
+                    <label>Wählen Sie eine Quelle:</label>
+                    <select class="form-control">
+                        <option>Omics-Journals</option>
+                        <option>Eigener Upload</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <!--Kategorie-->
+                    <label>Kategorie</label>
+                    <select id="categorie2" class="form-control">
+                        <option>-</option>
+                        {% for kategorie in categories %}
+                            <option>{{ kategorie }}</option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+                <div class="form-group">
+                 <!--Journals-->
+                 <label>Journales</label>
+                    <br>
+                    <div class="check-element" id="journales2">
+                    </div>
+                </div>
+
+            <!--Autor-Freitextsuche-->
+            <div class="form-group">
+                <label>Möchten Sie nach einem bestimmten Autor filtern?</label>
+                <form>
+                    <input type="search" list="authors" class="freitextsuche">
+                        <datalist id="authors">
+                             <option value="Heinecke">
+                             <option value="Isemann">
+                        </datalist>
+                </form>
+            </div>
+
+                <div class="form-group">
+                    <!--Länder-->
+                    <label>Möchten Sie ihr Korpus nach einem Land filtern?</label>
+                    <select class="form-control">
+                        <option>Germany</option>
+                        <option>Italy</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <!--Impact Factor-->
+                    <label>Wollen Sie Ihr Korpus auf einen bestimmten Impact-Factor reduzieren?</label>
+                    <select class="form-control">
+                        <option>-</option>
+                        <option>größer als 2.5</option>
+                        <option>kleiner als 2.5</option>
+                    </select>
+                </div>
+
+                        <!--Keyword-Freitextsuche-->
+            <div class="form-group">
+                <label>Möchten Sie nach einem bestimmten Keyword filtern?</label>
+                <form>
+                    <input type="search" list="authors" class="freitextsuche">
+                        <datalist id="keywords">
+                             <option value="it">
+                             <option value="computer science">
+                        </datalist>
+                </form>
+            </div>
+
+            </form>
+                <p>Ihr Korpus besteht aus folgenden Papern:</p>
+            <ul>
+                <li>Paper xaz</li>
+                <li>Paper abc</li>
+            </ul>
+                <div>
+                    <a href="{% url 'results' %}" class="btn btn-default">
+                        Analysiere
+                    </a>
+                </div>
+        </div>
+    </div>
+
+    <script>
+
+     $('#categorie').change(function(event) {
+         $('#labeljournales').empty()
+         create_post($('#categorie').val(), '#categorie')
+     });
+
+     $('#categorie2').change(function(event) {
+         $('#journales2').empty()
+         create_post($('#categorie2').val(), '#categorie2')
+     });
+
+
+     $('#labeljournales > #all').change(function() {
+         console.log('Funktionsaufruf klappt');
+         var checked_all_left = $('#labeljournales > #all').is(':checked');
+         console.log('checked all left: ' + checked_all_left);
+         if (checked_all_left) {
+             checkAllChildren('#labeljournales');
+         }
+         get_checked_journales();
+     });
+
+    function create_post(categorie, id_name) {
+            console.log("create post is working!");
+            $.ajax({
+                url: "{% url "ajaxCateogrie" %}",
+                type: "POST",
+                data: {
+                    categorie: categorie
+                },
+
+                success: function (json) {
+                    console.log("response");
+                    $('#labeljournales').append('<input type="checkbox" class="journalleft" id="all">').append('<label>alle</label><br>');
+                    $('#journales2').append('<input type="checkbox" class="journalright" id="all">').append('<label>alle</label><br>');
+                    for(categorie of json.journalnames){
+                        if (id_name == '#categorie'){
+                            $('#labeljournales').append($('<input type="checkbox" class="jounalleft">')).append($('<label>', {
+                                text: categorie
+                            })).append($('<br>'))};
+                        if (id_name == '#categorie2'){
+                            $('#journales2').append($('<input type="checkbox" class="journalright">')).append($('<label>', {
+                                text: categorie
+                            })).append($('<br>'))};
+
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+
+    function create_author_post(journalnames) {
+            console.log("author post is working!");
+            $.ajax({
+                url: "{% url "ajaxAuthor" %}",
+                type: "POST",
+                data: {
+                    journalnames: journalnames
+                },
+
+                success: function (json) {
+                    console.log("response for authors");
+                    for (author of json.authornames) {
+                        $('#authors').append($('<p>', {
+                            text: author
+                        }));
+                    }
+                },
+                error: function (xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+
+    function checkAllChildren(id){
+         children = $('' + id + ' :input');
+         print(children);
+         children.attr('checked', 'checked');
+    }
+
+    function get_checked_journales() {
+        checked_labels = $('.journalleft:checkbox:checked').next();
+        journalnames = [];
+
+        for (names of checked_labels){
+            journalnames.append(checked_labels[i].text())
+        }
+
+        console.log(journalnames)
+        create_author_post(journalnames)
+
+    }
+
+    </script>
+{% endblock %}

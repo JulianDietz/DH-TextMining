@@ -1,0 +1,177 @@
+{% extends 'index.html' %}
+{% block title %} Startseite {% endblock %}
+
+{% block body %}
+<div class="row">
+
+                <div class="col-lg-12">
+                    <h1 class="page-header">RCA - Regensburg Corpus Analyzer</h1>
+                </div>
+                <p class="col-lg-12">Der RCA ist ein Tool, das Wissenschaftlern im Bereich des Text Mining unterstützen soll. <br>
+                    Anhand eines Testkorpus können alle implementierten Metriken ausprobiert werden. Zusätzlich bietet der RCA die Möglichkeit,
+                    eigene Dokumente hochzuladen und somit externe Korpora zu erstellen.
+                    Im Folgenden wird das Projekt und die vorhandenen Metriken vorgestellt.</p>
+                <div class="col-lg-12">
+                    <h3>Die verschiedenen Korpusversionen</h3>
+                    <p><a href="https://www.omicsonline.org">Omics International</a> stellt aus zahlreichen wissenschaftlichen Domänen
+                    Journals kostenlos zur Verfügung. Aus diesen wurden 18 Kategorien gewählt und deren Journals aus dem Jahr 2018 gecrawlt.
+                    Diese dienen dem RCA als Testkorpus und stehen in den folgenden Varianten zur Verfügung.</p>
+                    {% load static %}
+
+                    <div class="list">
+                        <div class="overwiev">
+                            <img src="{% static 'img/grafiken_textmining_Korpusübersicht.png' %}" class="graphic"/>
+                        </div>
+                        <div class="listitems">
+                            <div class="popup" id="1"><li>raw</li>
+                                <span class="popuptext" id="raw">Das Korpus in seiner Originalversion ohne jegliche Bearbeitung.</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="2"><li>gestemmt</li>
+                                <span class="popuptext" id="stem">Alle Wörter werden auf ihren Stamm reduziert. <br> Bsp.: Häuser --> Haus</span>
+                            </div>
+                                <br>
+                            <div class="popup" id="3"><li>stoppwortgefiltert</li>
+                                <span class="popuptext" id="stop">Das Korpus wird um eine Standardliste an sog. Stoppwörtern redzuiert,
+                                                                da sie keine Bedeutung tragen. <br> Bsp.: und, da, weil</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="4"><li>POS-getagged</li>
+                                <span class="popuptext" id="pos">Jedes Wort wird hinsichtlich seiner Wortart mit einem Tag verstehen. <br>
+                                So können z.B. nur alle Substantive betrachtet werden.</span>
+                            </div>
+                                <br>
+                            <div class="popup" id="5"><li>lemmatisiert</li>
+                                <span class="popuptext" id="lemma">Die Wörter werden in ihre Grundform ("lemma") überführt. <br> Bsp.: geht --> gehen</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <h3>Basic Metrics</h3>
+                    <p>In der untenstehenden Grafik sind alle implementierten Metriken zu erkennen, die zur Kategorie "Basic Metrics" gehören.
+                    Damit sind grundlegende Metriken gemeint, mit deren Hilfe Korpora im Bereich des Text Mining analysiert werden.</p>
+                    {% load static %}
+
+                    <div class="list">
+                        <div class="overwiev">
+                            <img src="{% static 'img/grafiken_textmining_Basic.png' %}" class="graphic"/>
+                        </div>
+                        <div class="listitems">
+                            <div class="popup" id="6"><li>die häufigsten Wörter</li>
+                                <span class="popuptext" id="most_common">Welche Wörter treten im Korpus am Häufigsten auf?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="7"><li>most present words</li>
+                                <span class="popuptext">Wie häufig tritt ein Wort in n Dokumenten auf? <br>
+                                Besteht ein Korpus aus 50 Dokumenten, wäre die größte Auftrittshäufigkeit 50. Wir berechnen, welche die 10
+                                <i>most present words</i>sind.</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="8"><li>durchschnittliche Wortlänge</li>
+                                <span class="popuptext" id="wordlength">Wie lang sind Wörter im Durchschnitt des gewählten Korpus?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="9"><li>durchschnittliche Satzlänge</li>
+                                <span class="popuptext" id="sentencelength">Wie lang sind Sätze im Durchschnitt des gewählten Korpus?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="10"><li>Größe/Dichte des Wortschatzes - TTR</li>
+                                <span class="popuptext" id="ttr">Mit Hilfe der Type-Token-Relation kann berechnet werden, welchen Komplexitätsgrad
+                                ein Wortschatz besitzt. <br>
+                                    <b>Token:</b> jedes Wort (Anzahl aller Wörter) <br>
+                                    <b>Type:</b> individuelles Wort (Anzahl aller verschiedener Wörter) <br>
+                                    <b>Berechung:</b> Token/Type <br>
+                                Je mehr Types im Vergleich zu den Tokens vorhanden sind, desto reicher ist der Wortschatz. Das heißt je kleiner das Ergebnis
+                                (zwischen 0 und 1) ist, desto weniger Varietät weist der Wortschatz auf.</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="11"><li>Anzahl der Satzzeichen</li>
+                                <span class="popuptext" id="interpunct">Wie viele Satzzeichen befinden sich in den Doumenten des Korpus?</span>
+                            </div>
+                            <br>
+                             <div class="popup" id="12"><li>Anzahl der Zeichen</li>
+                                <span class="popuptext" id="char">Aus wie vielen Zeichen besteht das Korpus? <br>
+                                Wie viele Zeichen befinden sich durchschnittlich in den Dokumenten?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="13"><li>Anzahl aller Wörter</li>
+                                <span class="popuptext" id="token">Wie viele Tokens befinden sich im Korpus?</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <h3>Scientific Metrics</h3>
+                    <p>In der untenstehenden Grafik sind alle implementierten Metriken zu erkennen, die zur Kategorie "Scientific Metrics" gehören.
+                    Diese sollen dem Nutzer helfen herauszufinden, was typische Merkmale von Papern einer speziellen Domäne sind. Sie untersuchen
+                    also den Stil von Papern verschiedener wissenschaftlicher Gebiete. Die qualitative Auswertung und Interpretation muss jedoch
+                    vom Nutzer selbst durchgeführt werden. Alle hier berechneten Metriken sind quantitativ.</p>
+                    {% load static %}
+                    <div class="list">
+                        <div class="overwiev">
+                            <img src='{% static 'img/grafiken_textmining_Scientific.png' %}' class="graphic"/>
+                        </div>
+                        <div class="listitems">
+                            <div class="popup" id="14"><li>Autoren</li>
+                                <span class="popuptext" id="author">Wie viele Autoren schreiben im Durchschnitt an einem Paper?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="15"><li>Referenzen</li>
+                                <span class="popuptext" id="refernce">Wie häufig referenziert ein Paper im Korpus andere wissenschaftliche Artikel?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="16"><li>Universitäten</li>
+                                <span class="popuptext" id="uni">Wie viele verschiedene Universitäten arbeiten gemeinsam an einem Paper?
+                                Daraus lässt sich ableiten, wie häufig in wissenschaftlichen Domänen Kooperationsprojekte durchgeführt werden.</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="17"><li>Keywords</li>
+                                <span class="popuptext" id="keyword">Wie viele Keywords sind vorhanden? Was ist deren durchschnittliche Länge?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="18"><li>Die häufisten Keywords</li>
+                                <span class="popuptext" id="common_keyword">Welche Keywords treten im Korpus am häufigsten auf?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="19"><li>Anzahl aller Tabellen</li>
+                                <span class="popuptext" id="table">Wie viele gibt es in der Summe? Wie viele durchschnittlich?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="20"><li>Anzahl aller Bilder</li>
+                                <span class="popuptext" id="img">Wie viele gibt es in der Summe? Wie viele durchschnittlich?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="21"><li>Anzahl aller Überschriften</li>
+                                <span class="popuptext" id="headline">Aus wie vielen Überschriften besteht ein Paper? Welcher Durchschnitt
+                                ergibt sich daraus für das Korpus?</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="22"><li>Absätze pro Texteinheit</li>
+                                <span class="popuptext" id="paragraphs">Eine Texteinheit ist ein bestimmter Abschnitt in einem Paper,
+                                wie beispielsweise Abstract, Introduction, Conclusion, etc. Diese Metrik berechnet, wie viele Absätze pro Einheit
+                                vorhanden sind.</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="23"><li>durchschnittliche Beschriftungslänge von Tabellen und Bildern</li>
+                                <span class="popuptext" id="label">Tabellen und Bilder müssen in der Regel beschriftete werden. Deren durchschnittliche Länge
+                                kann anhand dieser Metriken herausgefunden werden.</span>
+                            </div>
+                            <br>
+                            <div class="popup" id="24"><li>Readability</li>
+                                <span class="popuptext" id="read">Wie schwierig ist ein Text zu verstehen bzw. zu lesen? <br>
+                                Das Maß ist abhängig von der Komplexität des Vokabulars und der Syntax, sowie der Präsentation (typografische
+                                Aspekte) des Textes. <br>
+                                Das Ergebnis wird mit Hilfe eins siebestufigen Scores ausgewertet: <br>
+                                very easy, easy, fairly easy, standard, fairly difficult, difficult, very confusing.</span>
+                            </div>
+                    </div>
+                    </div>
+
+                </div>
+
+
+</div>
+
+
+{% endblock %}

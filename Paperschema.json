@@ -1,0 +1,203 @@
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "metaData": {
+      "type": "object",
+      "properties": {
+        "keywords": {
+          "type": "array"
+        },
+        "yearOfArticle": {
+          "type": "string"
+        },
+        "journaltitle": {
+          "type": "string"
+        },
+        "impactFactor": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "URL": {
+          "type": "string"
+        },
+        "paperType": {
+          "type": "string"
+        }
+      }
+    },
+    "abstract": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "title"
+        ]
+      }
+    },
+    "authors": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "number"
+        },
+        "authorList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "authorName": {
+                "type": "string"
+              },
+              "authorIndex": {
+                "type": "number"
+              },
+              "university": {
+                "type": "object",
+                "properties": {
+                  "universityName": {
+                    "type": "string"
+                  },
+                  "universityCountry": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "references": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "number"
+        },
+        "referencesList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "referenceIndex": {
+                "type": "number"
+              },
+              "referenceName": {
+                "type": "string"
+              },
+              "referenceAuthor": {
+                "type": "string"
+              },
+              "referenceYear": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "text": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "subsection": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "depth": {
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "tables": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "number"
+              },
+              "tablesList": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "number"
+                    },
+                    "tableRowDim": {
+                      "type": "number"
+                    },
+                    "tableColDim": {
+                      "type": "number"
+                    },
+                    "tableDescription": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "pictures": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "number"
+              },
+              "picturesList": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "number"
+                    },
+                    "pictureDescription": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "text",
+        "title"
+      ]
+    }
+  },
+  "required": [
+    "title",
+    "text",
+    "authors"
+  ]
+}

@@ -1,0 +1,37 @@
+{% extends 'index.html' %}
+{% block title %}Liste der Paper{% endblock %}
+
+{% block body %}
+
+    <p>Abstract Metriken</p>
+     {% for paper in paperlist %}
+         {% for abstract in paper.abstract %}
+            <ul>{{ abstract.metrik.charCountResults.charCountWhiteSpace }}</ul>
+             <ul>{{ abstract.metrik.charCountResults.charCountNoWhiteSpace }}</ul>
+             {% endfor %}
+    {% endfor %}
+    <hr>
+
+    {% for paper in paperlist %}
+    <ul>{{ paper }} hinzugefügt. Titel= {{ paper.title }}</ul>
+    {% endfor %}
+    <hr>
+    {% for paper in paperlist %}
+    <li>
+     <ul>{{ paper.abstract.stemmedText.text}}</ul>
+    <ul>Text:</ul>
+        {% for text in paper.text %}
+             <ul>ENDE ENDE</ul>
+            <ul>{{ text.text}}</ul>
+             <ul>StemmedText:</ul>
+            <ul>{{ text.stopFilteredText.text}}</ul>
+             <ul>LemmatizedText:</ul>
+            <ul>{{ text.lemmatizedText.text}}</ul>
+            <ul>Metriks:</ul>
+            <ul>{{ text.metrik.charCountResults.charCountWhiteSpace}}</ul>
+            <ul>ENDE ENDE</ul>
+        {% endfor %}
+    </li>
+    {% endfor %}
+
+{% endblock %}

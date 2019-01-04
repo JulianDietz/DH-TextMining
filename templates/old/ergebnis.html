@@ -1,0 +1,374 @@
+{% extends 'index.html' %}
+{% block title %}Ergebnis{% endblock %}
+
+{% block body %}
+    <div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Ergebnis </h1>
+        <h3>Analyseauswertung der gewählten Korpora:</h3>
+    </div>
+
+    <div class="col-lg-12">
+        <h4>Basic Metrics</h4>
+    </div>
+    <div class="col-lg-6">
+        <h4>Die häufigsten Wörter aus Korpus ...</h4>
+        <!-- Tagcloud-->
+
+    </div>
+    <div class="col-lg-6">
+        <h4>Die häufigsten Wörter aus Korpus ...</h4>
+        <!-- Tagcloud-->
+    </div>
+
+    <!-- durchschnittliche Wortlänge -->
+    <div class="col-lg-6 result table-responsive text-nowrap">
+        <h4>Durchschnittliche Wortlänge</h4>
+        <table>
+            <tr>
+                <th>Teil d. Korpus</th>
+                <th>Ø Wortlänge</th>
+                <th>Modus</th>
+                <th>Median</th>
+                <th>Varianz</th>
+            </tr>
+            <tr>
+                <td class="tablebold">Gesamt</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Abstracts</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Überschrift 1. Grades</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Überschrift 2. Grades</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="col-lg-6 result table-responsive text-nowrap">
+        <h4>Durchschnittliche Wortlänge</h4>
+        <table>
+            <tr>
+                <th>Teil d. Korpus</th>
+                <th>Ø Wortlänge</th>
+                <th>Modus</th>
+                <th>Median</th>
+                <th>Varianz</th>
+            </tr>
+            <tr>
+                <td class="tablebold">Gesamt</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Abstracts</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Überschrift 1. Grades</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Überschrift 2. Grades</td>
+                <td>13.4 Zeichen</td>
+                <td>16 Zeichen</td>
+                <td>14.5 Zeichen</td>
+                <td>2.96 Zeichen</td>
+            </tr>
+
+        </table>
+    </div>
+
+    <!-- durchschnittliche Satzlänge -->
+    <div class="col-lg-6 result table-responsive text-nowrap">
+        <h4>Durchschnittliche Satzlänge</h4>
+        <table>
+            <tr>
+                <th>Teil d. Korpus</th>
+                <th>Ø Satzlänge</th>
+                <th>Modus</th>
+                <th>Median</th>
+                <th>Varianz</th>
+            </tr>
+            <tr>
+                <td class="tablebold">Gesamtkorpus</td>
+                <td>7.3 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Abstracts</td>
+                <td>7.3 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 1. Grades</td>
+                <td>7.3 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 2. Grades</td>
+                <td>7.3 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="col-lg-6 result table-responsive text-nowrap">
+        <h4>Durchschnittliche Satzlänge</h4>
+        <table>
+            <tr>
+                <th>Teil d. Korpus</th>
+                <th>Ø Satzlänge</th>
+                <th>Modus</th>
+                <th>Median</th>
+                <th>Varianz</th>
+            </tr>
+            <tr>
+                <td class="tablebold">Gesamtkorpus</td>
+                <td>8.1 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Abstracts</td>
+                <td>8.1 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 1. Grades</td>
+                <td>8.1 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 2. Grades</td>
+                <td>8.1 Wörter</td>
+                <td>7 Wörter</td>
+                <td>9 Wörter</td>
+                <td>4.3 Wörter</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <!-- Anzahl der Satzzeichen -->
+    <div class="col-lg-6 result table-responsive text-nowrap">
+        <h4>Anzahl der Satzzeichen</h4>
+        <table>
+            <tr>
+                <th>Teil d. Korpus</th>
+                <th>Absolut</th>
+                <th>Ø Satzzeichen pro Paper</th>
+                <th>Modus</th>
+                <th>Median</th>
+                <th>Varianz</th>
+            </tr>
+            <tr>
+                <td class="tablebold">Gesamtkorpus</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Abstracts</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 1. Grades</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 2. Grades</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-lg-6 result table-responsive text-nowrap">
+        <h4>Anzahl der Satzzeichen</h4>
+        <table>
+            <tr>
+                <th>Teil d. Korpus</th>
+                <th>Absolut</th>
+                <th>Ø Satzzeichen pro Paper</th>
+                <th>Modus</th>
+                <th>Median</th>
+                <th>Varianz</th>
+            </tr>
+            <tr>
+                <td class="tablebold">Gesamtkorpus</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">Abstracts</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 1. Grades</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+            <tr>
+                <td class="tablebold">ÜS 2. Grades</td>
+                <td>132.434 Satzzeichen</td>
+                <td>321.6 Satzzeichen</td>
+                <td>350 Satzzeichen</td>
+                <td>354 Satzzeichen</td>
+                <td>5.89 Satzzeichen</td>
+            </tr>
+        </table>
+    </div>
+
+    <!--Zeichenanzahl -->
+    <div class="col-lg-6 result">
+        <h4>Zeichenanzahl</h4>
+        <p>Die absolute Anzahl des Korpus beträgt: </p>
+        <p class="bordered">1.008.854 Zeichen</p>
+    </div>
+    <div class="col-lg-6 result">
+        <h4>Zeichenanzahl</h4>
+        <p>Die absolute Anzahl des Korpus beträgt: </p>
+        <p class="bordered">5.985.349.653 Zeichen</p>
+    </div>
+
+    <!--Wortanzahl -->
+    <div class="col-lg-6 result">
+        <h4>Wortanzahl</h4>
+        <p>Die absolute Anzahl des Korpus beträgt: </p>
+        <p class="bordered">648.986 Wörter</p>
+    </div>
+    <div class="col-lg-6 result">
+        <h4>Wortanzahl</h4>
+        <p>Die absolute Anzahl des Korpus beträgt: </p>
+        <p class="bordered">209.865 Wörter</p>
+    </div>
+
+    <!--Most Present Words-->
+    <div class="col-lg-6 result">
+        <h4>Most Present Words</h4>
+        <p>Die Top 10 der meist verwendeten Wörter(nach Rang sortiert) :</p>
+        <ul>
+            <li>hello</li>
+            <li>hi</li>
+            <li>bye</li>
+            <li>tree</li>
+            <li>science</li>
+            <li>refernce</li>
+            <li>abstract</li>
+            <li>paper</li>
+            <li>world</li>
+            <li>common</li>
+        </ul>
+    </div>
+    <div class="col-lg-6 result">
+        <h4>Most Present Words</h4>
+        <p>Die Top 10 der meist verwendeten Wörter(nach Rang sortiert) :</p>
+        <ul>
+            <li>hello</li>
+            <li>hi</li>
+            <li>bye</li>
+            <li>tree</li>
+            <li>science</li>
+            <li>refernce</li>
+            <li>abstract</li>
+            <li>paper</li>
+            <li>world</li>
+            <li>common</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <div class="col-lg-12">
+        <h3>Scientific Metrics</h3>
+    </div>
+    </div>
+    <div class="col-lg-6">
+        <form>
+              <a href="{% url 'download' %}" download><span class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-download"></i> Download files</span></a>
+        </form>
+    </div>
+
+    <div>
+            <form>
+              <a href="{% url 'download' %}" download ><span class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-download"></i> Download files</span></a>
+            </form>
+    </div>
+        <div class="panel-body">
+     </div>
+
+
+    <div class="footer" >
+    <footer >
+      <div class="text-center">
+        <p>
+         <strong>Anna Maria Auer, Marlene Bauer, Christoph Tögel & Julian Dietz</strong>
+        </p>
+      </div>
+    </footer>
+    </div>
+
+{% endblock %}
