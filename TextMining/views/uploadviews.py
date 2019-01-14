@@ -47,14 +47,14 @@ def uploadFiles(request):
 def completeUpload(request):
     if request.method == 'GET':
         global currentJsonfiles
-        print("Jsonfiles")
-        print(currentJsonfiles)
+        #print("Jsonfiles")
+        #print(currentJsonfiles)
         for jsonfile in currentJsonfiles:
             print(jsonfile)
             #savePaper(jsonfile)
         currentJsonfiles=[]
         print("Alle files sollen jetzt gespeichert werden")
-        return render(request, 'ergebnis.html')
+        return render(request, 'helloWorld.html')
 
 
 @csrf_exempt

@@ -1,4 +1,4 @@
-from TextMining.models import ResCitationSegmentCount
+#from TextMining.models import ResCitationSegmentCount
 import re
 
 method="citationcount"

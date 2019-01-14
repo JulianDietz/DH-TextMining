@@ -4,37 +4,37 @@
 {% block body %}
 
     <div class="container-fluid">
-        <h3><span id="validPaperNum">{{ validPaper|length }} </span> Valide Paper</h3>
+        <h3><span id="validPaperNum">{{ validPaper|length }} </span> Valide Paper:</h3>
         <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
                 aria-expanded="false" aria-controls="collapseExample">
             Details
         </button>
-
-    <div class="collapse" id="collapseExample">
-        <table id="table" class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Status</th>
-                <th>Name</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for paper in validPaper %}
+        <div class="collapse" id="collapseExample">
+            <table id="table" class="table table-bordered">
+                <thead>
                 <tr>
-                    <td><span><i class="glyphicon glyphicon-ok-circle"></i></span></td>
-                    <td>{{ paper.name }}</td>
+                    <th>Status</th>
+                    <th>Name</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for paper in validPaper %}
+                    <tr>
+                        <td><span><i class="far fa-check-circle"></i></span></td>
+                        <td>{{ paper.name }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-    </div>
-    </br>
     <hr>
     {% if invalidPaper %}
         <div id="invalidPaper">
-            <a href="{% url "completeUpload" %}" class="btn btn-primary" role="button">Paper hochladen ohne fehlerhafte
+            <a href="{% url "completeUpload" %}" class=" row float-right btn btn-primary" role="button">Paper hochladen ohne fehlerhafte
                 Paper</a>
+        <br>
+
             <h3><span id="invalidPaperNum">{{ invalidPaper|length }}</span> Fehlerhafte Paper:</h3>
             {% for paper in invalidPaper %}
                 <div class="jumbotron">
@@ -52,10 +52,10 @@
                         <textarea class="form-control" rows="15" id="file">
                     {{ paper.data }}
                 </textarea>
-                        <button class="btn btn-default" type="button" onclick="prettyPrint()">prettify</button>
-                        <button class="btn btn-default" type="submit" id="submitSingelPaperButton">Paper zum Korpus
-                            hinzufügen
+                        <button class="btn btn-light" type="button" onclick="prettyPrint()"><i class="fas fa-broom"></i>prettify
                         </button>
+                        <button class="float-right btn btn-primary" type="submit" id="submitSingelPaperButton">Paper zum
+                            Korpus hinzufügen </button>
                     </form>
                 </div>
             {% endfor %}
@@ -68,8 +68,10 @@
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 id="modaltitel" class="modal-title"></h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
                     <div class="modal-body">
                         <p id="modaltext"></p>
@@ -82,9 +84,8 @@
             </div>
         </div>
     {% else %}
-        <a href="{% url "completeUpload" %}" class="btn btn-primary" role="button">Paper hochladen</a>
+        <a href="{% url "completeUpload" %}" class="float-right btn btn-primary" role="button">Paper hochladen</a>
     {% endif %}
-    <!--dialog id="paperFail">Fail</dialog>-->
 
     </div>
 
@@ -115,10 +116,10 @@
                     console.log("response:");
                     console.log(json['valid']);
                     if (json['valid'] == 'true') {
-                        console.log("File ist nun zum Upload bereit!");
-                        showModal("Paper wurde erfolgreich zum Korpus hinzugefügt!", 'filename etc');
+                        //console.log("File ist nun zum Upload bereit!");
+                        showModal("Paper wurde erfolgreich zum Korpus hinzugefügt!", '');
                         $(form).parent().remove();
-                        $('#table tr:last').after('<tr> <td>done</td><td>' + json['filename'] + '</td></tr>');
+                        $('#table tr:last').after('<tr> <td><i class="far fa-check-circle"></i></td><td>' + json['filename'] + '</td></tr>');
                         console.log(parseInt($('#invalidPaperNum').html()) - 1)
                         $('#invalidPaperNum').html(parseInt($('#invalidPaperNum').html()) - 1);
                         $('#validPaperNum').html(parseInt($('#validPaperNum').html()) + 1);

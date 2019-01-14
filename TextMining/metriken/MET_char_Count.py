@@ -1,4 +1,4 @@
-from TextMining.models import ResCharSegmentCount
+#from TextMining.models import ResCharSegmentCount
 import re
 
 method="charcount"

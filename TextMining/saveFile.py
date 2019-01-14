@@ -1,5 +1,5 @@
-from .models import Metric,Text, Subsection, Reference, References, Paper, Author, Metadata, Authors, University, Abstract, \
-    Picture, Pictures, Table, Tables
+#from .models import Metric,Text, Subsection, Reference, References, Paper, Author, Metadata, Authors, University, Abstract, \
+#    Picture, Pictures, Table, Tables
 
 def savePaper(paperJson):
     paperDB = Paper()

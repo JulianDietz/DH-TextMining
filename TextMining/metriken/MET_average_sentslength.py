@@ -1,4 +1,4 @@
-from TextMining.models import ResWordSegmentCount
+#from TextMining.models import ResWordSegmentCount
 import re
 
 method="sentsCount"

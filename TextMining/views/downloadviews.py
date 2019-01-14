@@ -5,7 +5,7 @@ import json
 from jsonschema import Draft4Validator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
-from textMining.saveFile import savePaper
+#from textMining.saveFile import savePaper
 
 def downloadResults(request):
     if request.method == 'GET':

@@ -279,7 +279,7 @@ def getAbstract(htmlArticle):
             print("Abstract ohne überschriften")
             list.append({'title':EMPTYJSONTAG,'text':abstract.getText(),'depth':1})
     else:
-        list = {'title': EMPTYJSONTAG, 'text': EMPTYJSONTAG}
+        list = [{'title': EMPTYJSONTAG, 'text': EMPTYJSONTAG}]
     print("final Abstract:")
     print(list)
     return list

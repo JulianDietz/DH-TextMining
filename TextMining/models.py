@@ -6,107 +6,67 @@ from mongoengine import *
 # http://docs.mongoengine.org
 connect('textmining')
 
-# TEXT VARIANT !!! TEXT VARIANT !!! TEXT VARIANT !!! TEXT VARIANT !!! TEXT VARIANT !!! TEXT VARIANT !!! TEXT VARIANT !!!
-class TextVariant(EmbeddedDocument):
-    text = StringField()
-    method = StringField()
-
-# METRIK RESULTS !!! METRIK RESULTS !!! METRIK RESULTS !!! METRIK RESULTS !!! METRIK RESULTS !!! METRIK RESULTS !!!
-
-
-class ResCharSegmentCount(EmbeddedDocument):
-    charCountWhiteSpace = StringField(default= "0")
-    charCountNoWhiteSpace = StringField(default = "0")
-
-class ResWordSegmentCount(EmbeddedDocument):
-    wordCount = StringField(default= "0")
-
-class ResPunctSegmentCount(EmbeddedDocument):
-    punctCount = StringField(default= "0")
-
-class ResCitationSegmentCount(EmbeddedDocument):
-    citationCount = StringField(default= "0")
-
-
 
 class Metric(EmbeddedDocument):
-    charCountResults = EmbeddedDocumentField('ResCharSegmentCount')
-    wordCountResults = EmbeddedDocumentField('ResWordSegmentCount')
-    punctCountResults = EmbeddedDocumentField('ResPunctSegmentCount')
-    citationCountResults = EmbeddedDocumentField('ResCitationSegmentCount')
-    sentslengthAverage = FloatField()
+    charCountWhiteSpace = StringField()
+    charCountNoWhiteSpace = StringField()
+    wordCount = StringField()
+    punctCount = StringField()
+    citationCount = StringField()
+
 
 
 class Tables(EmbeddedDocument):
-    count = IntField()
-    tablesList = EmbeddedDocumentListField('Table')
-
-
-class Table(EmbeddedDocument):
-    tableIndex = IntField()
-    tableRowDim = IntField()
-    tableCodDim = IntField()
-    tableDescription = StringField()
+    index = IntField()
+    rowDim = IntField()
+    codDim = IntField()
+    description = StringField()
 
 
 class Pictures(EmbeddedDocument):
-    count = IntField()
-    picturesList = EmbeddedDocumentListField('Picture')
-
-
-class Picture(EmbeddedDocument):
-    pictureIndex = IntField()
-    pictureDescription = StringField()
+    index = IntField()
+    description = StringField()
 
 
 class Subsection(EmbeddedDocument):
-    title = StringField()
-    text = StringField()
-    stopFilteredText = EmbeddedDocumentField('TextVariant')
-    lemmatizedText = EmbeddedDocumentField('TextVariant')
-    metrik = EmbeddedDocumentField('Metric', null = True)
-    subsubsection = ListField()
+    titleRaw = EmbeddedDocumentField('TextVariant')
+    titleNltkStw = EmbeddedDocumentField('TextVariant')
+    textRaw = EmbeddedDocumentField('TextVariant')
+    textNltkStw = EmbeddedDocumentField('TextVariant')
+    metrik = EmbeddedDocumentField('Metric', null=True)
+    subsubsection = EmbeddedDocumentListField('Subsection') # nicht implementiert
 
-
-class Text(EmbeddedDocument):
-    title = StringField()
+class TextVariant(EmbeddedDocument):
     text = StringField()
-    stopFilteredText = EmbeddedDocumentField('TextVariant')
-    lemmatizedText = EmbeddedDocumentField('TextVariant')
-    metrik = EmbeddedDocumentField('Metric', null = True)
+    metrik = EmbeddedDocumentField('Metric', null=True)
+
+class Section(EmbeddedDocument):
+    titleRaw = EmbeddedDocumentField('TextVariant')
+    titleNltkStw = EmbeddedDocumentField('TextVariant')
+    textRaw = EmbeddedDocumentField('TextVariant')
+    textNltkStw = EmbeddedDocumentField('TextVariant')
     subsection = EmbeddedDocumentListField('Subsection')
-    tables = EmbeddedDocumentField('Tables')
-    pictures = EmbeddedDocumentField('Pictures')
-    formulas = StringField()  # String weil leer und nicht 0
-
-
-
-class Reference(EmbeddedDocument):
-    referenceIndex = IntField()
-    referenceName = StringField()
-    referenceAuthor = StringField()
-    referenceYear = StringField()
+    tables = EmbeddedDocumentListField('Tables')
+    pictures = EmbeddedDocumentListField('Pictures')
 
 
 class References(EmbeddedDocument):
-    count = IntField()
-    referencesList = EmbeddedDocumentListField('Reference')
+    index = IntField()
+    name = StringField()
+    author = StringField()
+    year = StringField()
+
 
 
 class University(EmbeddedDocument):
-    university_universityName = StringField()
-    university_universityCountry = StringField()
+    name = StringField()
+    country = StringField()
 
 
 class Author(EmbeddedDocument):
-    authorName = StringField()
-    authorIndex = IntField()
+    name = StringField()
+    index = IntField()
     university = EmbeddedDocumentField('University')
-
-
-class Authors(EmbeddedDocument):
-    count = IntField()
-    authorList = EmbeddedDocumentListField('Author')
 
 
 class Abstract(EmbeddedDocument):
@@ -114,7 +74,7 @@ class Abstract(EmbeddedDocument):
     text = StringField()
     stopFilteredText = EmbeddedDocumentField('TextVariant')
     lemmatizedText = EmbeddedDocumentField('TextVariant')
-    metrik = EmbeddedDocumentField('Metric', null = True)
+    metrik = EmbeddedDocumentField('Metric', null=True)
 
 
 class Metadata(EmbeddedDocument):
@@ -136,9 +96,9 @@ class Metadata(EmbeddedDocument):
 
 
 class Paper(Document):
-    title = StringField()
+    title = StringField() # in raw und nltkstw
     metaData = EmbeddedDocumentField('Metadata')
+    authors = EmbeddedDocumentListField('Authors')
+    references = EmbeddedDocumentListField('References')
     abstract = EmbeddedDocumentListField('Abstract')
-    authors = EmbeddedDocumentField('Authors')
-    references = EmbeddedDocumentField('References')
-    text = EmbeddedDocumentListField('Text')
+    content = EmbeddedDocumentListField('Section')

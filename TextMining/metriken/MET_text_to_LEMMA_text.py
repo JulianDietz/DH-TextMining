@@ -1,4 +1,4 @@
-from TextMining.models import TextVariant
+#from TextMining.models import TextVariant
 from nltk.stem import WordNetLemmatizer
 import nltk
 import re

@@ -15,10 +15,16 @@ Including another URLconf
 """
 # from django.contrib import admin
 from django.urls import path
+
+from DH_TextMining import settings
 from TextMining import views
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('textMining/helloWorld/', views.helloWorld),
+    path('textMining/upload/', views.uploadFiles, name='upload'),
+    path('textMining/uploadImprovedPaperAjax/', views.uploadImprovedPaper, name="improvedPaper"),
+    path('textMining/completeUpload/', views.completeUpload, name='completeUpload'),
 
 ]
 
@@ -37,11 +43,8 @@ urlpatterns = [
     path('textMining/results/', generalviews.showResults, name='results'),
 
 
-    path('textMining/upload/', uploadviews.uploadFiles, name='upload'),
     path('textMining/results/download/', downloadviews.downloadResults, name='download'),
     #path('textMining/results/download/', downloadviews.downloadResults2, name='download2'),
-    path('textMining/uploadImprovedPaperAjax/', uploadviews.uploadImprovedPaper, name="improvedPaper"),
-    path('textMining/completeUpload/', uploadviews.completeUpload, name='completeUpload'),
 
 
     path('textMining/ajax/categorie', generalviews.ajaxCategorie, name='ajaxCateogrie'),
