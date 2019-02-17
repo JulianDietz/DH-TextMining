@@ -6,6 +6,40 @@ from mongoengine import *
 # http://docs.mongoengine.org
 connect('textmining')
 
+class BibtexFields(EmbeddedDocument):
+    citekey = StringField()
+    entrytype = StringField()
+    title = StringField()
+    #author = StringField()
+    year = StringField()
+    month = StringField()
+    journal = StringField()
+    booktitle = StringField()
+    publisher = StringField()
+    volume = StringField()
+    number = StringField()
+    pages = StringField()
+    #note = StringField()
+    #keywords = StringField()
+    url = StringField()
+    #code = StringField()
+    #pdf = StringField()
+    #image = StringField()
+    #thumbnail = StringField()
+    #doi = StringField()
+    #external = StringField()
+    #abstract = StringField()
+    #isbn = StringField()
+    editor = StringField()
+    series = StringField()
+    address = StringField()
+    edition = StringField()
+    organization = StringField()
+    type = StringField()
+    chapter = StringField()
+    howpublished = StringField()
+    location = StringField()
+
 
 class Metric(EmbeddedDocument):
     charCountWhiteSpace = StringField()
@@ -93,6 +127,7 @@ class Metadata(EmbeddedDocument):
     pages = IntField()
     excerptPages = StringField()
     publicationLocation = StringField()
+    bibtexData = EmbeddedDocumentField('BibtexFields')
 
 
 class Paper(Document):
