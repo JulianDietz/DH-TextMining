@@ -50,14 +50,14 @@ class Metric(EmbeddedDocument):
 
 
 
-class Tables(EmbeddedDocument):
+class Table(EmbeddedDocument):
     index = IntField()
     rowDim = IntField()
     codDim = IntField()
     description = StringField()
 
 
-class Pictures(EmbeddedDocument):
+class Picture(EmbeddedDocument):
     index = IntField()
     description = StringField()
 
@@ -67,7 +67,7 @@ class Subsection(EmbeddedDocument):
     titleNltkStw = EmbeddedDocumentField('TextVariant')
     textRaw = EmbeddedDocumentField('TextVariant')
     textNltkStw = EmbeddedDocumentField('TextVariant')
-    metrik = EmbeddedDocumentField('Metric', null=True)
+    #metrik = EmbeddedDocumentField('Metric', null=True)
     subsubsection = EmbeddedDocumentListField('Subsection') # nicht implementiert
 
 class TextVariant(EmbeddedDocument):
@@ -80,11 +80,11 @@ class Section(EmbeddedDocument):
     textRaw = EmbeddedDocumentField('TextVariant')
     textNltkStw = EmbeddedDocumentField('TextVariant')
     subsection = EmbeddedDocumentListField('Subsection')
-    tables = EmbeddedDocumentListField('Tables')
-    pictures = EmbeddedDocumentListField('Pictures')
+    tables = EmbeddedDocumentListField('Table')
+    pictures = EmbeddedDocumentListField('Picture')
 
 
-class References(EmbeddedDocument):
+class Reference(EmbeddedDocument):
     index = IntField()
     name = StringField()
     author = StringField()
@@ -104,11 +104,10 @@ class Author(EmbeddedDocument):
 
 
 class Abstract(EmbeddedDocument):
-    title = StringField()
-    text = StringField()
-    stopFilteredText = EmbeddedDocumentField('TextVariant')
-    lemmatizedText = EmbeddedDocumentField('TextVariant')
-    metrik = EmbeddedDocumentField('Metric', null=True)
+    titleRaw = EmbeddedDocumentField('TextVariant')
+    titleNltkStw = EmbeddedDocumentField('TextVariant')
+    textRaw = EmbeddedDocumentField('TextVariant')
+    textNltkStw = EmbeddedDocumentField('TextVariant')
 
 
 class Metadata(EmbeddedDocument):
@@ -131,9 +130,9 @@ class Metadata(EmbeddedDocument):
 
 
 class Paper(Document):
-    title = StringField() # in raw und nltkstw
+    title = StringField() # TODO auch in raw und nltkstw???
     metaData = EmbeddedDocumentField('Metadata')
-    authors = EmbeddedDocumentListField('Authors')
-    references = EmbeddedDocumentListField('References')
+    authors = EmbeddedDocumentListField('Author')
+    references = EmbeddedDocumentListField('Reference')
     abstract = EmbeddedDocumentListField('Abstract')
     content = EmbeddedDocumentListField('Section')

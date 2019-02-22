@@ -20,19 +20,23 @@ from DH_TextMining import settings
 from TextMining import views
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('textMining/helloWorld/', views.helloWorld),
     path('textMining/upload/', views.uploadFiles, name='upload'),
     path('textMining/uploadImprovedPaperAjax/', views.uploadImprovedPaper, name="improvedPaper"),
     path('textMining/completeUpload/', views.completeUpload, name='completeUpload'),
+    path('textMining/readPaperView/', views.readJsonFilesView , name='readJsonFilesView'),
+    path('textMining/processPaperView/', views.processPaperView, name='processPaperView'),
 
+
+    #ajax read .json files
+    path('textMining/readPaper/', views.readJsonFiles , name='readJsonFiles'),
+    path('textMining/processPaper/', views.processPaper , name='processPaper'),
 ]
 
 '''
     #path('textMining/<int:pk>/', views.changeCategory),
-
-    path('textMining/readPaper/', generalviews.readJsonFiles),
-    path('textMining/processPaper/', generalviews.processPaper),
 
     path('textMining/calculateMetriken/', generalviews.calculateMetriken),
 

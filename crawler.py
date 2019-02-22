@@ -66,7 +66,7 @@ def savePaper(paperlistlink,categoryName,impactFactor):
 def runCrawler():
     r = requests.get('https://www.omicsonline.org')
     htmlfile = BeautifulSoup(r.text, 'html.parser')
-    for titel in htmlfile.findAll('h3'):
+    for titel in htmlfile.findAll('h6'):
         if titel.text == "Journals by Subject":
             for category in titel.parent.parent.findAll('a'):
                 print('category: '+category['title'])

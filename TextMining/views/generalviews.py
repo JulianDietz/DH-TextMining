@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from TextMining.models import Paper, Metadata
 import json
 from django.shortcuts import redirect
-from os import listdir
+from os import listdir,system
 from os.path import join
 from TextMining import metriken
 from TextMining.saveFile import savePaper
@@ -16,6 +16,54 @@ from TextMining.saveFile import savePaper
 
 def helloWorld(request):
     return render(request, 'helloWorld.html')
+
+
+def processPaperView (request):
+    context = {}
+    return render(request, 'processPaper.html', context)
+
+#Aufbereiten der Text Stopwortfiltern und lemmatisieren
+def processPaper(request):
+    print("Paper werden aufbreitet....")
+    paperlist = Paper.objects.all()[4:8]
+    for paper in paperlist:
+        metriken.removeStopwords(paper) #MET_text_to_STOP_text
+        metriken.lemmatize_Paper(paper) #MET_text_to_LEMMA_text
+        metriken.char_count_per_section_Paper(paper) #MET_char_Count
+        metriken.citation_count_per_section_Paper(paper) #MET_citation_Count
+        metriken.punctuation_count_per_section_Paper(paper) #MET_punctuation_Count
+        metriken.word_count_per_section_Paper(paper) #MET_word_Count
+        metriken.sentencelength_average_per_section_Paper(paper) #MET_average_sentslength
+
+    print("Papersind aufbereitet")
+    context = {'paperlist': paperlist}
+    return render(request, 'helloWorld.html', context)
+
+def readJsonFilesView (request):
+    context = {}
+    return render(request, 'readJsonFiles.html', context)
+
+def readJsonFiles(request):
+    # loads all Json files....
+    readpath = "./output"
+    onlyOne = False
+    counter=0
+    for filename in listdir(readpath):
+        if not onlyOne:
+            if filename != ".DS_Store": #file.endswith('.json')
+                file = open(join(readpath, filename), 'r', encoding='utf-8', errors="ignore")
+                paperJson = json.load(file)
+                paper=savePaper(paperJson)
+                counter+=1
+        onlyOne=False
+
+    return JsonResponse({'sucess':'Super!!!!!'})
+
+
+#Testen obs klappt
+def startDB(request):
+    system('mongod')
+
 
 '''def calculateMetriken(request):
     papers = Paper.objects.all()
@@ -119,45 +167,7 @@ def showResults(request):
     context={'corpus1':corpus1,'corpus2':corpus2}
     return render(request, 'ergebnis.html',context)
 
-def readJsonFiles(request):
-    # loads all Json files....
-    readpath = "./output"
-    onlyOne = False
-    counter=0
-    for filename in listdir(readpath):
-        if not onlyOne:
-            if filename != ".DS_Store": #file.endswith('.json')
-                file = open(join(readpath, filename), 'r', encoding='utf-8', errors="ignore")
-                paperJson = json.load(file)
-                paper=savePaper(paperJson)
-                print("Paper saved!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                counter+=1
-        onlyOne=False
 
-    paperlist=Paper.objects.all()
-    print('categorien')
-    print(Paper.objects.distinct('metaData.category'))
-    context = {'paperlist': paperlist}
-    return render(request, 'old/Helloworld.html', context)
-
-
-#Aufbereiten der Text Stopwortfiltern und lemmatisieren
-def processPaper(request):
-    print("Paper werden aufbreitet....")
-    paperlist = Paper.objects.all()[4:8]
-    for paper in paperlist:
-        metriken.removeStopwords(paper) #MET_text_to_STOP_text
-        metriken.lemmatize_Paper(paper) #MET_text_to_LEMMA_text
-        metriken.char_count_per_section_Paper(paper) #MET_char_Count
-        metriken.citation_count_per_section_Paper(paper) #MET_citation_Count
-        metriken.punctuation_count_per_section_Paper(paper) #MET_punctuation_Count
-        metriken.word_count_per_section_Paper(paper) #MET_word_Count
-        metriken.sentencelength_average_per_section_Paper(paper) #MET_average_sentslength
-
-    print("Papersind aufbereitet")
-
-    context = {'paperlist': paperlist}
-    return render(request, 'old/Helloworld.html', context)
 
 
 @csrf_exempt

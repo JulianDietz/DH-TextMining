@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+{% block body %}
+    <h1>Paper einlesen!</h1>
+
+    <button>Paper einlesen starten!</button>
+
+    <script>
+        $("button").click(function () {
+            $.ajax({
+                url: "{% url 'readJsonFiles' %}", success: function (result) {
+                    console.log(result)
+                }
+            });
+        });
+    </script>
+{% endblock %}
