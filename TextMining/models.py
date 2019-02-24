@@ -69,6 +69,7 @@ class Subsection(EmbeddedDocument):
     textNltkStw = EmbeddedDocumentField('TextVariant')
     #metrik = EmbeddedDocumentField('Metric', null=True)
     subsubsection = EmbeddedDocumentListField('Subsection') # nicht implementiert
+    #TODO tables und pictures hier auch rein?
 
 class TextVariant(EmbeddedDocument):
     text = StringField()
