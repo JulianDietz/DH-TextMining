@@ -7,3 +7,4 @@ from .MET_word_Count import *
 from .MET_citation_Count import *
 from .MET_punctuation_Count import *
 from .MET_average_sentslength import *
+from .MET_all import *

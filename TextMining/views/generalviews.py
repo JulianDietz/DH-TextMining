@@ -34,14 +34,17 @@ def processPaper(request):
     for paper in paperlist:
         print(paper)
         metriken.removeStopwords(paper) #MET_text_to_STOP_text
-        #metriken.lemmatize_Paper(paper) #MET_text_to_LEMMA_text
-        #metriken.char_count_per_section_Paper(paper) #MET_char_Count
-        #metriken.citation_count_per_section_Paper(paper) #MET_citation_Count
-        #metriken.punctuation_count_per_section_Paper(paper) #MET_punctuation_Count
-        #metriken.word_count_per_section_Paper(paper) #MET_word_Count
-        #metriken.sentencelength_average_per_section_Paper(paper) #MET_average_sentslength
+        metriken.calculateAllMetrics(paper)
+        '''
+        metriken.lemmatize_Paper(paper) #MET_text_to_LEMMA_text
+        metriken.char_count_per_section_Paper(paper) #MET_char_Count
+        metriken.citation_count_per_section_Paper(paper) #MET_citation_Count
+        metriken.punctuation_count_per_section_Paper(paper) #MET_punctuation_Count
+        metriken.word_count_per_section_Paper(paper) #MET_word_Count
+        metriken.sentencelength_average_per_section_Paper(paper) #MET_average_sentslength
+        '''
 
-    print("Papersind aufbereitet")
+    print("Papersind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
 
 def readJsonFilesView (request):
