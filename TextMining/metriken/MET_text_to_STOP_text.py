@@ -2,37 +2,45 @@ from nltk.corpus import stopwords
 from TextMining.models import TextVariant
 from nltk.tokenize import RegexpTokenizer
 
-method="nltk stopwordlist: english"
-
 def removeStopwords(paper):
+    #Titel
+    section=paper
+    if not paperIsRehashed(section,'titleNltkStw'):
+        stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(section.titleRaw.text))
+        section.titleNltkStw = stopWordFilteredText_String
+
     # Abstract
     for section in paper.abstract:
-        #print("stopFiltered:" + str(paperIsRehashed(section)))
-        if not paperIsRehashed(section):
-            #print('NotstopFiltered')
-            #print(getStopwordsForTextsection(section.text))
-            stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(section.text),method=method)
-            section.stopFilteredText = stopWordFilteredText_String
+        if not paperIsRehashed(section,'textNltkStw'):
+            stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(section.textRaw.text))
+            section.textNltkStw = stopWordFilteredText_String
+        if not paperIsRehashed(section,'titleNltkStw'):
+            stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(section.titleRaw.text))
+            section.titleNltkStw = stopWordFilteredText_String
 
     #Text
-    for section in paper.text:
-        #print("stopFiltered:" + str(paperIsRehashed(section)))
-        if not paperIsRehashed(section):
-            stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(section.text), method=method)
-            section.stopFilteredText = stopWordFilteredText_String
+    for section in paper.content:
+        if not paperIsRehashed(section,'textNltkStw'):
+            stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(section.textRaw.text))
+            section.textNltkStw = stopWordFilteredText_String
+        if not paperIsRehashed(section,'titleNltkStw'):
+            stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(section.titleRaw.text))
+            section.titleNltkStw = stopWordFilteredText_String
 
         #Subtext
         for subsection in section.subsection:
-            #print("stopFiltered:"+str(paperIsRehashed(subsection)))
-            if not paperIsRehashed(subsection):
-                stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(subsection.text), method=method)
-                #print ("String hier")
-                #print (stopWordFilteredText_String)
-                subsection.stopFilteredText = stopWordFilteredText_String
+            if not paperIsRehashed(subsection,'textNltkStw'):
+                stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(subsection.textRaw.text))
+                subsection.textNltkStw = stopWordFilteredText_String
+            if not paperIsRehashed(subsection, 'titleNltkStw'):
+                stopWordFilteredText_String = TextVariant(text=getStopwordsForTextsection(subsection.titleRaw.text))
+                subsection.titleNltkStw = stopWordFilteredText_String
     paper.save()
 
 #Stopwortliste nltk(english) word to lowercase
 def getStopwordsForTextsection(text):
+    print('Ausgangstext:')
+    print(text)
     text_As_Array = RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg?
     #print("text:"+text)
     textnostop = ""
@@ -40,24 +48,15 @@ def getStopwordsForTextsection(text):
         word = str(word).lower()
         if word not in stopwords.words('english'):
             textnostop += " " + word
-
+    print('stopworttext:')
     print(textnostop)
     return textnostop
 
 #checks if section has StemmedText with this method
-def paperIsRehashed(section):
-    return False
-    """
-    if section.stopFilteredText:
-        for stopFilteredText in section.stopFilteredText:
-            print("Hier")
-            print (stopFilteredText)
-
-            if stopFilteredText.method == method and stopFilteredText.text != "":
-                print ("stopFilteredText Text Hier")
-                print (stopFilteredText.text)
-                return True
-            else:
-                return False
+def paperIsRehashed(section,fieldname):
+    if section[fieldname]:
+        print('vorhanden')
+        return True
     else:
-        return False"""
+        print('noch nicht vorhanden')
+        return False
