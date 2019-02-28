@@ -135,5 +135,5 @@ class Paper(Document):
     metaData = EmbeddedDocumentField('Metadata')
     authors = EmbeddedDocumentListField('Author')
     references = EmbeddedDocumentListField('Reference')
-    abstract = EmbeddedDocumentListField('Abstract')
+    abstract = EmbeddedDocumentListField('Abstract') # TODO EmbeddedDocumentField machen, oder gibts echt mal mehr als ein Abstract?
     content = EmbeddedDocumentListField('Section')

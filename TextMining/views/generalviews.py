@@ -116,100 +116,7 @@ def showVergleichPage(request):
 
 #TODO DB files download!
 '''
-
-# corpus : Paper.objects(...)
-# fieldPath : Pfad zum jeweiligen Feld, in der Form
-# [{'field': 'abstract', 'listIndex': 0}, {'field': 'titleRaw'}, {'field': 'metrik'}, {'field': 'punctCount'}]
-# für gewählte section, untersection, abstract etc
-
-#durchschnittliche Wortlänge, urchschnittliche Satzlänge, Größe/Dichte Wortschatz = TTR wie laufen die?
-# vorberechnet oder life ausrechnen? wie mit lemmatisiert?
-
-
-def getStatisticalValues(inputarray):
-    average = np.mean(inputarray)
-    median = np.median(inputarray)
-    mode = stats.mode(inputarray)
-    variance = np.var(inputarray)
-    return {'average': average, 'median': median, 'mode': mode, 'variance': variance}
-
-#Erzeugt Array mit direktem Wert des gewählten Felds (aktuell noch String-Field) für jedes Paper/gewählte Section
-#Anzahl Satzzeichen je Paper
-#Anzahl Zeichen (mit und ohne Whitespace) je Paper
-#Anzahl Wörter je Paper
-#Anzahl Citations? (CitationCount) je Paper
-#TODO sind die alle so performant? Allgemein und auf Performance testen
-#TODO Läuft jede Metrik immer gleich für alle Sektionen und Subsektionen durch?
-#TODO die beiden wieder raus?
-def getFieldMetrik(corpus, fieldPath):
-    values = []
-    for paper in corpus:
-        metrik = paper
-        for subpath in fieldPath:
-            if 'listIndex' in subpath:
-                if getattr(metrik, subpath['field'])[subpath['listIndex']]:
-                    metrik = getattr(metrik, subpath['field'])[subpath['listIndex']]
-                else:
-                    break
-            else:
-                if getattr(metrik, subpath['field']):
-                    metrik = getattr(metrik, subpath['field'])
-                else:
-                    break
-        values.append(int(metrik))
-    return values
-
-#Erzeugt Array mit Länge der gewählten Liste für jedes Paper/gewählte Section
-#Anzahl Autoren je Paper
-#Anzahl Referenzen je Paper
-#Anzahl Keywords je Paper
-#Anzahl Tabellen je Section
-#Anzahl Bilder je Section
-def getLengthFieldMetrik(corpus, listPath):
-    values = []
-    for paper in corpus:
-        metrik = paper
-        for subpath in listPath:
-            if 'listIndex' in subpath:
-                if getattr(metrik, subpath['field'])[subpath['listIndex']]:
-                    metrik = getattr(metrik, subpath['field'])[subpath['listIndex']]
-                else:
-                    break
-            else:
-                if getattr(metrik, subpath['field']):
-                    metrik = getattr(metrik, subpath['field'])
-                else:
-                    break
-        values.append(len(metrik))
-    return values
-
-
-#TODO aktuell wird für jede Metrik immer über alle Paper geloopt anststatt nur einmal über alle Paper...  Passt?
-#Anzahl der verschiedenen Universitäten je Paper
-#TODO Brauchen wir nicht nur länge, sondern auch konkrete Namen der Universitäten je paper?
-def getLengthDistinctUniversities(corpus):
-    values = []
-    for paper in corpus:
-        distValues = []
-        for author in paper.authors:
-            if author.university.name not in distValues:
-                distValues.append(author.university.name)
-        values.append(len(distValues))
-    return values
-
-#Anzahl der verschiedenen Länder der Universitäten je Paper
-#TODO Brauchen wir nicht nur länge, sondern auch konkrete Länder je paper?
-def getLengthDistinctCountries(corpus):
-    values = []
-    for paper in corpus:
-        distValues = []
-        for author in paper.authors:
-            if author.university.country not in distValues:
-                distValues.append(author.university.country)
-        values.append(len(distValues))
-    return values
-
-
+#TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?
 def getTotalAmountOfDistinctAuthors(corpus):
     return len(corpus.distinct('authors.name'))
 
@@ -229,94 +136,148 @@ def getTotalAmountOfDistinctCountries(corpus):
 def getTotalAmountOfDistinctKeywords(corpus):
     return len(corpus.distinct('metaData.keywords'))
 
-#TODO auch anzahl paper je Universität/land berechnen?
-#TODO titel jetzt mal rausgelassen, nur für Sectionen/Subsectionen
-#TODO anschauen und testen da schon was falsch gehen kann...Ist das zu unperformant?
-#TODO schwierig wenn man alle Metriken einzeln und alle Feldvarianten einzeln duchloopen könnnen soll, wär in einem loop sicher performanter?
-def getCharCountWhiteSpace(corpus, textVariantField):
-    sections = []
-    subsections = []
-    for paper in corpus:
-        for sectionCount, section in enumerate(paper.content):
-            #TODO Performanter wenn man statt immer if einfach nen try-except block mit dem Index macht? Macht der in der Schleife nix kaputt?
-            #TODO statt charCountWhiteSpace nochmal getattr und in Methode als Parameter übergeben
-            if sectionCount == len(sections):
-                sections.append([])
-                subsections.append([])
-            #TODO existieren alle Textvarianten immer? Wenn ja if weg
-            if getattr(section, textVariantField):
-                textVariant = getattr(section, textVariantField)
-                sections[sectionCount].append(textVariant.metrik.charCountWhiteSpace)
-            for subsectionCount, subsection in enumerate(section.subsection):
-                if subsectionCount == len(subsections[sectionCount]):
-                    subsections[sectionCount].append([])
-                if getattr(subsection, textVariantField):
-                    subTextVariant = getattr(subsection, textVariantField)
-                    subsections[sectionCount][subsectionCount].append(subTextVariant.metrik.charCountWhiteSpace)
-    return sections, subsections
-
-
-
-
-def getPunctuationCount(request):
-    for paper in Paper.objects:
-        paper.authors = [TextMining.models.Author(name="jkdsaklfd")]
-        paper.metaData = TextMining.models.Metadata(keywords=["dskafakdjlk","dskljfasdkf","skdljlkfads"])
-        paper.authors[0].university = TextMining.models.University(name="BLUniversity")
-        content1 = TextMining.models.Section()
-        content2 = TextMining.models.Section()
-        metrik1 = TextMining.models.Metric(charCountWhiteSpace="12")
-        metrik2 = TextMining.models.Metric(charCountWhiteSpace="16")
-        metrik3 = TextMining.models.Metric(charCountWhiteSpace="17")
-        metrik4 = TextMining.models.Metric(charCountWhiteSpace="18")
-        metrik5 = TextMining.models.Metric(charCountWhiteSpace="19")
-        content1.titleRaw = TextMining.models.TextVariant(metrik=metrik1)
-        content2.titleRaw = TextMining.models.TextVariant(metrik=metrik2)
-        subsection1 = TextMining.models.Subsection()
-        subsection2 = TextMining.models.Subsection()
-        subsection3 = TextMining.models.Subsection()
-        subsection1.titleRaw = TextMining.models.TextVariant(metrik=metrik3)
-        subsection2.titleRaw = TextMining.models.TextVariant(metrik=metrik4)
-        subsection3.titleRaw = TextMining.models.TextVariant(metrik=metrik5)
-        content1.subsection = [subsection1, subsection2, subsection3]
-        content2.subsection = [subsection3, subsection3, subsection3]
-        paper.content = [content1,content2]
-        paper.save()
-
-    print("hier")
-    print(Paper.objects.values_list())
-
-    #Beispiel FieldMetrik
-    satzzeichen = [{'field': 'abstract', 'listIndex': 0}, {'field': 'titleRaw'}, {'field': 'metrik'}, {'field': 'punctCount'}]
-    satzzeichenArray = getFieldMetrik(Paper.objects, satzzeichen)
-    print("Satzzeichen:")
-    print(getStatisticalValues(satzzeichenArray))
-
-    #Beispiel ListMetrik
-    keywords = [{'field': 'metaData'}, {'field': 'keywords'}]
-    keywordsArray = getLengthFieldMetrik(Paper.objects, keywords)
-    print("Keywords:")
-    print(getStatisticalValues(keywordsArray))
-
-    #Beispiel verschiedene Unis
-    b = getLengthDistinctUniversities(Paper.objects)
-    print("unis")
-    print(b)
-
-    a = getTotalAmountOfDistinctUniversities(Paper.objects)
-    print(a)
-
-
-    f,g = getCharCountWhiteSpace(Paper.objects, 'titleRaw')
-    print("Hier:")
-    print(f)
-    print(g)
-
-
-
-
+def testMethode(request):
+    getMetriksRaw(Paper.objects, wordCount=True)
     return render(request, 'index.html')
 
+#TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
+#TODO was gemeint mit Größe/Dichte Wortschatz, Anzahl Überschriften (=alle Titles? dann ja nur einfach alle Sektionen?)
+#TODO die können alle über den Text berechnet werden => text raw in dict werfen?
+
+#TODO Schauen welche Felder immer in db, und welche mit if abfragen? Alle Liste in db immer mit [] machen wenn leer? Metadata für jedes da? Keywords
+#TODO wenn leer []? was wenn zb. Sektion keinen titel hat? None immer abfragen?
+#TODO Die einzelnen ifs in den Schleifen raus und immer appenden? Performance dann besser oder nicht?
+
+def getStatisticalValues(inputarray):
+    total = np.sum(inputarray)
+    average = np.mean(inputarray)
+    median = np.median(inputarray)
+    mode = stats.mode(inputarray)
+    variance = np.var(inputarray)
+    return {'total': total,'average': average, 'median': median, 'mode': mode, 'variance': variance}
+
+
+def newMetriksDictionaire():
+    return {'Text': {'charCountWhiteSpace': [], 'charCountNoWhiteSpace': [], 'wordCount': [],
+                     'punctCount': [], 'citationCount': [], 'textContent': []},
+            'Title': {'charCountWhiteSpace': [], 'charCountNoWhiteSpace': [], 'wordCount': [],
+                      'punctCount': [], 'citationCount': [], 'textContent': []},
+            'tableCount': [], 'pictureCount': [], 'tableDescLengthCount': [], 'pictureDescLengthCount': []}
+
+
+def appendFieldMetrik(condition, modelField, dict, title, text):
+    if condition:
+        dict['Titel'][modelField].append(getattr(title, modelField))
+        dict['Text'][modelField].append(getattr(text, modelField))
+
+
+def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
+                  punctCount=False, citationCount=False, authorCount=False, referenceCount=False, universityCount=False,
+                  countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
+                  tableDescriptionCount=False, pictureDescriptionCount=False, keywordFrequency=False):
+
+    abstracts = newMetriksDictionaire()
+    sections = []
+    subsections = []
+
+    resultsAuthorCount = []
+    resultsReferenceCount = []
+    resultsUniversityCount = []
+    resultsCountryCount = []
+    resultsKeywordCount = []
+    resultsKeywordText = []
+
+    FieldMetriks = [{'condition': charCountWhiteSpace, 'modelField': "charCountWhiteSpace"},
+                    {'condition': charCountNoWhiteSpace, 'modelField': "charCountNoWhiteSpace"},
+                    {'condition': wordCount, 'modelField': "wordCount"},
+                    {'condition': punctCount, 'modelField': "punctCount"},
+                    {'condition': citationCount, 'modelField': "citationCount"}]
+
+    for paper in corpus:
+        #Allgemeine Metriken
+        #Kein Extraloop für alle drei mehr, oder?
+        if authorCount or universityCount or countryCount:
+            authors = paper.authors
+            universities = []
+            countries = []
+            for author in authors:
+                university = author.university
+                if university:
+                    if university not in universities:
+                        universities.append(university)
+                    country = university.country
+                    if country:
+                        countries.append(country)
+
+            resultsAuthorCount.append(len(authors))
+            resultsUniversityCount.append(len(universities))
+            resultsCountryCount.append(len(countries))
+
+        keywords = paper.metaData.keywords
+        if keywordCount:
+            resultsKeywordCount.append(len(keywords))
+        if keywordFrequency:
+            resultsKeywordText.append(keywords)
+
+        if referenceCount:
+            resultsReferenceCount.append(len(paper.references))
+
+        #Feldmetriken Abstract
+        abstract = corpus.abstract
+        abstractTitle = getattr(abstract, "title" + variant)
+        abstractText = getattr(abstract, "text" + variant)
+        for FieldMetrik in FieldMetriks:
+            appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], abstracts, abstractTitle, abstractText)
+
+        for sectionCount, section in enumerate(paper.content):
+            if sectionCount == len(sections):
+                sections.append(newMetriksDictionaire())
+                subsections.append([])
+
+            sectionTitle = getattr(section, "title" + variant)
+            sectionText = getattr(section, "text" + variant)
+
+            for FieldMetrik in FieldMetriks:
+                appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], sections[sectionCount],
+                                  sectionTitle, sectionText)
+
+            tables = section.tables
+            if tableCount:
+                sections[sectionCount]['tableCount'].append(len(tables))
+            if tableDescriptionCount:
+                # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
+                countTableDescription = []
+                for table in tables:
+                    countTableDescription.append(len(table.description))
+                sections[sectionCount]['tableDescLengthCount'].append(countTableDescription)
+
+            pictures = section.pictures
+            if pictureCount:
+                sections[sectionCount]['pictureCount'].append(len(pictures))
+            if pictureDescriptionCount:
+                # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
+                countPictureDescription = []
+                for picture in pictures:
+                    countPictureDescription.append(len(picture.description))
+                sections[sectionCount]['pictureDescLengthCount'].append(countPictureDescription)
+
+
+            for subsectionCount, subsection in enumerate(section.subsection):
+                if subsectionCount == len(subsections[sectionCount]):
+                    subsections[sectionCount].append(newMetriksDictionaire())
+
+                    subsectionTitle = getattr(subsection, "title" + variant)
+                    subsectionText = getattr(subsection, "text" + variant)
+
+                    for FieldMetrik in FieldMetriks:
+                        appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], subsections[sectionCount][subsectionCount],
+                                          subsectionTitle, subsectionText)
+                    #TODO tables und pictures in subsections auch noch rein?
+
+            #TODO statistische Werte mit Methode berechnen. results nach subsection/section oder nach Metriken gliedern?
+            #Metrik charCountNhiteSpace
+            results = {}
+    return ""
 
 '''
 #TODO anderes funktioniert

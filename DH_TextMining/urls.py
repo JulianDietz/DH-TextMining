@@ -33,7 +33,7 @@ urlpatterns = [
     #ajax read .json files
     path('textMining/readPaper/', views.readJsonFiles , name='readJsonFiles'),
     path('textMining/processPaper/', views.processPaper , name='processPaper'),
-    path('textMining/test/', views.getPunctuationCount, name='test'),
+    path('textMining/test/', views.testMethode, name='test'),
 ]
 
 '''
