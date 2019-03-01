@@ -145,7 +145,10 @@ def getTotalAmountOfDistinctKeywords(corpus):
     return len(corpus.distinct('metaData.keywords'))
 
 def testMethode(request):
-    getMetriksRaw(Paper.objects, wordCount=True)
+    getMetriksRaw(Paper.objects,'Raw', charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
+                  punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
+                  countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
+                  tableDescriptionCount=True, pictureDescriptionCount=True, keywordFrequency=True)
     return render(request, 'index.html')
 
 #TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
@@ -175,7 +178,7 @@ def newMetriksDictionaire():
 
 def appendFieldMetrik(condition, modelField, dict, title, text):
     if condition:
-        dict['Titel'][modelField].append(getattr(title, modelField))
+        dict['Title'][modelField].append(getattr(title, modelField))
         dict['Text'][modelField].append(getattr(text, modelField))
 
 
@@ -184,6 +187,7 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
                   countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                   tableDescriptionCount=False, pictureDescriptionCount=False, keywordFrequency=False):
 
+    print('start!!!!!!!!')
     abstracts = newMetriksDictionaire()
     #TODO Abstracts sind tatsächlich Liste
     sections = []
@@ -217,7 +221,8 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
                         universities.append(university)
                     country = university.country
                     if country:
-                        countries.append(country)
+                        if country not in countries:
+                            countries.append(country)
 
             resultsAuthorCount.append(len(authors))
             resultsUniversityCount.append(len(universities))
@@ -233,11 +238,13 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
             resultsReferenceCount.append(len(paper.references))
 
         #Feldmetriken Abstract
-        abstract = corpus.abstract[0]
+        abstract = paper.abstract[0]
         abstractTitle = getattr(abstract, "title" + variant)
+        abstractTitleMetrik= getattr(abstractTitle, 'metrik')
         abstractText = getattr(abstract, "text" + variant)
+        abstractTextMetrik = getattr(abstractText, 'metrik')
         for FieldMetrik in FieldMetriks:
-            appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], abstracts, abstractTitle, abstractText)
+            appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], abstracts, abstractTitleMetrik, abstractTextMetrik)
 
         for sectionCount, section in enumerate(paper.content):
             if sectionCount == len(sections):
@@ -245,11 +252,12 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
                 subsections.append([])
 
             sectionTitle = getattr(section, "title" + variant)
+            sectionTitleMetrik = getattr(sectionTitle, 'metrik')
             sectionText = getattr(section, "text" + variant)
-
+            sectionTextMetrik = getattr(sectionText, 'metrik')
             for FieldMetrik in FieldMetriks:
                 appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], sections[sectionCount],
-                                  sectionTitle, sectionText)
+                                  sectionTitleMetrik, sectionTextMetrik)
 
             tables = section.tables
             if tableCount:
@@ -277,28 +285,35 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
                     subsections[sectionCount].append(newMetriksDictionaire())
 
                     subsectionTitle = getattr(subsection, "title" + variant)
+                    subsectionTitleMetrik = getattr(subsectionTitle, 'metrik')
                     subsectionText = getattr(subsection, "text" + variant)
+                    subsectionTextMetrik = getattr(subsectionText, 'metrik')
 
                     for FieldMetrik in FieldMetriks:
                         appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], subsections[sectionCount][subsectionCount],
-                                          subsectionTitle, subsectionText)
+                                          subsectionTitleMetrik, subsectionTextMetrik)
                     #TODO tables und pictures in subsections auch noch rein? NEIN
+                    
 
-            #TODO statistische Werte mit Methode berechnen. results nach subsection/section oder nach Metriken gliedern?
-            #Metrik charCountNhiteSpace
-            abstracts = newMetriksDictionaire()
-            # TODO Abstracts sind tatsächlich Liste
-            print(sections)
-            print(subsections)
 
-            # TODO paper-title metriken
-            print(resultsAuthorCount)
-            print(resultsReferenceCount)
-            print(resultsUniversityCount)
-            print(resultsCountryCount)
-            print(resultsKeywordCount)
-            print(resultsKeywordText)
-            results = {}
+    #TODO statistische Werte mit Methode berechnen. results nach subsection/section oder nach Metriken gliedern?
+    #Metrik charCountNhiteSpace
+    print('Abstract:')
+    print(abstracts)
+    # TODO Abstracts sind tatsächlich Liste
+    print('Sektionen')
+    print(sections)
+    print('Subsections')
+    print(subsections)
+
+    # TODO paper-title metriken
+    print(resultsAuthorCount)
+    print(resultsReferenceCount)
+    print(resultsUniversityCount)
+    print(resultsCountryCount)
+    print(resultsKeywordCount)
+    print(resultsKeywordText)
+    results = {}
     return ""
 
 '''
