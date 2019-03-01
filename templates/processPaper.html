@@ -2,5 +2,15 @@
 {% block body %}
     <h1>Paper vorberechen!</h1>
 
+    <button>Paper vorbrechnen starten!</button>
 
+    <script>
+        $("button").click(function () {
+            $.ajax({
+                url: "{% url 'processPaper' %}", success: function (result) {
+                    console.log(result)
+                }
+            });
+        });
+    </script>
 {% endblock %}

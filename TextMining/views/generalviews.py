@@ -18,6 +18,11 @@ import numpy as np
 
 #currentJsonfiles=[]
 
+'''init ntlk run:
+import nltk
+nltk.download('stopwords')
+'''
+
 def helloWorld(request):
     return render(request, 'helloWorld.html')
 
@@ -29,19 +34,22 @@ def processPaperView (request):
 #Aufbereiten der Text Stopwortfiltern und lemmatisieren
 def processPaper(request):
     print("Paper werden aufbreitet....")
-    paperlist = Paper.objects.all()[4:8]
+    paperlist = Paper.objects.all()
     for paper in paperlist:
+        print(paper)
         metriken.removeStopwords(paper) #MET_text_to_STOP_text
+        metriken.calculateAllMetrics(paper)
+        '''
         metriken.lemmatize_Paper(paper) #MET_text_to_LEMMA_text
         metriken.char_count_per_section_Paper(paper) #MET_char_Count
         metriken.citation_count_per_section_Paper(paper) #MET_citation_Count
         metriken.punctuation_count_per_section_Paper(paper) #MET_punctuation_Count
         metriken.word_count_per_section_Paper(paper) #MET_word_Count
         metriken.sentencelength_average_per_section_Paper(paper) #MET_average_sentslength
+        '''
 
-    print("Papersind aufbereitet")
-    context = {'paperlist': paperlist}
-    return render(request, 'helloWorld.html', context)
+    print("Papersind aufbereitet und vorberechnet")
+    return JsonResponse({'sucess': 'Super!!!!!'})
 
 def readJsonFilesView (request):
     context = {}
@@ -49,7 +57,7 @@ def readJsonFilesView (request):
 
 def readJsonFiles(request):
     # loads all Json files....
-    readpath = "./output"
+    readpath = "./outputNew20"
     onlyOne = False
     counter=0
     for filename in listdir(readpath):
