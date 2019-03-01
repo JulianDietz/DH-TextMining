@@ -15,7 +15,6 @@ class Metric(EmbeddedDocument):
     citationCount = IntField()
 
 
-
 class Table(EmbeddedDocument):
     index = IntField()
     rowDim = IntField()
@@ -33,8 +32,7 @@ class Subsection(EmbeddedDocument):
     titleNltkStw = EmbeddedDocumentField('TextVariant')
     textRaw = EmbeddedDocumentField('TextVariant')
     textNltkStw = EmbeddedDocumentField('TextVariant')
-    #metrik = EmbeddedDocumentField('Metric', null=True)
-    subsubsection = EmbeddedDocumentListField('Subsection') # nicht implementiert
+    subsubsection = EmbeddedDocumentListField('Subsection') # Nicht implementiert
 
 
 class TextVariant(EmbeddedDocument):
@@ -56,7 +54,6 @@ class Reference(EmbeddedDocument):
     name = StringField()
     author = StringField()
     year = StringField()
-
 
 
 class University(EmbeddedDocument):
@@ -127,5 +124,5 @@ class Paper(Document):
     metaData = EmbeddedDocumentField('Metadata')
     authors = EmbeddedDocumentListField('Author')
     references = EmbeddedDocumentListField('Reference')
-    abstract = EmbeddedDocumentListField('Abstract') # TODO EmbeddedDocumentField machen, oder gibts echt mal mehr als ein Abstract? JA mehr als eins
+    abstract = EmbeddedDocumentListField('Abstract')
     content = EmbeddedDocumentListField('Section')

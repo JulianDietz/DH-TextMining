@@ -233,7 +233,7 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
             resultsReferenceCount.append(len(paper.references))
 
         #Feldmetriken Abstract
-        abstract = corpus.abstract
+        abstract = corpus.abstract[0]
         abstractTitle = getattr(abstract, "title" + variant)
         abstractText = getattr(abstract, "text" + variant)
         for FieldMetrik in FieldMetriks:
@@ -286,6 +286,18 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
 
             #TODO statistische Werte mit Methode berechnen. results nach subsection/section oder nach Metriken gliedern?
             #Metrik charCountNhiteSpace
+            abstracts = newMetriksDictionaire()
+            # TODO Abstracts sind tatsächlich Liste
+            print(sections)
+            print(subsections)
+
+            # TODO paper-title metriken
+            print(resultsAuthorCount)
+            print(resultsReferenceCount)
+            print(resultsUniversityCount)
+            print(resultsCountryCount)
+            print(resultsKeywordCount)
+            print(resultsKeywordText)
             results = {}
     return ""
 
