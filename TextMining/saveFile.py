@@ -33,19 +33,14 @@ def savePaper(paperJson):
             keywords = []
 
         paperDB.metaData = Metadata(yearOfArticle=paperJson['metaData']['yearOfArticle'],
-                                    journalTitle=paperJson['metaData']['journaltitle'],
+                                    journal=paperJson['metaData']['journaltitle'],
                                     impactfactor=paperJson['metaData']['impactFactor'],
                                     paperType=paperJson['metaData']['paperType'],
                                     keywords=keywords,
-                                    #TODO source jetzt in dict???
-                                    #URL=paperJson['metaData']['URL'],
-                                    #source=paperJson['metaData']['source'],
                                     URL=paperJson['metaData']['source']['URL'],
                                     source=paperJson['metaData']['source']['sourceName'],
-                                    # TODO auch in array?? wann mehrere?
-                                    category=paperJson['metaData']['category'][0],
+                                    category=paperJson['metaData']['category'],
                                     entrytype=paperJson['metaData']['paperType'],
-                                    #TODO titel doppelt speichern?
                                     title=paperJson['metaData']['title'],
                                     month=paperJson['metaData']['month'],
                                     language=paperJson['metaData']['language'],
@@ -56,7 +51,7 @@ def savePaper(paperJson):
                                     publisher=paperJson['metaData']['publisher'],
                                     booktitle=paperJson['metaData']['booktitle'],
                                     location=paperJson['metaData']['location'],
-                                    organisation=paperJson['metaData']['organisation'],
+                                    organization=paperJson['metaData']['organisation'],
                                     address=paperJson['metaData']['organisation'],
                                     citekey=str(paperJson['metaData']['id']),#id=citekey?
                                     publicationtype=paperJson['metaData']['publicationtype'],

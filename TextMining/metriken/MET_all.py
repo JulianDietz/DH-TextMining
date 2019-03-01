@@ -52,7 +52,7 @@ def MET_char_count_WhiteSpace(text):
     text_without_quotes = re.sub(r"(\s\[[^]]*\])", "", text)
     #Count the text length
     countWithWhitespace = len(text_without_quotes)
-    return str(countWithWhitespace)
+    return countWithWhitespace
 
 def MET_char_count_No_WhiteSpace(text):
     #Remove quotes
@@ -61,18 +61,18 @@ def MET_char_count_No_WhiteSpace(text):
     countNoWhitespace = len("".join(text_without_quotes.split()))
 
     #print (countNoWhitespace)
-    return str(countNoWhitespace)
+    return countNoWhitespace
 
 def MET_word_count(text):
     #Remove quotes
     word_count = len(re.sub(r"(\s\[[^]]*\])", "", text).split(" "))
-    return str(word_count)
+    return word_count
 
 #Count punctuation without citations
 def MET_punctuation_count(text):
     #Remove quotes
     finding = re.findall(r'(?<!\[[0-9])[.,\/#!?\^&\*;:{}=\-_`~“”\"()]', text)
-    return str(len(finding))
+    return len(finding)
 
 def MET_citation_count(text):
     # \[[^]]*\]
@@ -95,4 +95,4 @@ def MET_citation_count(text):
         else:
             quoteCount += 1
     #print(quoteCount)
-    return str(quoteCount)
+    return quoteCount

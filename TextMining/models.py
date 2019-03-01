@@ -8,11 +8,11 @@ connect('textmining')
 
 
 class Metric(EmbeddedDocument):
-    charCountWhiteSpace = StringField()
-    charCountNoWhiteSpace = StringField()
-    wordCount = StringField()
-    punctCount = StringField()
-    citationCount = StringField()
+    charCountWhiteSpace = IntField()
+    charCountNoWhiteSpace = IntField()
+    wordCount = IntField()
+    punctCount = IntField()
+    citationCount = IntField()
 
 
 
@@ -79,32 +79,24 @@ class Abstract(EmbeddedDocument):
 class Metadata(EmbeddedDocument):
     keywords = ListField()
     yearOfArticle = IntField()
-    category = StringField()
+    category = ListField()
     source = StringField()
-    journalTitle = StringField()
     impactfactor = StringField()
     URL=StringField()
-    paperType=StringField()# equals entrytype?
-    documenttype = StringField()
-    publishingCompany = StringField()
-    excerptPages = StringField()
-    publicationLocation = StringField()
+    paperType=StringField()
     language = StringField()
-    issue=StringField()# doppelt? neu
-    publicationtype=StringField()#doppelt? neu
-    organisation=StringField()#doppelt? neu
+    publicationtype=StringField()#online oder paper
     #Bibtexfelder
     citekey = StringField()
     entrytype = StringField()
     title = StringField()
-    # author = StringField()
     year = StringField()
     month = StringField()
     journal = StringField()
     booktitle = StringField()
     publisher = StringField()
     volume = StringField()
-    number = StringField()
+    issue = StringField()
     pages = StringField()
     # note = StringField()
     # keywords = StringField()
