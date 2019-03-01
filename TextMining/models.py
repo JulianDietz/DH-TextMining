@@ -69,7 +69,7 @@ class Subsection(EmbeddedDocument):
     textNltkStw = EmbeddedDocumentField('TextVariant')
     #metrik = EmbeddedDocumentField('Metric', null=True)
     subsubsection = EmbeddedDocumentListField('Subsection') # nicht implementiert
-    #TODO tables und pictures hier auch rein?
+
 
 class TextVariant(EmbeddedDocument):
     text = StringField()
@@ -135,5 +135,5 @@ class Paper(Document):
     metaData = EmbeddedDocumentField('Metadata')
     authors = EmbeddedDocumentListField('Author')
     references = EmbeddedDocumentListField('Reference')
-    abstract = EmbeddedDocumentListField('Abstract') # TODO EmbeddedDocumentField machen, oder gibts echt mal mehr als ein Abstract?
+    abstract = EmbeddedDocumentListField('Abstract') # TODO EmbeddedDocumentField machen, oder gibts echt mal mehr als ein Abstract? JA mehr als eins
     content = EmbeddedDocumentListField('Section')

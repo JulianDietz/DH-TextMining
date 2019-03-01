@@ -177,9 +177,11 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
                   tableDescriptionCount=False, pictureDescriptionCount=False, keywordFrequency=False):
 
     abstracts = newMetriksDictionaire()
+    #TODO Abstracts sind tatsächlich Liste
     sections = []
     subsections = []
 
+    #TODO paper-title metriken
     resultsAuthorCount = []
     resultsReferenceCount = []
     resultsUniversityCount = []
@@ -272,7 +274,7 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
                     for FieldMetrik in FieldMetriks:
                         appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], subsections[sectionCount][subsectionCount],
                                           subsectionTitle, subsectionText)
-                    #TODO tables und pictures in subsections auch noch rein?
+                    #TODO tables und pictures in subsections auch noch rein? NEIN
 
             #TODO statistische Werte mit Methode berechnen. results nach subsection/section oder nach Metriken gliedern?
             #Metrik charCountNhiteSpace
