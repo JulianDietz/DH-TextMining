@@ -39,14 +39,6 @@ def processPaper(request):
         print(paper)
         metriken.removeStopwords(paper) #MET_text_to_STOP_text
         metriken.calculateAllMetrics(paper)
-        '''
-        metriken.lemmatize_Paper(paper) #MET_text_to_LEMMA_text
-        metriken.char_count_per_section_Paper(paper) #MET_char_Count
-        metriken.citation_count_per_section_Paper(paper) #MET_citation_Count
-        metriken.punctuation_count_per_section_Paper(paper) #MET_punctuation_Count
-        metriken.word_count_per_section_Paper(paper) #MET_word_Count
-        metriken.sentencelength_average_per_section_Paper(paper) #MET_average_sentslength
-        '''
 
     print("Papersind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
@@ -63,6 +55,7 @@ def readJsonFiles(request):
     for filename in listdir(readpath):
         if not onlyOne:
             if filename != ".DS_Store": #file.endswith('.json')
+                #print(filename)
                 file = open(join(readpath, filename), 'r', encoding='utf-8', errors="ignore")
                 paperJson = json.load(file)
                 paper=savePaper(paperJson)
@@ -145,7 +138,7 @@ def getTotalAmountOfDistinctKeywords(corpus):
     return len(corpus.distinct('metaData.keywords'))
 
 def testMethode(request):
-    getMetriksRaw(Paper.objects,'Raw', charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
+    getMetriksRaw(Paper.objects,'NltkStw', charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
                   punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
                   countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
                   tableDescriptionCount=True, pictureDescriptionCount=True, keywordFrequency=True)

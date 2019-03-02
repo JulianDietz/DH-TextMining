@@ -1,31 +1,4 @@
-#from TextMining.models import ResCitationSegmentCount
 import re
-
-method="citationcount"
-
-def citation_count_per_section_Paper(paper):
-    # Abstract
-    for section in paper.abstract:
-        print("punctCount:" + str(paperIsRehashed(section)))
-        if not paperIsRehashed(section):
-            citCount= ResCitationSegmentCount(citationCount=MET_citation_count(section.text))
-            section.metrik.citationCountResults = citCount
-
-    #Text
-    for section in paper.text:
-        print("punctCount:" + str(paperIsRehashed(section)))
-        if not paperIsRehashed(section):
-            citCount = ResCitationSegmentCount(citationCount=MET_citation_count(section.text))
-            section.metrik.citationCountResults = citCount
-
-        #Subtext
-        for subsection in section.subsection:
-            print("punctCount:"+str(paperIsRehashed(section)))
-            if not paperIsRehashed(section):
-                citCount = ResCitationSegmentCount(citationCount=MET_citation_count(subsection.text))
-                subsection.metrik.citationCountResults = citCount
-    paper.save()
-
 
 #Count punctuation without citations
 def MET_citation_count(text):
@@ -50,9 +23,5 @@ def MET_citation_count(text):
             quoteCount += 1
     print(quoteCount)
     return str(quoteCount)
-
-#checks if section has Wordcount with this method
-def paperIsRehashed(section):
-    return False
 
 
