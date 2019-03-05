@@ -169,24 +169,28 @@ def newMetriksDictionaire():
             'tableCount': [], 'pictureCount': [], 'tableDescLengthCount': [], 'pictureDescLengthCount': []}
 
 
-def appendFieldMetrik(condition, modelField, dict, title, text):
+def appendFieldMetrik(condition, modelField, dict, titleMetrik, textMetrik):
     if condition:
-        dict['Title'][modelField].append(getattr(title, modelField))
-        dict['Text'][modelField].append(getattr(text, modelField))
+        dict['Title'][modelField].append(getattr(titleMetrik, modelField))
+        dict['Text'][modelField].append(getattr(textMetrik, modelField))
 
+def appendFieldMetrikForTitle(condition, modelField, dict, title):
+    if condition:
+        dict[modelField].append(getattr(title, modelField))
 
+#TODO if Abfragen für existenz von Feldern
 def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
                   punctCount=False, citationCount=False, authorCount=False, referenceCount=False, universityCount=False,
                   countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                   tableDescriptionCount=False, pictureDescriptionCount=False, keywordFrequency=False):
 
     print('start!!!!!!!!')
-    abstracts = newMetriksDictionaire()
-    #TODO Abstracts sind tatsächlich Liste
+    titles = {'charCountWhiteSpace': [], 'charCountNoWhiteSpace': [], 'wordCount': [],
+              'punctCount': [], 'citationCount': [], 'textContent': []}
+    abstracts = []
     sections = []
     subsections = []
 
-    #TODO paper-title metriken
     resultsAuthorCount = []
     resultsReferenceCount = []
     resultsUniversityCount = []
@@ -230,15 +234,26 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
         if referenceCount:
             resultsReferenceCount.append(len(paper.references))
 
-        #Feldmetriken Abstract
-        abstract = paper.abstract[0]
-        abstractTitle = getattr(abstract, "title" + variant)
-        abstractTitleMetrik= getattr(abstractTitle, 'metrik')
-        abstractText = getattr(abstract, "text" + variant)
-        abstractTextMetrik = getattr(abstractText, 'metrik')
+        #Feldmetriken Titel
+        paperTitle = getattr(paper, "title" + variant)
+        paperTitleMetrik = getattr(paperTitle, 'metrik')
         for FieldMetrik in FieldMetriks:
-            appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], abstracts, abstractTitleMetrik, abstractTextMetrik)
+            appendFieldMetrikForTitle(FieldMetrik['condition'], FieldMetrik['modelField'], titles, paperTitleMetrik)
 
+        #Feldmetriken Abstracts
+        for abstractCount, abstract in enumerate(paper.abstract):
+            if abstractCount == len(abstracts):
+                abstracts.append(newMetriksDictionaire())
+
+            abstractTitle = getattr(abstract, "title" + variant)
+            abstractTitleMetrik = getattr(abstractTitle, 'metrik')
+            abstractText = getattr(abstract, "text" + variant)
+            abstractTextMetrik = getattr(abstractText, 'metrik')
+            for FieldMetrik in FieldMetriks:
+                appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], abstracts,
+                                  abstractTitleMetrik, abstractTextMetrik)
+
+        #Feldmetriken Sectionen und Subsectionen
         for sectionCount, section in enumerate(paper.content):
             if sectionCount == len(sections):
                 sections.append(newMetriksDictionaire())
@@ -285,28 +300,32 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
                     for FieldMetrik in FieldMetriks:
                         appendFieldMetrik(FieldMetrik['condition'], FieldMetrik['modelField'], subsections[sectionCount][subsectionCount],
                                           subsectionTitleMetrik, subsectionTextMetrik)
-                    #TODO tables und pictures in subsections auch noch rein? NEIN
-                    
 
 
-    #TODO statistische Werte mit Methode berechnen. results nach subsection/section oder nach Metriken gliedern?
-    #Metrik charCountNhiteSpace
-    print('Abstract:')
+    print('Titles:')
+    print(titles)
+    print('Abstracts:')
     print(abstracts)
-    # TODO Abstracts sind tatsächlich Liste
-    print('Sektionen')
+    print('Sections:')
     print(sections)
-    print('Subsections')
+    print('Subsections:')
     print(subsections)
 
-    # TODO paper-title metriken
     print(resultsAuthorCount)
     print(resultsReferenceCount)
     print(resultsUniversityCount)
     print(resultsCountryCount)
     print(resultsKeywordCount)
     print(resultsKeywordText)
+    #TODO Hier noch nicht Metriken ausgerechnet da nicht sicher ob nicht doch noch wertereihen gebruacht, falls wir zB doch Boxplot machen wollen
+    #TODO statistische Werte mit Methode berechnen. results nach subsection/section oder nach Metriken gliedern?
     results = {}
+
+    #title
+    #abstracts
+    #sectionen
+    #subsectionen
+    #gesamt (Abstracts + Sectionen + Subsectionen)
     return ""
 
 '''
