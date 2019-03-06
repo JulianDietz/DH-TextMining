@@ -9,8 +9,8 @@ EMPTYJSONTAG = "<<empty>>"
 
 
 def parseHTML():
-    htmlfilesdirectory = 'corpusRawHTML'
-    outputdirectory = 'output'
+    htmlfilesdirectory = 'corpusRawHTMLNew'
+    outputdirectory = 'outputNew'
     source = 'omics'
     # open file
     readpathbasic=path.join(htmlfilesdirectory,source)
@@ -34,7 +34,7 @@ def parseHTML():
                     titel=getTitel(htmlarticle)
                     if titel==EMPTYJSONTAG:
                         continue
-                    output['title'] = titel
+                    #output['title'] = titel
                     output['metaData']= getMetadata(htmlfile,categoryFolder,source)
                     output['abstract'] = getAbstract(htmlarticle)
                     output['authors'] = getAuthors(htmlarticle)
@@ -182,6 +182,44 @@ def getYear(htmlfile):
 
     return year
 
+def getMonth(htmlfile):
+    month = EMPTYJSONTAG
+    monthEl=htmlfile.find("meta", {"name": "citation_publication_date"})
+    if monthEl != None and monthEl != -1:
+        month = str(monthEl["content"]).split("/")[1]
+    return month
+
+def getPages(htmlfile):
+    pages = EMPTYJSONTAG
+    pagesEl1=htmlfile.find("meta", {"name": "citation_firstpage"})
+    pagesEl2 = htmlfile.find("meta", {"name": "citation_lastpage"})
+    if pagesEl1 != None and pagesEl1 != -1 and pagesEl2 != None and pagesEl2 != -1:
+        pages = str(pagesEl1["content"]) + "-" + str(pagesEl2["content"])
+    return pages
+
+def getDOI(htmlfile):
+    DOI = EMPTYJSONTAG
+    DOIEl=htmlfile.find("meta", {"name": "citation_doi"})
+    if DOIEl != None and DOIEl != -1:
+        DOI = str(DOIEl["content"])
+    return DOI
+
+def getVolume(htmlfile):
+    Volume = EMPTYJSONTAG
+    VolumeEl=htmlfile.find("meta", {"name": "citation_volume"})
+    if VolumeEl != None and VolumeEl != -1:
+        Volume = str(VolumeEl["content"])
+    return Volume
+
+def getIssue(htmlfile):
+    Issue = EMPTYJSONTAG
+    IssueEl=htmlfile.find("meta", {"name": "citation_doi"})
+    if IssueEl != None and IssueEl != -1:
+        Issue = str(IssueEl["content"])
+    return Issue
+
+
+
 def getImpactFactor(htmlfile):
     impactFactor=htmlfile.find('meta' ,{'name':'journal_impact_factor'})['content']
     if impactFactor.strip()=="-" or impactFactor.strip()=="" or impactFactor==None:
@@ -239,18 +277,18 @@ def getAbstractText(abstract):
             #print("else")#
             if tag.name !=None and tag.name !='p' and tag.name !='br':
                 if tag.name =="a" or tag.name =="span" or (tag.name=="em" and tag.parent.name!="span") and tag.name!="sup":
-                    text=text+tag.getText()
+                    text=str(text)+str(tag.getText())
                     if tag.next_sibling:
-                        text=text+tag.next_sibling
+                        text=str(text)+str(tag.next_sibling)
                 elif tag.next_sibling and not tag.next_sibling.name:
                     #if tag.next_sibling.name and tag.next_sibling.name!="sup":
-                    text = text + tag.next_sibling
+                    text = str(text) + str(tag.next_sibling)
 
             #test br im Absatz
             elif tag.name =='br' and tag.next_sibling and tag.next_sibling.name==None:
-                text=text+tag.next_sibling
+                text=str(text)+str(tag.next_sibling)
             elif tag.name =='p' and tag.next_sibling and tag.next_sibling.name==None:
-                text=text+tag.next_sibling
+                text=str(text)+str(tag.next_sibling)
 
     result.append({"title": titel, "text": text, "depth": 1})
     return result
@@ -290,10 +328,30 @@ def getMetadata(htmlfile,category,source):
     output['yearOfArticle']=getYear(htmlfile)
     output['journaltitle']=getJournalTitle(htmlfile)
     output['impactFactor'] = getImpactFactor(htmlfile)
-    output['category']=category
-    output['source']=source
-    output['URL'] = getPaperURL(htmlfile)
+    output['category']=[category]
+    output['source']={"sourceName": source, "URL": getPaperURL(htmlfile)}
     output['paperType'] = getPaperType(htmlfile)
+    output['title'] = getTitel(htmlfile.article)
+
+    #NEW NEW NEW
+
+    output['month'] = getMonth(htmlfile)
+    output['language'] = "english"
+    output['volume'] = getVolume(htmlfile)
+    output['issue'] = getIssue(htmlfile)
+    output['pages'] = getPages(htmlfile)
+    output['edition'] = 1
+    output['publisher'] = "OMICS International"
+    output['booktitle'] = EMPTYJSONTAG
+    output['location'] = "Online"
+    output['organisation'] = "OMICS International"
+    output['address'] = EMPTYJSONTAG
+    output['id'] = 1
+    output['publicationtype'] = "Online"
+    output['chapter'] = EMPTYJSONTAG
+    output['doi'] = getDOI(htmlfile)
+
+
     return output
 
 def getAuthors(htmlArticle):
@@ -341,8 +399,13 @@ def getAuthors(htmlArticle):
                 universityCountry = str(university.contents[-1]).replace(",","").strip()
                 #print("university")
                 #print(university.contents)
-                if university.find('a', title=True):
-                    universityName = str(university.find('a', href=True)['title'])
+                if university.find('a', title=True) != None and university.find('a', title=True) != -1:
+                    print("HIER HIER HIER")
+                    if university.find('a', href=True).has_attr("title"):
+                        universityName = str(university.find('a', href=True)['title'])
+                    else:
+                        universityName = str(university.find('a', href=True).contents)
+
                 else:
                     universityName = str(university.contents[0]).split(',')[0]
 
@@ -352,7 +415,6 @@ def getAuthors(htmlArticle):
 
     #print(authorsOutput)
     return authorsOutput
-
 
 def getSelectionText(htmlArticle):
     h4array=[]
@@ -366,9 +428,8 @@ def getSelectionText(htmlArticle):
                 continue
             if title!="": #and text!="":
                 dataImages=getImages(section.findNext())
-                dataFormula= ""#getFormula(section.findNext())
                 dataTables = getTables(section.findNext())
-                h4array.append({"title": title, "text": text,'subsection':subsection,'tables':dataTables,'pictures':dataImages,'formula':dataFormula})
+                h4array.append({"title": title, "text": text, 'depth': 1, 'subsection':subsection,'tables':dataTables,'pictures':dataImages})
                 print('save h4section')
             print("titel:" + section.text)
             subsection = []
@@ -423,15 +484,13 @@ def getSelectionText(htmlArticle):
 
         dataImages = getImages(section.findNext())
         dataTables = getTables(section.findNext())
-        dataFormula = getFormula(section.findNext())
         h4array.append({"title": title, "text": text, 'depth': 1, 'subsection': subsection, 'tables': dataTables,
-                        'pictures': dataImages, 'formula': dataFormula})
+                        'pictures': dataImages})
     else:
         #Artikel hat keine Überschift!
         #soll nicht in datenbank
         return EMPTYJSONTAG
     return h4array
-
 
 def getTables(section):
     sectionTableData = {"count": 0, "tablesList": []}
@@ -450,24 +509,25 @@ def getTables(section):
 
 
     for table in tableListHTML:
-        sectionTableData['count'] += 1
-        description = EMPTYJSONTAG
+        if table != None:
+            sectionTableData['count'] += 1
+            description = EMPTYJSONTAG
 
-        rows = len(table.find_all("tr"))
+            rows = len(table.find_all("tr"))
 
-        colsArray = table.find("tr").contents
+            cols = 0
+            if table.find("tr") != None and table.find("tr")!= -1:
+                colsArray = table.find("tr").contents
 
-        while '\n' in colsArray:
-            colsArray.remove('\n')
+                while '\n' in colsArray:
+                    colsArray.remove('\n')
 
-        cols = len(colsArray)
+                cols = len(colsArray)
 
-        tableData = {"index": sectionTableData['count'], "tableRowDim": rows, "tableColDim": cols, "tableDescription": description}
-        sectionTableData['tablesList'].append(tableData)
+            tableData = {"index": sectionTableData['count'], "tableRowDim": rows, "tableColDim": cols, "tableDescription": description}
+            sectionTableData['tablesList'].append(tableData)
 
     return sectionTableData
-
-
 
 def getImages(section):
     print("picturesection")
@@ -513,8 +573,6 @@ def getFormula(section):
         sectionFormulaData['formulaList'].append(pictureData)
 
     return sectionFormulaData
-
-
 
 parseHTML()
 #readJsonFiles()
