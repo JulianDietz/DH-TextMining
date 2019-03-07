@@ -5,7 +5,7 @@ from bs4 import Tag
 from os import listdir,path
 from os.path import isfile, join,basename
 
-EMPTYJSONTAG = "<<empty>>"
+EMPTYJSONTAG = ""
 
 
 def parseHTML():
@@ -304,7 +304,7 @@ def getAbstract(htmlArticle):
     if div and div.find('p'):
         abstract = div.find('p').find('p')
     else:
-        return EMPTYJSONTAG
+        return [{'title': EMPTYJSONTAG, 'text': EMPTYJSONTAG}] #updated
 
     if abstract:
         #Absätze mit überschriften

@@ -11,9 +11,6 @@ from .models import Paper, Metadata, Author, University, Abstract, Table, Pictur
 
 # db.paper.find()
 
-# wirft fehler wenn "abstract": "<<empty>>" -->
-#"abstract": [{ "title": "<<empty>>",
-#      "text": "<<empty>>",}]
 def savePaper(paperJson):
     print('Paper in der Datenbank speichern')
     print(paperJson)
@@ -62,7 +59,6 @@ def savePaper(paperJson):
                                     )
 
     # Abstract
-    # TODO <<empty>>?
     for abstractPart in paperJson['abstract']:
         paperDB.abstract.append(
             Abstract(titleRaw=TextVariant(text=abstractPart['title']), textRaw=TextVariant(text=abstractPart['text'])))

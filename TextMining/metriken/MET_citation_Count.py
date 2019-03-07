@@ -4,8 +4,10 @@ import re
 def MET_citation_count(text):
     # \[[^]]*\]
     # ['doctors having a degree in internal medicine (MD or DNB', 'Int Med)'] found
+    #[L]
     # ValueError: invalid literal for int() with base 10: 'Int Med)'
-    finding = re.findall(r"(\[[(\d+)(\-\d+)?]]*\])", text)
+    #finding = re.findall(r"(\[[(\d+)(\-\d+)?]]*\])", text)
+    finding = re.findall(r"([(\d+)\-(\d+)])", text)
     quoteCount = 0
     for quote in finding:
         print(quote)
@@ -14,7 +16,8 @@ def MET_citation_count(text):
             #print(quotes)
             while "-" in quotes: quotes.remove("-")
             #print(quotes)
-            quoteCount += (int(quotes[1]) -int(quotes[0])) + 1
+            if quotes[1].isdigit() and quotes[0].isdigit():
+                quoteCount += (int(quotes[1]) -int(quotes[0])) + 1
         elif "," in quote:
             quotes = (quote.split(","))
             while "," in quotes: quotes.remove(",")
@@ -22,6 +25,6 @@ def MET_citation_count(text):
         else:
             quoteCount += 1
     print(quoteCount)
-    return str(quoteCount)
+    return quoteCount
 
 

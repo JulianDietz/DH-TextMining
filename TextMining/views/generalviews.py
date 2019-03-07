@@ -27,29 +27,13 @@ def helloWorld(request):
     return render(request, 'helloWorld.html')
 
 
-def processPaperView (request):
-    context = {}
-    return render(request, 'processPaper.html', context)
-
-#Aufbereiten der Text Stopwortfiltern und lemmatisieren
-def processPaper(request):
-    print("Paper werden aufbreitet....")
-    paperlist = Paper.objects.all()
-    for paper in paperlist:
-        print(paper)
-        metriken.removeStopwords(paper) #MET_text_to_STOP_text
-        metriken.calculateAllMetrics(paper)
-
-    print("Papersind aufbereitet und vorberechnet")
-    return JsonResponse({'sucess': 'Super!!!!!'})
-
 def readJsonFilesView (request):
     context = {}
     return render(request, 'readJsonFiles.html', context)
 
 def readJsonFiles(request):
     # loads all Json files....
-    readpath = "./outputNew20"
+    readpath = "./outputNew"
     onlyOne = False
     counter=0
     for filename in listdir(readpath):
@@ -63,6 +47,22 @@ def readJsonFiles(request):
         onlyOne=False
 
     return JsonResponse({'sucess':'Super!!!!!'})
+
+def processPaperView (request):
+    context = {}
+    return render(request, 'processPaper.html', context)
+
+#Aufbereiten der Text Stopwortfiltern und lemmatisieren
+def processPaper(request):
+    print("Paper werden aufbreitet....")
+    paperlist = Paper.objects.all()
+    for paper in paperlist:
+        print('Paper: '+paper.titleRaw.text)
+        metriken.removeStopwords(paper) #MET_text_to_STOP_text
+        metriken.calculateAllMetrics(paper)
+
+    print("Papersind aufbereitet und vorberechnet")
+    return JsonResponse({'sucess': 'Super!!!!!'})
 
 
 #Testen obs klappt
