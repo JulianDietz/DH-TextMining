@@ -141,7 +141,7 @@ def testMethode(request):
     getMetriksRaw(Paper.objects,'NltkStw', charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
                   punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
                   countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
-                  tableDescriptionCount=True, pictureDescriptionCount=True, keywordFrequency=True)
+                  tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True, keywordFrequency=True)
     return render(request, 'index.html')
 
 #TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
@@ -160,7 +160,8 @@ def getStatisticalValues(inputarray):
     variance = np.var(inputarray)
     return {'total': total,'average': average, 'median': median, 'mode': mode, 'variance': variance}
 
-
+#Erster Ansatz Ergebnisse, Ergebnisse noch nach Paperaufbau anstatt Metriken gegliedert
+'''
 def newMetriksDictionaire():
     return {'Text': {'charCountWhiteSpace': [], 'charCountNoWhiteSpace': [], 'wordCount': [],
                      'punctCount': [], 'citationCount': [], 'textContent': []},
@@ -179,7 +180,7 @@ def appendFieldMetrikForTitle(condition, modelField, dict, title):
         dict[modelField].append(getattr(title, modelField))
 
 #TODO if Abfragen für existenz von Feldern
-def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
+def getMetriksRawTest(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
                   punctCount=False, citationCount=False, authorCount=False, referenceCount=False, universityCount=False,
                   countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                   tableDescriptionCount=False, pictureDescriptionCount=False, keywordFrequency=False):
@@ -327,6 +328,206 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
     #subsectionen
     #gesamt (Abstracts + Sectionen + Subsectionen)
     return ""
+'''
+
+def createNewMetrikDict():
+    return {'titles': [], 'totalContentTitles': [], 'totalContentText': [], 'abstractTitles': [], 'abstractText': [],
+            'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
+
+# TODO if Abfragen für existenz von Feldern
+#TODO wenn Werte leeres Dict-... "0" bisher appendet!
+#TODO totale Textwerte speichern
+#TODO empty tag
+def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
+                  punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
+                  universityCount=False,
+                  countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
+                  tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False, keywordFrequency=False):
+
+    print('start!!!!!!!!')
+    abstractHelper = []
+    sectionHelper = []
+    subsectionHelper = []
+
+    resultsAuthorCount = []
+    resultsReferenceCount = []
+    resultsUniversityCount = []
+    resultsCountryCount = []
+    resultsKeywordCount = []
+    #Enthält die keyword-liste aus den models, frequenz muss noch berechnet werden
+    resultsKeywordText = []
+
+    #liste für jede Sektion mit Werten Anzahl Tables/Pictures
+    resultsTableCount = []
+    resultsPictureCount = []
+    #liste für jede Sektion mit Liste an Werten der Beschreibungslänge
+    resultsTableDescLengthCount = []
+    resultsPictureDescLengthCount = []
+
+    FieldMetriks = [{'condition': charCountWhiteSpace, 'modelField': "charCountWhiteSpace", 'values': createNewMetrikDict()},
+                    {'condition': charCountNoWhiteSpace, 'modelField': "charCountNoWhiteSpace", 'values': createNewMetrikDict()},
+                    {'condition': wordCount, 'modelField': "wordCount", 'values': createNewMetrikDict()},
+                    {'condition': punctCount, 'modelField': "punctCount", 'values': createNewMetrikDict()},
+                    {'condition': citationCount, 'modelField': "citationCount", 'values': createNewMetrikDict()}]
+
+    UsedFieldMetriks = []
+    for possibleFieldMetrik in FieldMetriks:
+        if possibleFieldMetrik['condition']:
+            UsedFieldMetriks.append(possibleFieldMetrik)
+
+    for paper in corpus:
+        # Allgemeine Metriken
+        # Kein Extraloop für alle drei mehr, oder?
+        if authorCount or universityCount or countryCount:
+            authors = paper.authors
+            universities = []
+            countries = []
+            for author in authors:
+                university = author.university
+                if university:
+                    if university not in universities:
+                        universities.append(university)
+                    country = university.country
+                    if country:
+                        if country not in countries:
+                            countries.append(country)
+
+            resultsAuthorCount.append(len(authors))
+            resultsUniversityCount.append(len(universities))
+            resultsCountryCount.append(len(countries))
+
+        keywords = paper.metaData.keywords
+        if keywordCount:
+            resultsKeywordCount.append(len(keywords))
+        if keywordFrequency:
+            resultsKeywordText.append(keywords)
+
+        if referenceCount:
+            resultsReferenceCount.append(len(paper.references))
+
+        # Feldmetriken Titel
+        paperTitle = getattr(paper, "title" + variant)
+        if paperTitle:
+            paperTitleMetrik = getattr(paperTitle, 'metrik')
+            for fieldMetrik in UsedFieldMetriks:
+                fieldMetrik['values']['titles'].append(getattr(paperTitleMetrik, fieldMetrik['modelField']))
+
+        # Feldmetriken Abstracts
+        for abstractCount, abstract in enumerate(paper.abstract):
+            if abstractCount == len(abstractHelper):
+                abstractHelper.append([])
+                for fieldMetrik in UsedFieldMetriks:
+                    fieldMetrik['values']['abstractTitles'].append([])
+                    fieldMetrik['values']['abstractText'].append([])
+
+            abstractTitle = getattr(abstract, "title" + variant)
+            abstractTitleMetrik = getattr(abstractTitle, 'metrik')
+            abstractText = getattr(abstract, "text" + variant)
+            abstractTextMetrik = getattr(abstractText, 'metrik')
+            for fieldMetrik in UsedFieldMetriks:
+                fieldMetrik['values']['abstractTitles'][abstractCount].append(
+                    getattr(abstractTitleMetrik, fieldMetrik['modelField']))
+                fieldMetrik['values']['abstractText'][abstractCount].append(
+                    getattr(abstractTextMetrik, fieldMetrik['modelField']))
+
+        # Feldmetriken Sectionen und Subsectionen
+        for sectionCount, section in enumerate(paper.content):
+            if sectionCount == len(sectionHelper):
+                sectionHelper.append([])
+                subsectionHelper.append([])
+                resultsTableCount.append([])
+                resultsPictureCount.append([])
+                resultsTableDescLengthCount.append([])
+                resultsPictureDescLengthCount.append([])
+                for fieldMetrik in UsedFieldMetriks:
+                    fieldMetrik['values']['sectionTitles'].append([])
+                    fieldMetrik['values']['sectionText'].append([])
+                    fieldMetrik['values']['subsectionTitles'].append([])
+                    fieldMetrik['values']['subsectionText'].append([])
+
+            sectionTitle = getattr(section, "title" + variant)
+            sectionTitleMetrik = getattr(sectionTitle, 'metrik')
+            sectionText = getattr(section, "text" + variant)
+            sectionTextMetrik = getattr(sectionText, 'metrik')
+            for fieldMetrik in UsedFieldMetriks:
+                fieldMetrik['values']['sectionTitles'][sectionCount].append(
+                    getattr(sectionTitleMetrik, fieldMetrik['modelField']))
+                fieldMetrik['values']['sectionText'][sectionCount].append(
+                    getattr(sectionTextMetrik, fieldMetrik['modelField']))
+
+            tables = section.tables
+            if tableCount:
+                resultsTableCount[sectionCount].append(len(tables))
+            if tableDescriptionLengthCount:
+                # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
+                countTableDescription = []
+                for table in tables:
+                    countTableDescription.append(len(table.description))
+                resultsTableDescLengthCount[sectionCount].append(countTableDescription)
+
+            pictures = section.pictures
+            if pictureCount:
+                resultsPictureCount[sectionCount].append(len(pictures))
+            if pictureDescriptionLengthCount:
+                # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
+                countPictureDescription = []
+                for picture in pictures:
+                    countPictureDescription.append(len(picture.description))
+                resultsPictureDescLengthCount[sectionCount].append(countPictureDescription)
+
+            for subsectionCount, subsection in enumerate(section.subsection):
+                if subsectionCount == len(subsectionHelper[sectionCount]):
+                    subsectionHelper[sectionCount].append([])
+                    for fieldMetrik in UsedFieldMetriks:
+                        fieldMetrik['values']['subsectionTitles'][sectionCount].append([])
+                        fieldMetrik['values']['subsectionText'][sectionCount].append([])
+
+                    subsectionTitle = getattr(subsection, "title" + variant)
+                    subsectionTitleMetrik = getattr(subsectionTitle, 'metrik')
+                    subsectionText = getattr(subsection, "text" + variant)
+                    subsectionTextMetrik = getattr(subsectionText, 'metrik')
+
+                    for fieldMetrik in UsedFieldMetriks:
+                        fieldMetrik['values']['subsectionTitles'][sectionCount][subsectionCount].append(
+                            getattr(subsectionTitleMetrik, fieldMetrik['modelField']))
+                        fieldMetrik['values']['subsectionText'][sectionCount][subsectionCount].append(
+                            getattr(subsectionTextMetrik, fieldMetrik['modelField']))
+
+    results = {}
+    if authorCount:
+        results['authorCount'] = resultsAuthorCount
+    if referenceCount:
+        results['referenceCount'] = resultsReferenceCount
+    if universityCount:
+        results['universityCount'] = resultsUniversityCount
+    if countryCount:
+        results['countryCount'] = resultsCountryCount
+    if keywordCount:
+        results['keywordCount'] = resultsKeywordCount
+    #TODO aus keyword-listen die tatsächliche Frequenz berechnen
+    if keywordFrequency:
+        results['keywordFrequency'] = resultsKeywordText
+    if tableCount:
+        results['tableCount'] = resultsTableCount
+    if tableDescriptionLengthCount:
+        results['tableDescriptionLengthCount'] = resultsTableDescLengthCount
+    if pictureCount:
+        results['pictureCount'] = resultsPictureCount
+    if pictureDescriptionLengthCount:
+        results['pictureDescriptionLengthCount'] = resultsPictureDescLengthCount
+    for fieldMetrik in UsedFieldMetriks:
+        if fieldMetrik['modelField'] == 'charCountWhiteSpace' and charCountWhiteSpace:
+            results['charCountWhiteSpace'] = fieldMetrik['values']
+        if fieldMetrik['modelField'] == 'charCountNoWhiteSpace' and charCountNoWhiteSpace:
+            results['charCountNoWhiteSpace'] = fieldMetrik['values']
+        if fieldMetrik['modelField'] == 'wordCount' and wordCount:
+            results['wordCount'] = fieldMetrik['values']
+        if fieldMetrik['modelField'] == 'punctCount' and punctCount:
+            results['punctCount'] = fieldMetrik['values']
+        if fieldMetrik['modelField'] == 'citationCount' and citationCount:
+            results['citationCount'] = fieldMetrik['values']
+    print(results)
+    return results
 
 '''
 #TODO anderes funktioniert
