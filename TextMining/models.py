@@ -30,8 +30,10 @@ class Picture(EmbeddedDocument):
 class Subsection(EmbeddedDocument):
     titleRaw = EmbeddedDocumentField('TextVariant')
     titleNltkStw = EmbeddedDocumentField('TextVariant')
+    titleNltkStem = EmbeddedDocumentField('TextVariant')
     textRaw = EmbeddedDocumentField('TextVariant')
     textNltkStw = EmbeddedDocumentField('TextVariant')
+    textNltkStem = EmbeddedDocumentField('TextVariant')
     subsubsection = EmbeddedDocumentListField('Subsection') # Nicht implementiert
 
 
@@ -42,8 +44,10 @@ class TextVariant(EmbeddedDocument):
 class Section(EmbeddedDocument):
     titleRaw = EmbeddedDocumentField('TextVariant')
     titleNltkStw = EmbeddedDocumentField('TextVariant')
+    titleNltkStem = EmbeddedDocumentField('TextVariant')
     textRaw = EmbeddedDocumentField('TextVariant')
     textNltkStw = EmbeddedDocumentField('TextVariant')
+    textNltkStem = EmbeddedDocumentField('TextVariant')
     subsection = EmbeddedDocumentListField('Subsection')
     tables = EmbeddedDocumentListField('Table')
     pictures = EmbeddedDocumentListField('Picture')
@@ -70,8 +74,11 @@ class Author(EmbeddedDocument):
 class Abstract(EmbeddedDocument):
     titleRaw = EmbeddedDocumentField('TextVariant')
     titleNltkStw = EmbeddedDocumentField('TextVariant')
+    titleNltkStem = EmbeddedDocumentField('TextVariant')
     textRaw = EmbeddedDocumentField('TextVariant')
     textNltkStw = EmbeddedDocumentField('TextVariant')
+    textNltkStem = EmbeddedDocumentField('TextVariant')
+
 
 
 class Metadata(EmbeddedDocument):
@@ -121,6 +128,7 @@ class Metadata(EmbeddedDocument):
 class Paper(Document):
     titleRaw = EmbeddedDocumentField('TextVariant')
     titleNltkStw = EmbeddedDocumentField('TextVariant')
+    titleNltkStem = EmbeddedDocumentField('TextVariant')
     metaData = EmbeddedDocumentField('Metadata')
     authors = EmbeddedDocumentListField('Author')
     references = EmbeddedDocumentListField('Reference')

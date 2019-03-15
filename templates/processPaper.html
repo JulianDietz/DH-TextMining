@@ -2,13 +2,24 @@
 {% block body %}
     <h1>Paper vorberechen!</h1>
 
+    <div class="spinner-border hidden" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <div>
+        <p id='resultText' class="hidden">Paper erfolgreich aufbreitet.</p>
+    </div>
+    <br>
+
     <button>Paper vorbrechnen starten!</button>
 
     <script>
         $("button").click(function () {
+            $('.spinner-border').show();
             $.ajax({
                 url: "{% url 'processPaper' %}", success: function (result) {
-                    console.log(result)
+                    console.log(result);
+                    $('.spinner-border').hide();
+                    $('#resultText').show();
                 }
             });
         });

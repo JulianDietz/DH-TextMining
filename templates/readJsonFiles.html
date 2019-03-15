@@ -1,15 +1,26 @@
 {% extends 'index.html' %}
 {% block body %}
-    <h1>Paper einlesen!</h1>
+        <h1>Paper einlesen!</h1>
 
-    <button>Paper einlesen starten!</button>
+        <div class="spinner-border hidden" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div>
+        <p id='resultText'class="hidden">Paper erfolgreich eingelesen. Nächster Schritt Paper vorberechnen: <a class="btn btn-primary" href="{% url 'processPaperView' %}" role="button">Link</a></p>
+        </div>
+        <br>
+        <button>Paper einlesen starten!</button>
 
     <script>
         $("button").click(function () {
+            $('.spinner-border').show();
             $.ajax({
-                url: "{% url 'readJsonFiles' %}", success: function (result) {
-                    console.log(result)
-                }
+                url: "{% url 'readJsonFiles' %}",
+                    success: function (result) {
+                        console.log(result);
+                        $('.spinner-border').hide();
+                        $('#resultText').show()
+                    }
             });
         });
     </script>

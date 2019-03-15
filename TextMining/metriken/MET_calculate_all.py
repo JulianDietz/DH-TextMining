@@ -6,6 +6,7 @@ def calculateAllMetrics(paper):
     #Titel
     addMetricForPart(paper.titleRaw)
     addMetricForPart(paper.titleNltkStw)
+    addMetricForPart(paper.titleNltkStem)
 
     # Abstract
     for section in paper.abstract:
@@ -13,6 +14,8 @@ def calculateAllMetrics(paper):
         addMetricForPart(section.titleNltkStw)
         addMetricForPart(section.textRaw)
         addMetricForPart(section.titleRaw)
+        addMetricForPart(section.textNltkStem)
+        addMetricForPart(section.titleNltkStem)
 
     #Text
     for section in paper.content:
@@ -20,6 +23,8 @@ def calculateAllMetrics(paper):
         addMetricForPart(section.titleNltkStw)
         addMetricForPart(section.textRaw)
         addMetricForPart(section.titleRaw)
+        addMetricForPart(section.textNltkStem)
+        addMetricForPart(section.titleNltkStem)
 
         #Subtext
         for subsection in section.subsection:
@@ -27,6 +32,8 @@ def calculateAllMetrics(paper):
             addMetricForPart(subsection.titleNltkStw)
             addMetricForPart(subsection.textRaw)
             addMetricForPart(subsection.titleRaw)
+            addMetricForPart(subsection.textNltkStem)
+            addMetricForPart(subsection.titleNltkStem)
 
     paper.save()
 

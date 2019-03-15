@@ -33,7 +33,7 @@ def readJsonFilesView (request):
 
 def readJsonFiles(request):
     # loads all Json files....
-    readpath = "./outputNew"
+    readpath = "./outputNew20"
     onlyOne = False
     counter=0
     for filename in listdir(readpath):
@@ -59,6 +59,7 @@ def processPaper(request):
     for paper in paperlist:
         print('Paper: '+paper.titleRaw.text)
         metriken.removeStopwords(paper) #MET_text_to_STOP_text
+        metriken.stemText(paper) #MET_text_to_STEM_text
         metriken.calculateAllMetrics(paper)
 
     print("Papersind aufbereitet und vorberechnet")

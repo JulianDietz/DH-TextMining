@@ -39,24 +39,24 @@ def removeStopwords(paper):
 
 #Stopwortliste nltk(english) word to lowercase
 def getStopwordsForTextsection(text):
-    print('Ausgangstext:')
-    print(text)
-    text_As_Array = RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg?
+    #print('Ausgangstext:')
+    #print(text)
+    text_As_Array = RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg???!?!????
     #print("text:"+text)
     textnostop = ""
     for word in text_As_Array:
         word = str(word).lower()
         if word not in stopwords.words('english'):
             textnostop += " " + word
-    print('stopworttext:')
-    print(textnostop)
+    #print('stopworttext:')
+    #print(textnostop)
     return textnostop
 
 #checks if section has StemmedText with this method
 def paperIsRehashed(section,fieldname):
     if section[fieldname]:
-        print('vorhanden')
+        #print('vorhanden')
         return True
     else:
-        print('noch nicht vorhanden')
+        #print('noch nicht vorhanden')
         return False
