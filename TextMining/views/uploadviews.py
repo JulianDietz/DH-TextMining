@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import json
 from jsonschema import Draft4Validator
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from TextMining.saveFile import savePaper
+from os.path import join
 
 currentJsonfiles=[]
 
@@ -18,19 +19,18 @@ def uploadFiles(request):
         #print(request.FILES.getlist('JsonPaper'))
         validPaper = []
         invalidPaper = []
-        json_data = open("Paperschema.json", "r")
+        json_data = open("./static/jsonSchema/Paperschema.json", "r")
         schema = json.load(json_data)
         v = Draft4Validator(schema)
         for uploadfile in request.FILES.getlist('JsonPaper'):
             print(uploadfile.name)
             jsondata=json.loads(uploadfile.read().decode('utf-8'))
             #print(jsondata)
-            currentJsonfiles.append(jsondata)
+            currentJsonfiles.append({'name':uploadfile.name,'file':jsondata})
             if v.is_valid(jsondata):
                 validPaper.append(uploadfile)
                 print("validFile:"+uploadfile.name)
             else:
-
                 print("invalidFile:" + uploadfile.name)
                 errors=[]
                 for error in sorted(v.iter_errors(jsondata), key=str):
@@ -49,12 +49,19 @@ def completeUpload(request):
         global currentJsonfiles
         #print("Jsonfiles")
         #print(currentJsonfiles)
+        readpath = "./static/uploadFiles"
         for jsonfile in currentJsonfiles:
-            print(jsonfile)
+            #print(jsonfile)
+            file = open(join(readpath,jsonfile['name']), 'w')
+            #jsondata = json.loads(jsonfile['file'].read().decode('utf-8'))
+            json.dump(jsonfile['file'], file, ensure_ascii=False)
+            #file.write(jsondata)
+            #print()
+            #print(jsonfile['name'])
+            ##Save File in the
             #savePaper(jsonfile)
         currentJsonfiles=[]
-        print("Alle files sollen jetzt gespeichert werden")
-        return render(request, 'helloWorld.html')
+        return redirect('readJsonFilesView')
 
 
 @csrf_exempt
@@ -66,7 +73,7 @@ def uploadImprovedPaper(request):
         response = {}
         filedata=request.POST.get('file')
         jsondata = json.loads(filedata)
-        json_data = open("Paperschema.json", "r")
+        json_data = open("./static/jsonSchema/Paperschema.json", "r")
         schema = json.load(json_data)
         v = Draft4Validator(schema)
 

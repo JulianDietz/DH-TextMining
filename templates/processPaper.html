@@ -2,6 +2,9 @@
 {% block body %}
     <h1>Paper vorberechen!</h1>
 
+    <p>Es befinden sich {{ numberPaper }} Einträge in der Datenbank. Beim vorberechnen wird aus dem Rawtext des Papers ein
+    stopwortgefilteter Text und ein gestemmter Text berechnet sowie einige Metriken vorberechnet. Der Vorhang kann einige Zeit dauern... </p>
+
     <div class="spinner-border hidden" role="status">
         <span class="sr-only">Loading...</span>
     </div>

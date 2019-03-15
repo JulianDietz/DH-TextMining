@@ -1,6 +1,8 @@
 {% extends 'index.html' %}
 {% block body %}
         <h1>Paper einlesen!</h1>
+        <p>Es befinden sich {{ numberPaper }} Einträge in der Datenbank.</p>
+        <p>Es sind {{ numberFiles }} Dateien bereit zum Einlesen.</p>
 
         <div class="spinner-border hidden" role="status">
             <span class="sr-only">Loading...</span>
@@ -8,8 +10,13 @@
         <div>
         <p id='resultText'class="hidden">Paper erfolgreich eingelesen. Nächster Schritt Paper vorberechnen: <a class="btn btn-primary" href="{% url 'processPaperView' %}" role="button">Link</a></p>
         </div>
+
         <br>
+        {% if  numberFiles != 0 %}
         <button>Paper einlesen starten!</button>
+        {% else %}
+            <p>Keine hochgleadenen Paper vorhanden. Bitte laden die ihre Paper hoch <a class="btn btn-primary" href="{% url 'upload' %}" role="button"> Zum Upload </a> </p>
+        {% endif %}
 
     <script>
         $("button").click(function () {

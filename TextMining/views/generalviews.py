@@ -12,6 +12,7 @@ from os.path import join
 from TextMining import metriken
 from TextMining.saveFile import savePaper
 from scipy import stats
+import os
 
 import TextMining.models
 import numpy as np
@@ -28,28 +29,34 @@ def helloWorld(request):
 
 
 def readJsonFilesView (request):
-    context = {}
+    files = os.listdir('./static/uploadFiles')
+    numberFiles = len(files)
+    numPaper=Paper.objects.all().count()
+    context = {'numberFiles':numberFiles,'numberPaper':numPaper}
     return render(request, 'readJsonFiles.html', context)
 
 def readJsonFiles(request):
     # loads all Json files....
-    readpath = "./outputNew20"
+    readpath = "./static/uploadFiles"
     onlyOne = False
     counter=0
     for filename in listdir(readpath):
         if not onlyOne:
             if filename != ".DS_Store": #file.endswith('.json')
                 #print(filename)
-                file = open(join(readpath, filename), 'r', encoding='utf-8', errors="ignore")
+                filepath=join(readpath, filename)
+                file = open(filepath, 'r', encoding='utf-8', errors="ignore")
                 paperJson = json.load(file)
                 paper=savePaper(paperJson)
                 counter+=1
+                os.remove(filepath)
         onlyOne=False
 
     return JsonResponse({'sucess':'Super!!!!!'})
 
 def processPaperView (request):
-    context = {}
+    numberPaper = Paper.objects.all().count()
+    context = {'numberPaper':numberPaper}
     return render(request, 'processPaper.html', context)
 
 #Aufbereiten der Text Stopwortfiltern und lemmatisieren
