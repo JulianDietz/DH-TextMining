@@ -198,7 +198,7 @@ function returnGraph(name, htmlEl, data2, data1) {
 
 
     let metric_name = name.split("_")[2]
-    let downloadButton = d3.select("#download_" + metric_name;
+    let downloadButton = d3.select("#download_" + metric_name);
     downloadButton.style("visibility", "visible");
 
     let csv_text = convertJSONtoCSV(dataPoints);

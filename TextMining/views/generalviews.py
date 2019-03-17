@@ -27,6 +27,9 @@ nltk.download('stopwords')
 def helloWorld(request):
     return render(request, 'helloWorld.html')
 
+def results(request):
+    return render(request, 'results/results.html')
+
 
 def readJsonFilesView (request):
     files = os.listdir('./static/uploadFiles')
