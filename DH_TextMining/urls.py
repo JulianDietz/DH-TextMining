@@ -28,6 +28,7 @@ urlpatterns = [
     path('textMining/completeUpload/', views.completeUpload, name='completeUpload'),
     path('textMining/readPaperView/', views.readJsonFilesView , name='readJsonFilesView'),
     path('textMining/processPaperView/', views.processPaperView, name='processPaperView'),
+    path('textMining/results/', views.results, name='results'),
 
 
     #ajax read .json files

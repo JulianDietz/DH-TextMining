@@ -1,0 +1,103 @@
+.panel-group {
+    margin: 3em 0;
+    border: black solid 1px;
+    border-radius: 5px;
+    padding: 1em;
+
+}
+
+.toggle_button {
+    float: right;
+    height: 32px;
+    width: 32px;
+    color: rgb(255, 255, 255);
+    background-color: transparent;
+    box-shadow: none;
+    border: 0px;
+
+}
+
+
+.toggle_button_open {
+    background-image: url(../img/results/expand-arrow.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    color: white;
+}
+
+.toggle_button_closed {
+    background-image: url(../img/results/expand-button.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.loaded_indicator {
+    height: 32px;
+    width: 32px;
+    float: right;
+    display: inline-block;
+    margin: 0 15px;
+}
+
+.download_button {
+    float: right;
+    height: 32px;
+    width: 32px;
+    color: rgb(0,0,0);
+    background-color: transparent;
+    box-shadow: none;
+    border: 0px;
+    visibility: hidden;
+    margin:0 15px;
+}
+download_button:hover{
+    color: #000000
+}
+
+
+.metricDescription {
+    padding-top: 15px;
+    border-top: black solid 1px;
+    margin: 15px auto 15px auto;
+    text-align: center
+}
+
+.metricDescriptionColTags {
+    text-align: center;
+}
+
+.metricDescriptionColHeader {
+    text-align: center;
+}
+
+.credit_section {
+    font-size: .5em;
+}
+
+.metric-data {
+    display: inline;
+    font-size: 0.5em;
+}
+
+.metric-data:before {
+    content: attr(data-before);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.metric-data:not(:first-child) {
+    margin-left: 1.5em;
+}
+
+.indicator {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.svg-chart {
+    width: 100%;
+
+}
