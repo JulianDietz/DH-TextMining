@@ -148,28 +148,25 @@ def getTotalAmountOfDistinctCountries(corpus):
 def getTotalAmountOfDistinctKeywords(corpus):
     return len(corpus.distinct('metaData.keywords'))
 
+
 def testMethode(request):
-    getMetriksRaw(Paper.objects,'NltkStw', charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
-                  punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
-                  countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
-                  tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True, keywordFrequency=True)
+    getMetriks(Paper.objects, 'NltkStw', charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
+               punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
+               countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
+               tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True, keywordFrequency=True)
     return render(request, 'index.html')
 
-#TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
-#TODO was gemeint mit Größe/Dichte Wortschatz, Anzahl Überschriften (=alle Titles? dann ja nur einfach alle Sektionen?)
-#TODO die können alle über den Text berechnet werden => text raw in dict werfen?
-
-#TODO Schauen welche Felder immer in db, und welche mit if abfragen? Alle Liste in db immer mit [] machen wenn leer? Metadata für jedes da? Keywords
-#TODO wenn leer []? was wenn zb. Sektion keinen titel hat? None immer abfragen?
-#TODO Die einzelnen ifs in den Schleifen raus und immer appenden? Performance dann besser oder nicht?
 
 def getStatisticalValues(inputarray):
     total = np.sum(inputarray)
     average = np.mean(inputarray)
-    median = np.median(inputarray)
     mode = stats.mode(inputarray)
     variance = np.var(inputarray)
-    return {'total': total,'average': average, 'median': median, 'mode': mode, 'variance': variance}
+    lowerQuartile, median, upperQuartile = np.percentile(inputarray, [25, 50, 75])
+    min = np.amin(inputarray)
+    max = np.amax(inputarray)
+    return {'total': total,'average': average, 'median': median, 'mode': mode, 'variance': variance, 'lowerQuartile': lowerQuartile,
+            'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max}
 
 #Erster Ansatz Ergebnisse, Ergebnisse noch nach Paperaufbau anstatt Metriken gegliedert
 '''
@@ -341,19 +338,44 @@ def getMetriksRawTest(corpus, variant, charCountWhiteSpace=False, charCountNoWhi
     return ""
 '''
 
+
+#TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
+#TODO was gemeint mit Größe/Dichte Wortschatz, Anzahl Überschriften (=alle Titles? dann ja nur einfach alle Sektionen?)
+#TODO die können alle über den Text berechnet werden => text raw in dict werfen?
+
+#TODO Schauen welche Felder immer in db, und welche mit if abfragen? Alle Liste in db immer mit [] machen wenn leer? Metadata für jedes da? Keywords
+#TODO wenn leer []? was wenn zb. Sektion keinen titel hat? None immer abfragen?
+#TODO Die einzelnen ifs in den Schleifen raus und immer appenden? Performance dann besser oder nicht?
+
 def createNewMetrikDict():
     return {'titles': [], 'totalContentTitles': [], 'totalContentText': [], 'abstractTitles': [], 'abstractText': [],
-            'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
+            'sectionTitles': [], 'sectionText': [], 'subsectionTitles': []}
+
+
+def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
+               punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
+               universityCount=False,countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
+               tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False, keywordFrequency=False):
+
+    metriks1 = getMetriks(corpus1, variant,charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+               punctCount, citationCount, authorCount, referenceCount,
+               universityCount,countryCount, keywordCount, tableCount, pictureCount,
+               tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
+    metriks2 = getMetriks(corpus2, variant,charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+               punctCount, citationCount, authorCount, referenceCount,
+               universityCount,countryCount, keywordCount, tableCount, pictureCount,
+               tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
+    return {'Corpus1': metriks1, 'Corpus2': metriks2}
+
 
 # TODO if Abfragen für existenz von Feldern
-#TODO wenn Werte leeres Dict-... "0" bisher appendet!
-#TODO totale Textwerte speichern
-#TODO empty tag
-def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
-                  punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
-                  universityCount=False,
-                  countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
-                  tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False, keywordFrequency=False):
+# TODO wenn Werte leeres Dict-... "0" bisher appendet!
+# TODO werte auch in totalContent werfen
+# TODO empty tag
+def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+               punctCount, citationCount, authorCount, referenceCount,
+               universityCount, countryCount, keywordCount, tableCount, pictureCount,
+               tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency):
 
     print('start!!!!!!!!')
     abstractHelper = []
@@ -506,39 +528,134 @@ def getMetriksRaw(corpus, variant, charCountWhiteSpace=False, charCountNoWhiteSp
 
     results = {}
     if authorCount:
-        results['authorCount'] = resultsAuthorCount
+        results['authorCount'] = {'rawValues': resultsAuthorCount, 'statisticalValues': getStatisticalValues(resultsAuthorCount)}
     if referenceCount:
-        results['referenceCount'] = resultsReferenceCount
+        results['referenceCount'] = {'rawValues': resultsReferenceCount, 'statisticalValues': getStatisticalValues(resultsReferenceCount)}
     if universityCount:
-        results['universityCount'] = resultsUniversityCount
+        results['universityCount'] = {'rawValues': resultsUniversityCount, 'statisticalValues': getStatisticalValues(resultsUniversityCount)}
     if countryCount:
-        results['countryCount'] = resultsCountryCount
+        results['countryCount'] = {'rawValues': resultsCountryCount, 'statisticalValues': getStatisticalValues(resultsCountryCount)}
     if keywordCount:
-        results['keywordCount'] = resultsKeywordCount
+        results['keywordCount'] = {'rawValues': resultsKeywordCount, 'statisticalValues': getStatisticalValues(resultsKeywordCount)}
     #TODO aus keyword-listen die tatsächliche Frequenz berechnen
     if keywordFrequency:
         results['keywordFrequency'] = resultsKeywordText
     if tableCount:
-        results['tableCount'] = resultsTableCount
+        #TableCount ist Liste an Sektionen, wird für statistische Werte zusammengefasst
+        #TODO flat list auch mit übergeben?
+        #TODO testen ob alle gehen
+        #TODO erste Sektionen, zweite Sektionen etc auch?
+        flatTableCount = [item for sublist in resultsTableCount for item in sublist]
+        results['tableCount'] = {'rawValues': resultsTableCount,
+                                 'statisticalValues': getStatisticalValues(flatTableCount)}
     if tableDescriptionLengthCount:
-        results['tableDescriptionLengthCount'] = resultsTableDescLengthCount
+        flatTableDescriptionCount = [item for sublist in resultsTableDescLengthCount for subsublist in sublist for item in subsublist]
+        results['tableDescriptionLengthCount'] = {'rawValues': resultsTableDescLengthCount,
+                                                  'statisticalValues': getStatisticalValues(flatTableDescriptionCount)}
     if pictureCount:
-        results['pictureCount'] = resultsPictureCount
+        flatPictureCount = [item for sublist in resultsPictureCount for item in sublist]
+        results['pictureCount'] = {'rawValues': resultsPictureCount,
+                                   'statisticalValues': getStatisticalValues(flatPictureCount)}
     if pictureDescriptionLengthCount:
-        results['pictureDescriptionLengthCount'] = resultsPictureDescLengthCount
+        flatTableDescriptionCount = [item for sublist in resultsPictureDescLengthCount for subsublist in sublist for item in subsublist]
+        results['pictureDescriptionLengthCount'] = {'rawValues': resultsPictureDescLengthCount,
+                                                    'statisticalValues': getStatisticalValues(flatTableDescriptionCount)}
     for fieldMetrik in UsedFieldMetriks:
         if fieldMetrik['modelField'] == 'charCountWhiteSpace' and charCountWhiteSpace:
-            results['charCountWhiteSpace'] = fieldMetrik['values']
+            results['charCountWhiteSpace'] = {'rawValues': fieldMetrik['values'],
+                                              'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
+
         if fieldMetrik['modelField'] == 'charCountNoWhiteSpace' and charCountNoWhiteSpace:
-            results['charCountNoWhiteSpace'] = fieldMetrik['values']
+            results['charCountNoWhiteSpace'] = {'rawValues': fieldMetrik['values'],
+                                                'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
         if fieldMetrik['modelField'] == 'wordCount' and wordCount:
-            results['wordCount'] = fieldMetrik['values']
+            results['wordCount'] = {'rawValues': fieldMetrik['values'],
+                                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
         if fieldMetrik['modelField'] == 'punctCount' and punctCount:
-            results['punctCount'] = fieldMetrik['values']
+            results['punctCount'] = {'rawValues': fieldMetrik['values'],
+                                     'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
         if fieldMetrik['modelField'] == 'citationCount' and citationCount:
-            results['citationCount'] = fieldMetrik['values']
+            results['citationCount'] = {'rawValues': fieldMetrik['values'],
+                                        'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
     print(results)
     return results
+
+
+def getStatisticalValuesForFieldMetriks(input):
+    flatAbstractTitles  = []
+    flatAbstractText  = []
+    flatSectionTitles  = []
+    flatSectionText  = []
+    flatSubsectionTitles = []
+    flatSubsectionText = []
+    flattenedSubsectionTitles = []
+    flattenedSubsectionText = []
+
+    resultsArrayAbstractTitles = []
+    resultsArrayAbstractText = []
+    resultsArraySectionTitles = []
+    resultsArraySectionText = []
+    resultsArraySubsectionTitles = []
+    resultsArraySubsectionText = []
+
+    for list in input['abstractTitles']:
+        resultsArrayAbstractTitles.append(getStatisticalValues(list))
+        for item in list:
+            flatAbstractTitles.append(item)
+    for list in input['abstractText']:
+        resultsArrayAbstractText.append(getStatisticalValues(list))
+        for item in list:
+            flatAbstractText.append(item)
+    for list in input['sectionTitles']:
+        resultsArraySectionTitles.append(getStatisticalValues(list))
+        for item in list:
+            flatSectionTitles.append(item)
+    for list in input['sectionText']:
+        resultsArraySectionText.append(getStatisticalValues(list))
+        for item in list:
+            flatSectionText.append(item)
+    #TODO subsectionen hier jetzt nicht nach zugehöriger Sektion (1.,2.,...), sondern nur nach erste, zweite,... Subsection gegliedert
+    #subsection titles
+    totalSubsectionsForTitles = 0
+    for list in input['subsectionTitles']:
+        subsectionCount = len(max(list, key=len))
+        if subsectionCount > totalSubsectionsForTitles:
+            totalSubsectionsForTitles = subsectionCount
+    for i in range(totalSubsectionsForTitles):
+        flattenedSubsectionTitles.append([])
+    for list in input['subsectionTitles']:
+        for sublistCount, sublist in enumerate(list):
+            for item in sublist:
+                flatSubsectionTitles.append(item)
+                flattenedSubsectionTitles[sublistCount].append(item)
+    for list in flattenedSubsectionTitles:
+        resultsArraySubsectionTitles.append(getStatisticalValues(list))
+    #subscection text
+    totalSubsectionsForText = 0
+    for list in input['subsectionText']:
+        subsectionCount = len(max(list, key=len))
+        if subsectionCount > totalSubsectionsForText:
+            totalSubsectionsForText = subsectionCount
+    for i in range(totalSubsectionsForText):
+        flattenedSubsectionText.append([])
+    for list in input['subsectionText']:
+        for sublistCount, sublist in enumerate(list):
+            for item in sublist:
+                flatSubsectionText.append(item)
+                flattenedSubsectionText[sublistCount].append(item)
+    for list in flattenedSubsectionText:
+        resultsArraySubsectionText.append(getStatisticalValues(list))
+
+    results =  {'totalTitles': getStatisticalValues(input['titles']),
+            'totalAbstractTitles': getStatisticalValues(flatAbstractTitles), 'totalAbstractText': getStatisticalValues(flatAbstractText),
+            'totalSectionTitles': getStatisticalValues(flatSectionTitles), 'totalSectionText': getStatisticalValues(flatSectionText),
+            'totalSubsectionTitles': getStatisticalValues(flatSubsectionTitles), 'totalSubsectionText': getStatisticalValues(flatSubsectionText),
+            'arrayAbstractTitles': resultsArrayAbstractTitles, 'arrayAbstractText': resultsArrayAbstractText,
+            'arraySectionTitles': resultsArraySectionTitles, 'arraySectionText': resultsArraySectionText,
+            'arraySubsectionTitles': resultsArraySubsectionTitles, 'arraySubsectionText': resultsArraySubsectionText}
+
+
+
 
 '''
 #TODO anderes funktioniert
