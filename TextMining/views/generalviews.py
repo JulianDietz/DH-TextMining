@@ -352,7 +352,7 @@ def getMetriksRawTest(corpus, variant, charCountWhiteSpace=False, charCountNoWhi
 
 def createNewMetrikDict():
     return {'titles': [], 'totalContentTitles': [], 'totalContentText': [], 'abstractTitles': [], 'abstractText': [],
-            'sectionTitles': [], 'sectionText': [], 'subsectionTitles': []}
+            'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
 
 
 def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
