@@ -365,7 +365,8 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
                punctCount, citationCount, authorCount, referenceCount,
                universityCount,countryCount, keywordCount, tableCount, pictureCount,
                tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
-    return {'Corpus1': metriks1, 'Corpus2': metriks2}
+    results = {'Corpus1': metriks1, 'Corpus2': metriks2}
+    return json.dumps(results)
 
 
 # TODO if Abfragen für existenz von Feldern
