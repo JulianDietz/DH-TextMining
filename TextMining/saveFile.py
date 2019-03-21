@@ -51,7 +51,7 @@ def savePaper(paperJson):
                                     booktitle=paperJson['metaData']['booktitle'],
                                     location=paperJson['metaData']['location'],
                                     organization=paperJson['metaData']['organisation'],
-                                    address=paperJson['metaData']['organisation'],
+                                    address=paperJson['metaData']['address'],
                                     citekey=str(paperJson['metaData']['id']),#id=citekey?
                                     publicationtype=paperJson['metaData']['publicationtype'],
                                     chapter=paperJson['metaData']['chapter'],
