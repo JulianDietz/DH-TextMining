@@ -153,10 +153,12 @@ def getTotalAmountOfDistinctKeywords(corpus):
 
 
 def testMethode(request):
-    getMetriks(Paper.objects, 'NltkStw', charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
+    analyseCorpora('NltkStw', Paper.objects, Paper.objects, charCountWhiteSpace=True, charCountNoWhiteSpace=True, wordCount=True,
                punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
                countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
                tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True, keywordFrequency=True)
+
+
     return render(request, 'index.html')
 
 
@@ -168,7 +170,8 @@ def getStatisticalValues(inputarray):
     lowerQuartile, median, upperQuartile = np.percentile(inputarray, [25, 50, 75])
     min = np.amin(inputarray)
     max = np.amax(inputarray)
-    return {'total': total,'average': average, 'median': median, 'mode': mode, 'variance': variance, 'lowerQuartile': lowerQuartile,
+    return {'total': total,'average': average, 'median': median, 'mode': mode,
+            'variance': variance, 'lowerQuartile': lowerQuartile,
             'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max}
 
 #Erster Ansatz Ergebnisse, Ergebnisse noch nach Paperaufbau anstatt Metriken gegliedert
@@ -368,7 +371,12 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
                punctCount, citationCount, authorCount, referenceCount,
                universityCount,countryCount, keywordCount, tableCount, pictureCount,
                tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
+    if not corpus1:
+        metriks1 = None
+    if not corpus2:
+        metriks2 = None
     results = {'Corpus1': metriks1, 'Corpus2': metriks2}
+    print(json.dumps(results))
     return json.dumps(results)
 
 
@@ -581,7 +589,7 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
         if fieldMetrik['modelField'] == 'citationCount' and citationCount:
             results['citationCount'] = {'rawValues': fieldMetrik['values'],
                                         'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
-    print(results)
+
     return results
 
 
@@ -649,6 +657,7 @@ def getStatisticalValuesForFieldMetriks(input):
                 flattenedSubsectionText[sublistCount].append(item)
     for list in flattenedSubsectionText:
         resultsArraySubsectionText.append(getStatisticalValues(list))
+
 
     results =  {'totalTitles': getStatisticalValues(input['titles']),
             'totalAbstractTitles': getStatisticalValues(flatAbstractTitles), 'totalAbstractText': getStatisticalValues(flatAbstractText),
