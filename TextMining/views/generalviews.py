@@ -30,6 +30,9 @@ def helloWorld(request):
 def results(request):
     return render(request, 'results/results.html')
 
+def corpusSelection(request):
+    return render(request, 'corpusSelection/corpusSelection.html')
+
 
 def readJsonFilesView (request):
     files = os.listdir('./static/uploadFiles')

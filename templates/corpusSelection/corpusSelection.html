@@ -1,0 +1,17 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+    {% load static %}
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="{% static "js/corpusSelection/fieldAdder.js" %}"></script>
+    <link href='{% static "css/corpusSelection.css" %}' rel="stylesheet">
+
+    <div id="siteContainer">
+        <form id="container">
+            <button id="startAnalysisButton" class="cust_button">Analyse starten</button>
+        </form>
+    </div>
+    <button id="addCorpusButton">+</button>
+{% endblock %}
+

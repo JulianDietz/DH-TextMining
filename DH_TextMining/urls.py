@@ -29,7 +29,7 @@ urlpatterns = [
     path('textMining/readPaperView/', views.readJsonFilesView , name='readJsonFilesView'),
     path('textMining/processPaperView/', views.processPaperView, name='processPaperView'),
     path('textMining/results/', views.results, name='results'),
-
+    path('textMining/corpusSelection/', views.corpusSelection, name='corpusSelection'),
 
     #ajax read .json files
     path('textMining/readPaper/', views.readJsonFiles , name='readJsonFiles'),
