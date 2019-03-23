@@ -78,6 +78,100 @@ def processPaper(request):
     print("Papersind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
 
+def getSelectedPaper(request):
+    if(request.method=="POST"):
+        #split requestdata
+        corpus1 = {}
+        corpus2 = {}
+        querydata=request.POST
+        for key in querydata:
+            if 'CorpusID_1' in key:
+                number = key.replace('_CorpusID_1', '').replace('optionfield_', '').replace('inputfield_', '')
+                if not corpus1.get(number):
+                    corpus1[number]={}
+                if 'optionfield' in key:
+                    corpus1[number]['optionfield'] = querydata[key]
+                if 'inputfield' in key:
+                    corpus1[number]['inputfield'] = querydata[key]
+            if 'CorpusID_2' in key:
+                number = key.replace('_CorpusID_2', '').replace('optionfield_', '').replace('inputfield_', '')
+                if not corpus2.get(number):
+                    corpus2[number] = {}
+                if 'optionfield' in key:
+                    corpus2[number]['optionfield'] = querydata[key]
+                if 'inputfield' in key:
+                    corpus2[number]['inputfield'] = querydata[key]
+        #print('korpus1')
+        #print(corpus1)
+        #print('korpus2')
+        #print(corpus2)
+        #korpus1= {'2': {'optionfield': 'journal', 'inputfield': '1111'}, '1': {'optionfield': 'authors', 'inputfield': '1111'}}
+        #korpus2= {'2': {'optionfield': 'journal', 'inputfield': '2222'}, '1': {'optionfield': 'authors', 'inputfield': '2222'}}
+
+        ####### filterDBs
+        paperCorpus1= filterDB(corpus1)
+        paperCorpus2 = filterDB(corpus2)
+        return JsonResponse({'sucess':True,'corpus1':paperCorpus1,'corpus2':paperCorpus2})
+
+#http://docs.mongoengine.org/guide/querying.html
+def filterDB(querydata):
+    if querydata:
+        papers=Paper.objects.all()
+        for number in querydata:
+            query=querydata[number]
+            field=query['optionfield']
+            searchdata=query['inputfield']
+            print('search for ' + field + " equals " + searchdata)
+
+            #field='metaData__'+field+'__contains'
+            #papers = papers.filter(** {field: searchdata})
+
+            #if field=='authors':
+            #    papers = papers.filter(metaData__title__contains=searchdata)
+            if field=='category':
+                papers = papers.filter(metaData__category__in=searchdata)
+            if field=='organization':
+                papers = papers.filter(metaData__organization__icontains=searchdata)
+            if field=='keywords':
+                papers = papers.filter(metaData__keywords__in=searchdata)
+            if field == 'journal':
+                papers = papers.filter(metaData__journal__icontains=searchdata)
+            if field=='source':
+                papers = papers.filter(metaData__source__icontains=searchdata)
+            if field=='yearOfArticle':
+                papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
+            if field=='language':
+                papers = papers.filter(metaData__language__icontains=searchdata)
+            if field=='title':
+                papers = papers.filter(metaData__title__icontains=searchdata)
+        ##nur titel und id....
+        return papers.to_json()
+    else:
+        return ''
+
+def startAnalyse(request):
+    if(request.method=="GET"):
+        print(request.GET)
+        if request.GET.get('Korpus1'):
+            korpus1liste=request.GET.get('Korpus1').split(',')
+            korpus1=Paper.objects.filter(id__in=korpus1liste)
+        else:
+            korpus1=None
+        if request.GET.get('Korpus2'):
+            korpus2liste=request.GET.get('Korpus2').split(',')
+            korpus2 = Paper.objects.filter(id__in=korpus2liste)
+        else:
+            korpus2=None
+
+        '''analyse=analyseCorpora('NltkStw', korpus1, korpus2, charCountWhiteSpace=True, charCountNoWhiteSpace=True,
+                       wordCount=True,
+                       punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
+                       countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
+                       tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True, keywordFrequency=True)
+        print(analyse)'''
+
+        return render(request, 'results/results.html')
+
 
 #Testen obs klappt
 def startDB(request):

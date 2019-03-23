@@ -8,10 +8,76 @@
     <link href='{% static "css/corpusSelection.css" %}' rel="stylesheet">
 
     <div id="siteContainer">
-        <form id="container">
+        <form id="container" action="{% url 'getSelectedPaper' %}" method="post">
+            {% csrf_token %}
             <button id="startAnalysisButton" class="cust_button">Analyse starten</button>
         </form>
     </div>
-    <button id="addCorpusButton">+</button>
-{% endblock %}
 
+    <button id="addCorpusButton">+</button>
+
+
+    <script>
+        overridestartAjaxFilter();
+        function overridestartAjaxFilter() {
+            $('#container').submit(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    url: $('#container').attr('action'),
+                    type: $('#container').attr('method'),
+                    data: $('#container').serialize(),
+                    success: function (response) {
+                        changeButton();
+                        showResponse(response)
+                    }
+                });
+                return false;
+
+            });
+        }
+
+        function showResponse(response) {
+            console.log(response);
+            if (response.corpus1) {
+                let target = document.getElementById('corpus_1');
+                table = createPaperTable(JSON.parse(response.corpus1), 'Korpus1');
+                target.insertAdjacentHTML('beforeend', table);
+            }
+            if (response.corpus2) {
+                let target = document.getElementById('corpus_2');
+                table = createPaperTable(JSON.parse(response.corpus2), 'Korpus2');
+                target.insertAdjacentHTML('beforeend', table);
+            }
+        }
+
+        function createPaperTable(papers, korpusid) {
+            htmldata = '<h4>' + korpusid + '</h4><table id="datatable-' + korpusid + '" class="searchDataSelector table table-bordered">' +
+                '<thead><tr><th>Ausgewählt</th><th>Titel</th><th>ID</th>' +
+                '</tr></thead><tbody>';
+            for (let paper of papers) {
+                htmldata += '<tr><td><input type="checkbox" name="' + korpusid + '" value="' + paper._id.$oid + '"/></td>' +
+                    '<td>' + paper.titleRaw.text + '</td><td>' + paper._id.$oid + '</td></tr>'
+            }
+            return htmldata
+        }
+
+        function changeButton() {
+            $("#startAnalysisButton").attr('type', 'button').click(function () {
+                sendPaperlist();
+            });
+        }
+
+        function sendPaperlist() {
+            console.log('send paperlist');
+            let korpus1data = [];
+            $.each($("input[name='Korpus1']:checked"), function () {
+                korpus1data.push($(this).val());
+            });
+            let korpus2data = [];
+            $.each($("input[name='Korpus2']:checked"), function () {
+                korpus2data.push($(this).val());
+            });
+            window.location = '{% url 'startAnalyse' %}?Korpus1=' + korpus1data + '&Korpus2=' + korpus2data;
+        }
+    </script>
+{% endblock %}
