@@ -28,8 +28,10 @@ urlpatterns = [
     path('textMining/completeUpload/', views.completeUpload, name='completeUpload'),
     path('textMining/readPaperView/', views.readJsonFilesView , name='readJsonFilesView'),
     path('textMining/processPaperView/', views.processPaperView, name='processPaperView'),
-    path('textMining/results/', views.results, name='results'),
     path('textMining/corpusSelection/', views.corpusSelection, name='corpusSelection'),
+    path('textMining/getSelectedPaper/', views.getSelectedPaper, name='getSelectedPaper'),
+    path('textMining/results/', views.startAnalyse, name='startAnalyse'),
+
 
     #ajax read .json files
     path('textMining/readPaper/', views.readJsonFiles , name='readJsonFiles'),
