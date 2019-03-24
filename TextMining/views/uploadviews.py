@@ -52,7 +52,8 @@ def completeUpload(request):
         readpath = "./static/uploadFiles"
         for jsonfile in currentJsonfiles:
             #print(jsonfile)
-            file = open(join(readpath,jsonfile['name']), 'w')
+            #TODO hier encodet, kein Fehler auch bei den andern?
+            file = open(join(readpath,jsonfile['name']), 'w', encoding="utf-8")
             #jsondata = json.loads(jsonfile['file'].read().decode('utf-8'))
             json.dump(jsonfile['file'], file, ensure_ascii=False)
             #file.write(jsondata)

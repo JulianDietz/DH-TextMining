@@ -55,7 +55,7 @@ def savePaper(paperlistlink,categoryName,impactFactor):
                 if not os.path.exists(fullpath):
                     os.makedirs(fullpath)
                 name=link['href'].split('/')[len(link['href'].split('/'))-1]
-                file=open(os.path.join(fullpath,name), 'w')
+                file=open(os.path.join(fullpath,name), 'w', encoding="utf-8")
                 validHTML=resolveHTMLError(r.text)
                 #paper=BeautifulSoup(validHTML, 'html.parser')
                 validHTML='<meta name="journal_impact_factor" content='+impactFactor+'/>'+validHTML
