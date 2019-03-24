@@ -3,28 +3,36 @@
 
 {% block body %}
 
+    {% load static %}
+
+    <link href='{% static "css/upload.css" %}' rel="stylesheet">
+
     <div class="container-fluid">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <h4 class="page-header">Upload</h4>
+            <h3 class="page-header">Upload</h3>
 
             <div class="row">
                 <div class="col-lg-12">
                     <!-- The fileinput-button span is used to style the file input field as button -->
-                    <span class="btn btn-success" id="upload">
-                        <input accept=".json" type="file" id="upload" name="JsonPaper" multiple required>
-                    </span>
-                    <br>
+                    <div id="upload-container">
+                        <span align="center" class="btn btn-success" id="upload-span">
+                            <input accept=".json" type="file" id="upload" name="JsonPaper" multiple required>
+                        </span>
+                    </div>
 
-                    <hr>
-                    <button type="reset" class="btn btn-primary">
-                        <i class="fas fa-trash"></i>
-                        <span>Delete files</span>
-                    </button>
+                    <div class="button-container">
+                        <button type="reset" class="btn-dh-white bottom-button">
+                            <i class="fas fa-trash"></i>
+                            <span>Auswahl zurücksetzen</span>
+                        </button>
 
-                    <button type="submit" class="float-right btn btn-primary">
-                        <span>Start upload</span>
-                    </button>
+                        <button type="submit" class="btn-dh-white bottom-button">
+                            <span>Upload starten</span>
+                        </button>
+
+                    </div>
+
                 </div>
             </div>
         </form>

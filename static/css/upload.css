@@ -1,0 +1,42 @@
+.page-header {
+    text-align: center;
+}
+
+#upload-container {
+    text-align: center;
+    margin: 1em auto;
+    cursor: pointer;
+}
+
+#upload{
+    cursor: pointer;
+}
+
+#upload-span {
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+    border-radius: 0px;
+    outline: 4px solid white;
+    outline-offset: 0px;
+    cursor: pointer;
+    padding: 2em;
+}
+
+#upload-span:hover {
+    background-color: black;
+    border: 1px solid black;
+    color: white;
+
+}
+
+.button-container{
+    text-align: center;
+
+
+}
+
+.bottom-button{
+    width: 20em;
+    margin: .5em 0;
+}

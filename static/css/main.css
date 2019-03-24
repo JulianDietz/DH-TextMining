@@ -1,7 +1,45 @@
-.credit_section{
+.credit_section {
     font-size: .5em;
 
 }
-.hidden{
+
+.page-header {
+    text-align: center;
+}
+
+.hidden {
     display: none;
+}
+
+.nav-text {
+    color: black !important;
+}
+
+.nav-text:hover {
+    text-decoration: solid !important;
+    -webkit-text-decoration-color: black;
+    -webkit-text-decoration-style: solid;
+    -webkit-text-decoration-line: underline;
+}
+
+.nav-icon {
+    margin-right: 3px;
+}
+
+.btn-dh-white {
+    color: black;
+    border: 1px solid black;
+    background-color: white;
+    padding: 0.5em 2em;
+    transition: all .4s;
+    font-family: Helvetica;
+    text-transform: uppercase;
+    font-weight: lighter;
+
+}
+
+.btn-dh-white:hover {
+    color: white;
+    border: 1px solid black;
+    background-color: black;
 }

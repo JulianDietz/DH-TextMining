@@ -4,12 +4,26 @@ $(document).ready(function () {
         let $this = $(this);
         let collapseEl = $($this.attr("data-collapse"));
 
+        let statisticDisplayType = $this.attr("data-statisticdisplaytype");
+
 
         if ($this.attr("data-ready") == "false") {
             setTimeout(function () {
+                console.log(statisticDisplayType)
+                switch (statisticDisplayType) {
 
-                returnGraph($this.attr("id"), collapseEl, null);
+                    case "numeric-total":
+                        returnGraphNumericTotal($this.attr("id"), collapseEl, null);
+                        break;
+                    case "numeric-section":
+                        returnGraphNumericSection($this.attr("id"), collapseEl, null)
+                        break;
+                    case "text-total":
 
+                        break;
+                    case "text-section":
+                        break;
+                }
                 $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
                 collapseEl.collapse('toggle');
                 $this.attr("data-ready", "true");
@@ -36,49 +50,260 @@ $(document).ready(function () {
 });
 
 
-function returnGraph(name, htmlEl, data2, data1) {
+response.AutorCount.Stat.key
+response.AutorCount.RawData
 
-    var sumstat = [{"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}}, {
-        "key": "Korpus 2",
-        "value": {"q1": 5.6, "median": 5.9, "q3": 6.3, "interQuantileRange": 0.7000000000000002, "min": 4.549999999999999, "max": 7.35}
-    }];
+function returnGraphNumericTotal(IDMetricEl, htmlEl, data2) {
+    //TODO debug v
+    let sumstat = [
+        {"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}},
+        {"key": "Korpus 2", "value": {"q1": 5.6, "median": 5.9, "q3": 6.3, "interQuantileRange": 0.7000000000000002, "min": 4.549999999999999, "max": 7.35}}]
 
-    let data = sumstat;
+    let rawData = JSON.parse('[{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"4.7","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"4.3","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"4.7","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"4.5","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5.3","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"7","corpus":"Korpus 1"},{"metric_value":"6.4","corpus":"Korpus 1"},{"metric_value":"6.9","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"6.5","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"6.6","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.9","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"6.2","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.9","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"6.4","corpus":"Korpus 1"},{"metric_value":"6.6","corpus":"Korpus 1"},{"metric_value":"6.8","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"6.2","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"}]');
+    let rawData2 = JSON.parse('[{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"4.7","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"4.4","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"4.3","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"4.7","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"4.4","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"4.5","corpus":"Korpus 1"},{"metric_value":"4.4","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5.3","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"7","corpus":"Korpus 2"},{"metric_value":"6.4","corpus":"Korpus 2"},{"metric_value":"6.9","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"6.5","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"6.3","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"6.6","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.9","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"6.7","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"6.2","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.9","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"6.3","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"6.4","corpus":"Korpus 2"},{"metric_value":"6.6","corpus":"Korpus 2"},{"metric_value":"6.8","corpus":"Korpus 2"},{"metric_value":"6.7","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"6.7","corpus":"Korpus 2"},{"metric_value":"6.3","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"6.2","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"}]');
+
+
+    let statisticalData = sumstat;
+    //TODO debug ^
 
     let metricContainer = d3.select(htmlEl[0]);
 
     let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true);
 
-    let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
+    //Add a statistical overview for each corpus
+    for (corpus of statisticalData) {
+        console.log(corpus);
 
-    metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text("Korpus 1");
-    let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
+        let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
+        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus.key);
+        let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
 
-    metricDescriptionTags.append("p").classed("metric-data median-text", true).text(data[0].value.median).attr("data-before", "Median: ");
-    metricDescriptionTags.append("p").classed("metric-data average-text", true).text(data[0].value.q3).attr("data-before", "Durchschnitt: ");
-    metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(data[0].value.interQuantileRange.toFixed(2)).attr("data-before", "Varianz: ");
-    metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(data[0].value.max.toFixed(2)).attr("data-before", "Modus: ");
-
-    if (data[1].key == "Korpus 2") {
-
-        let metricDescriptionCol2 = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
-
-        metricDescriptionCol2.append("div").classed("metricDescriptionColHeader", true).text("Korpus 2");
-        let metricDescriptionTags2 = metricDescriptionCol2.append("div").classed("metricDescriptionColTags", true);
-
-        metricDescriptionTags2.append("p").classed("metric-data median-text", true).text(data[1].value.median).attr("data-before", "Median: ");
-        metricDescriptionTags2.append("p").classed("metric-data average-text", true).text(data[1].value.q3).attr("data-before", "Durchschnitt: ");
-        metricDescriptionTags2.append("p").classed("metric-data variance-text", true).text(data[1].value.interQuantileRange.toFixed(2)).attr("data-before", "Varianz: ");
-        metricDescriptionTags2.append("p").classed("metric-data modus-text", true).text(data[1].value.max.toFixed(2)).attr("data-before", "Modus: ");
-
+        //TODO keys abgleichen
+        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(corpus.value.max.toFixed(2)).attr("data-before", "Modus: ");
+        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(corpus.value.median).attr("data-before", "Median: ");
+        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(corpus.value.q3).attr("data-before", "Durchschnitt: ");
+        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(corpus.value.interQuantileRange.toFixed(2)).attr("data-before", "Varianz: ");
     }
+    ;
 
+    //drat the boxplot
+    drawBoxplot(metricContainer, statisticalData, rawData);
+
+    //Create CSV file and download
+    createCSVdownload(IDMetricEl, rawData);
+};
+
+function returnGraphNumericSection(IDMetricEl, htmlEl, data2) {
+    //TODO debug v
+    let sumstat = [
+        {"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}},
+        {"key": "Korpus 2", "value": {"q1": 5.6, "median": 5.9, "q3": 6.3, "interQuantileRange": 0.7000000000000002, "min": 4.549999999999999, "max": 7.35}}]
+
+    let rawData = [{
+        "section" : "h1","rawData": [{"metric_value": "5.1", "corpus": "Korpus 2"}, {"metric_value": "4.9", "corpus": "Korpus 2"}, {"metric_value": "4.7", "corpus": "Korpus 2"}, {
+            "metric_value": "4.6",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5", "corpus": "Korpus 2"}, {"metric_value": "5.4", "corpus": "Korpus 2"}, {"metric_value": "4.6", "corpus": "Korpus 2"}, {
+            "metric_value": "5",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "4.4", "corpus": "Korpus 2"}, {"metric_value": "4.9", "corpus": "Korpus 2"}, {"metric_value": "5.4", "corpus": "Korpus 2"}, {
+            "metric_value": "4.8",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "4.8", "corpus": "Korpus 2"}, {"metric_value": "4.3", "corpus": "Korpus 2"}, {"metric_value": "5.8", "corpus": "Korpus 2"}, {
+            "metric_value": "5.7",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5.4", "corpus": "Korpus 2"}, {"metric_value": "5.1", "corpus": "Korpus 2"}, {"metric_value": "5.7", "corpus": "Korpus 2"}, {
+            "metric_value": "5.1",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5.4", "corpus": "Korpus 2"}, {"metric_value": "5.1", "corpus": "Korpus 2"}, {"metric_value": "4.6", "corpus": "Korpus 2"}, {
+            "metric_value": "5.1",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "4.8", "corpus": "Korpus 2"}, {"metric_value": "5", "corpus": "Korpus 2"}, {"metric_value": "5", "corpus": "Korpus 2"}, {
+            "metric_value": "5.2",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5.2", "corpus": "Korpus 2"}, {"metric_value": "4.7", "corpus": "Korpus 2"}, {"metric_value": "4.8", "corpus": "Korpus 2"}, {
+            "metric_value": "5.4",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5.2", "corpus": "Korpus 2"}, {"metric_value": "5.5", "corpus": "Korpus 2"}, {"metric_value": "4.9", "corpus": "Korpus 2"}, {
+            "metric_value": "5",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5.5", "corpus": "Korpus 2"}, {"metric_value": "4.9", "corpus": "Korpus 2"}, {"metric_value": "4.4", "corpus": "Korpus 2"}, {
+            "metric_value": "5.1",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5", "corpus": "Korpus 2"}, {"metric_value": "4.5", "corpus": "Korpus 2"}, {"metric_value": "4.4", "corpus": "Korpus 2"}, {
+            "metric_value": "5",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5.1", "corpus": "Korpus 2"}, {"metric_value": "4.8", "corpus": "Korpus 2"}, {"metric_value": "5.1", "corpus": "Korpus 2"}, {
+            "metric_value": "4.6",
+            "corpus": "Korpus 2"
+        }, {"metric_value": "5.3", "corpus": "Korpus 2"}, {"metric_value": "5", "corpus": "Korpus 2"}, {"metric_value": "7", "corpus": "Korpus 1"}, {
+            "metric_value": "6.4",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "6.9", "corpus": "Korpus 1"}, {"metric_value": "5.5", "corpus": "Korpus 1"}, {"metric_value": "6.5", "corpus": "Korpus 1"}, {
+            "metric_value": "5.7",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "6.3", "corpus": "Korpus 1"}, {"metric_value": "4.9", "corpus": "Korpus 1"}, {"metric_value": "6.6", "corpus": "Korpus 1"}, {
+            "metric_value": "5.2",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "5", "corpus": "Korpus 1"}, {"metric_value": "5.9", "corpus": "Korpus 1"}, {"metric_value": "6", "corpus": "Korpus 1"}, {
+            "metric_value": "6.1",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "5.6", "corpus": "Korpus 1"}, {"metric_value": "6.7", "corpus": "Korpus 1"}, {"metric_value": "5.6", "corpus": "Korpus 1"}, {
+            "metric_value": "5.8",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "6.2", "corpus": "Korpus 1"}, {"metric_value": "5.6", "corpus": "Korpus 1"}, {"metric_value": "5.9", "corpus": "Korpus 1"}, {
+            "metric_value": "6.1",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "6.3", "corpus": "Korpus 1"}, {"metric_value": "6.1", "corpus": "Korpus 1"}, {"metric_value": "6.4", "corpus": "Korpus 1"}, {
+            "metric_value": "6.6",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "6.8", "corpus": "Korpus 1"}, {"metric_value": "6.7", "corpus": "Korpus 1"}, {"metric_value": "6", "corpus": "Korpus 1"}, {
+            "metric_value": "5.7",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "5.5", "corpus": "Korpus 1"}, {"metric_value": "5.5", "corpus": "Korpus 1"}, {"metric_value": "5.8", "corpus": "Korpus 1"}, {
+            "metric_value": "6",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "5.4", "corpus": "Korpus 1"}, {"metric_value": "6", "corpus": "Korpus 1"}, {"metric_value": "6.7", "corpus": "Korpus 1"}, {
+            "metric_value": "6.3",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "5.6", "corpus": "Korpus 1"}, {"metric_value": "5.5", "corpus": "Korpus 1"}, {"metric_value": "5.5", "corpus": "Korpus 1"}, {
+            "metric_value": "6.1",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "5.8", "corpus": "Korpus 1"}, {"metric_value": "5", "corpus": "Korpus 1"}, {"metric_value": "5.6", "corpus": "Korpus 1"}, {
+            "metric_value": "5.7",
+            "corpus": "Korpus 1"
+        }, {"metric_value": "5.7", "corpus": "Korpus 1"}, {"metric_value": "6.2", "corpus": "Korpus 1"}, {"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "5.7", "corpus": "Korpus 1"}]
+    }
+        , {
+            "section": "h2" , "rawData": [{"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "4.9", "corpus": "Korpus 1"}, {"metric_value": "4.7", "corpus": "Korpus 1"}, {
+                "metric_value": "4.6",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5", "corpus": "Korpus 1"}, {"metric_value": "5.4", "corpus": "Korpus 1"}, {"metric_value": "4.6", "corpus": "Korpus 1"}, {
+                "metric_value": "5",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "4.4", "corpus": "Korpus 1"}, {"metric_value": "4.9", "corpus": "Korpus 1"}, {"metric_value": "5.4", "corpus": "Korpus 1"}, {
+                "metric_value": "4.8",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "4.8", "corpus": "Korpus 1"}, {"metric_value": "4.3", "corpus": "Korpus 1"}, {"metric_value": "5.8", "corpus": "Korpus 1"}, {
+                "metric_value": "5.7",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5.4", "corpus": "Korpus 1"}, {"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "5.7", "corpus": "Korpus 1"}, {
+                "metric_value": "5.1",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5.4", "corpus": "Korpus 1"}, {"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "4.6", "corpus": "Korpus 1"}, {
+                "metric_value": "5.1",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "4.8", "corpus": "Korpus 1"}, {"metric_value": "5", "corpus": "Korpus 1"}, {"metric_value": "5", "corpus": "Korpus 1"}, {
+                "metric_value": "5.2",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5.2", "corpus": "Korpus 1"}, {"metric_value": "4.7", "corpus": "Korpus 1"}, {"metric_value": "4.8", "corpus": "Korpus 1"}, {
+                "metric_value": "5.4",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5.2", "corpus": "Korpus 1"}, {"metric_value": "5.5", "corpus": "Korpus 1"}, {"metric_value": "4.9", "corpus": "Korpus 1"}, {
+                "metric_value": "5",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5.5", "corpus": "Korpus 1"}, {"metric_value": "4.9", "corpus": "Korpus 1"}, {"metric_value": "4.4", "corpus": "Korpus 1"}, {
+                "metric_value": "5.1",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5", "corpus": "Korpus 1"}, {"metric_value": "4.5", "corpus": "Korpus 1"}, {"metric_value": "4.4", "corpus": "Korpus 1"}, {
+                "metric_value": "5",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "4.8", "corpus": "Korpus 1"}, {"metric_value": "5.1", "corpus": "Korpus 1"}, {
+                "metric_value": "4.6",
+                "corpus": "Korpus 1"
+            }, {"metric_value": "5.3", "corpus": "Korpus 1"}, {"metric_value": "5", "corpus": "Korpus 1"}, {"metric_value": "7", "corpus": "Korpus 2"}, {
+                "metric_value": "6.4",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "6.9", "corpus": "Korpus 2"}, {"metric_value": "5.5", "corpus": "Korpus 2"}, {"metric_value": "6.5", "corpus": "Korpus 2"}, {
+                "metric_value": "5.7",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "6.3", "corpus": "Korpus 2"}, {"metric_value": "4.9", "corpus": "Korpus 2"}, {"metric_value": "6.6", "corpus": "Korpus 2"}, {
+                "metric_value": "5.2",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "5", "corpus": "Korpus 2"}, {"metric_value": "5.9", "corpus": "Korpus 2"}, {"metric_value": "6", "corpus": "Korpus 2"}, {
+                "metric_value": "6.1",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "5.6", "corpus": "Korpus 2"}, {"metric_value": "6.7", "corpus": "Korpus 2"}, {"metric_value": "5.6", "corpus": "Korpus 2"}, {
+                "metric_value": "5.8",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "6.2", "corpus": "Korpus 2"}, {"metric_value": "5.6", "corpus": "Korpus 2"}, {"metric_value": "5.9", "corpus": "Korpus 2"}, {
+                "metric_value": "6.1",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "6.3", "corpus": "Korpus 2"}, {"metric_value": "6.1", "corpus": "Korpus 2"}, {"metric_value": "6.4", "corpus": "Korpus 2"}, {
+                "metric_value": "6.6",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "6.8", "corpus": "Korpus 2"}, {"metric_value": "6.7", "corpus": "Korpus 2"}, {"metric_value": "6", "corpus": "Korpus 2"}, {
+                "metric_value": "5.7",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "5.5", "corpus": "Korpus 2"}, {"metric_value": "5.5", "corpus": "Korpus 2"}, {"metric_value": "5.8", "corpus": "Korpus 2"}, {
+                "metric_value": "6",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "5.4", "corpus": "Korpus 2"}, {"metric_value": "6", "corpus": "Korpus 2"}, {"metric_value": "6.7", "corpus": "Korpus 2"}, {
+                "metric_value": "6.3",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "5.6", "corpus": "Korpus 2"}, {"metric_value": "5.5", "corpus": "Korpus 2"}, {"metric_value": "5.5", "corpus": "Korpus 2"}, {
+                "metric_value": "6.1",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "5.8", "corpus": "Korpus 2"}, {"metric_value": "5", "corpus": "Korpus 2"}, {"metric_value": "5.6", "corpus": "Korpus 2"}, {
+                "metric_value": "5.7",
+                "corpus": "Korpus 2"
+            }, {"metric_value": "5.7", "corpus": "Korpus 2"}, {"metric_value": "6.2", "corpus": "Korpus 2"}, {"metric_value": "5.1", "corpus": "Korpus 2"}, {
+                "metric_value": "5.7",
+                "corpus": "Korpus 2"
+            }]
+        }]
+
+
+    let statisticalData = sumstat;
+    //TODO debug ^
+
+    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true);
+    metricSectionSelectorContainer.append("p").text("Abschnitt:");
+    let sectionSelector = metricSectionSelectorContainer.append("select").classed("metricSectionSelector", true);
+
+        sectionSelector.selectAll("option").data(rawData).enter().append("option").attr("value", function(d) {return d.section}).text(function (d) {return d.section});
+        sectionSelector.on("change", function () {console.log("datachangeld")});
+
+    let metricContainer = d3.select(htmlEl[0]);
+
+    let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true);
+
+    //Add a statistical overview for each corpus
+    for (corpus of statisticalData) {
+        console.log(corpus);
+
+        let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
+        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus.key);
+        let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
+
+        //TODO keys abgleichen
+        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(corpus.value.max.toFixed(2)).attr("data-before", "Modus: ");
+        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(corpus.value.median).attr("data-before", "Median: ");
+        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(corpus.value.q3).attr("data-before", "Durchschnitt: ");
+        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(corpus.value.interQuantileRange.toFixed(2)).attr("data-before", "Varianz: ");
+    };
+
+    //drat the boxplot
+    //drawBoxplot(metricContainer, statisticalData, rawData);
+
+    //Create CSV file and download
+    createCSVdownload(IDMetricEl, rawData);
+};
+
+function returnGraphTextSection(IDMetricEl, htmlEl, data2){
+}
+
+function returnGraphTextTotal(IDMetricEl, htmlEl, data2){
+}
+
+
+function drawBoxplot(container, statisticsData, dataPoints) {
     var margin = {top: 20, right: 40, bottom: 60, left: 120};
 
     let height = 200 - margin.bottom - margin.top;
     let width = 960 - margin.right - margin.left;
 
-    let svg = metricContainer.append("div")
+    let svg = container.append("div")
         .classed("graphContainer", true)
         .append("svg")
         .classed("svg-chart", true)
@@ -87,6 +312,8 @@ function returnGraph(name, htmlEl, data2, data1) {
         .append("g").attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+
+    //TODO domain dynamisch
     // Show the Y scale
     var y = d3.scaleBand()
         .range([height, 0])
@@ -113,7 +340,7 @@ function returnGraph(name, htmlEl, data2, data1) {
     // Show the main vertical line
     svg
         .selectAll("vertLines")
-        .data(sumstat)
+        .data(statisticsData)
         .enter()
         .append("line")
         .attr("x1", function (d) {
@@ -134,12 +361,12 @@ function returnGraph(name, htmlEl, data2, data1) {
     // rectangle for the main box
     svg
         .selectAll("boxes")
-        .data(sumstat)
+        .data(statisticsData)
         .enter()
         .append("rect")
         .attr("x", function (d) {
             return (x(d.value.q1))
-        }) // console.log(x(d.value.q1)) ;
+        })
         .attr("width", function (d) {
             ;
             return (x(d.value.q3) - x(d.value.q1))
@@ -155,7 +382,7 @@ function returnGraph(name, htmlEl, data2, data1) {
     // Show the median
     svg
         .selectAll("medianLines")
-        .data(sumstat)
+        .data(statisticsData)
         .enter()
         .append("line")
         .attr("y1", function (d) {
@@ -176,9 +403,7 @@ function returnGraph(name, htmlEl, data2, data1) {
     // Add individual points with jitter
     var jitterWidth = 30;
 
-
-    let dataPoints = JSON.parse('[{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"4.7","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"4.3","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"4.7","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"4.5","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5.3","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"7","corpus":"Korpus 1"},{"metric_value":"6.4","corpus":"Korpus 1"},{"metric_value":"6.9","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"6.5","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"6.6","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.9","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"6.2","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.9","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"6.4","corpus":"Korpus 1"},{"metric_value":"6.6","corpus":"Korpus 1"},{"metric_value":"6.8","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"6.2","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"}]');
-
+    //TODO debug daten anpassen
     svg
         .selectAll("indPoints")
         .data(dataPoints)
@@ -196,38 +421,40 @@ function returnGraph(name, htmlEl, data2, data1) {
         })
         .attr("stroke", "black")
 
+}
 
-    let metric_name = name.split("_")[2]
+function createCSVdownload(metricID, dataPoints) {
+
+    let metric_name = metricID.split("_")[2]
     let downloadButton = d3.select("#download_" + metric_name);
     downloadButton.style("visibility", "visible");
 
     let csv_text = convertJSONtoCSV(dataPoints);
 
     //add CSV header
-    csv_text = metric_name +  "_values," + "corpus" + "\r\n" + csv_text;
+    csv_text = metric_name + "_values," + "corpus" + "\r\n" + csv_text;
 
 
     let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
     downloadButton.attr("download", metric_name + "_csvdata");
 
-};
+    function convertJSONtoCSV(data) {
 
-function convertJSONtoCSV(data) {
+        let csv_text = "";
 
-    let csv_text = "";
-
-    for (let i = 0; i < data.length; i++) {
-        let data_row = "";
-        for (let col in data[i]) {
-            if (data_row != "") {
-                data_row += ",";
+        for (let i = 0; i < data.length; i++) {
+            let data_row = "";
+            for (let col in data[i]) {
+                if (data_row != "") {
+                    data_row += ",";
+                }
+                data_row += data[i][col];
             }
-            data_row += data[i][col];
+            csv_text += data_row + "\r\n";
         }
-        csv_text += data_row + "\r\n";
-    }
-    return csv_text;
-}
+        return csv_text;
+    };
+};
 
 

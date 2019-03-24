@@ -1,20 +1,31 @@
 {% extends 'index.html' %}
 {% block body %}
-    <h1>Paper vorberechen!</h1>
 
-    <p>Es befinden sich {{ numberPaper }} Einträge in der Datenbank. Beim vorberechnen wird aus dem Rawtext des Papers ein
-    stopwortgefilteter Text und ein gestemmter Text berechnet sowie einige Metriken vorberechnet. Der Vorhang kann einige Zeit dauern... </p>
+
+    {% load static %}
+
+    <link href='{% static "css/processPaper.css" %}' rel="stylesheet">
+
+    <h3 class="page-header">Dokumente vorberechnen</h3>
+
+    <div style="text-align: center">
+    <p class="info-text">Es befinden sich {{ numberPaper }} Einträge in der Datenbank. Beim Vorberechnen wird aus dem Rawtext des Papers ein
+        stopwortgefilteter Text und ein gestemmter Text berechnet sowie einige Metriken vorberechnet.</p>
+    <p class="info-text"> Der Vorhang kann einige Zeit dauern... </pclassinfo-text>
 
     <div class="spinner-border hidden" role="status">
         <span class="sr-only">Loading...</span>
     </div>
+
     <div>
         <p id='resultText' class="hidden">Paper erfolgreich aufbreitet.</p>
     </div>
-    <br>
 
-    <button>Paper vorbrechnen starten!</button>
+    <div>
+        <button id="startCalculationButton" class="btn-dh-white">Paper vorbrechnen starten!</button>
+    </div>
 
+    </div>
     <script>
         $("button").click(function () {
             $('.spinner-border').show();

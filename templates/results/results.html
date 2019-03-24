@@ -1,90 +1,48 @@
 {% extends 'index.html' %}
 
 {% block body %}
-
     {% load static %}
+
 
     <script src="{% static "js/results/loader.js" %}"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
+    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
 
-   <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
 
 
     <div class="container">
-        <div class="row">
-            <div class="col">
-                <!-- First one-->
-                <div class="panel-group">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                Autorenanzahl
-                                <button id="collapse_button_authors" data-collapse="#collapse1" data-ready="false" class="toggle_button toggle_button_closed"></button>
-                                <div class="loaded_indicator">
-                                    <img class="indicator" src="{% static 'img/results/not-available.png' %}" class="graphic"/>
-                                </div>
-                                <a id="download_authors" class="download_button">CSV</a>
-                            </h4>
-                        </div>
-                        <div id="collapse1" class="panel-collapse collapse">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row" >
-            <div class="col">
-                <!-- Second one-->
-                <div class="panel-group">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                Satzzeichen
-                                <button id="collapse_button_punctuation" data-collapse="#collapse2" data-ready="false" class="toggle_button toggle_button_closed"></button>
-                                <div class="loaded_indicator">
-                                    <img class="indicator" src="{% static 'img/results/not-available.png' %}" class="graphic"/>
-                                </div>
-                                <a id="download_punctuation" class="download_button">CSV</a>
-                            </h4>
-                        </div>
-                        <div id="collapse2" class="panel-collapse collapse">
+        {% for metric in metrics %}
+            <div class="row">
+                <div class="col">
+                    <!-- metric-->
+                    <div class="panel-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    {{ metric.germanTitle }}
+                                    <button id="collapse_button_{{ metric.metric }}" data-collapse="#collapse{{ forloop.counter }}" data-ready="false"
+                                            data-statisticdisplaytype="{{ metric.dataDisplayType }}"
+                                            class="toggle_button toggle_button_closed"></button>
+                                    <div class="loaded_indicator">
+                                        <img class="indicator" src="{% static 'img/results/not-available.png' %}" class="graphic"/>
+                                    </div>
+                                    <a id="download_{{ metric.metric }}" class="download_button"><i class="fas fa-download" style="margin: 5px;"></i>CSV</a>
+                                </h4>
+                            </div>
+                            <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-        </div>
 
+        {% endfor %}
 
-        <div class="row">
-            <div class="col">
-                <!-- Third one-->
-                <div class="panel-group">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                Referenzen
-                                <button id="collapse_button_references" data-collapse="#collapse3" data-ready="false" class="toggle_button toggle_button_closed"></button>
-                                <div class="loaded_indicator">
-                                    <img class="indicator" src="{% static 'img/results/not-available.png' %}" class="graphic"/>
-                                </div>
-                                <a id="download_references" class="download_button">CSV</a>
-                            </h4>
-                        </div>
-                        <div id="collapse3" class="panel-collapse collapse">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
-
-
-
-<div class="credit_section">Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/" 			    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 			    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-
+    <div class="credit_section">Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+        is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 {% endblock %}
+
 

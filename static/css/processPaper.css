@@ -1,0 +1,13 @@
+.info-text{
+    margin: 1.5em 10em;
+    text-align: justify;
+}
+
+#startCalculationButton {
+    text-align: center;
+    margin: 0 auto;
+}
+
+#buttonContainer{
+    text-align: center;
+}
