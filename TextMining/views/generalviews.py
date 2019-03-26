@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
+from functools import reduce
+
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -15,6 +17,7 @@ from scipy import stats
 import os
 
 import TextMining.models
+from mongoengine.queryset.visitor import Q
 import numpy as np
 
 # currentJsonfiles=[]
@@ -128,6 +131,7 @@ def getSelectedPaper(request):
         return JsonResponse({'sucess':True,'corpus1':paperCorpus1,'corpus2':paperCorpus2})
 
 #http://docs.mongoengine.org/guide/querying.html
+#https://stackoverflow.com/questions/8189702/mongodb-using-an-or-clause-in-mongoengine
 def filterDB(querydata):
     if querydata:
         papers=Paper.objects.all()
@@ -136,28 +140,56 @@ def filterDB(querydata):
             field=query['optionfield']
             searchdata=query['inputfield']
             print('search for ' + field + " equals " + searchdata)
-
             #field='metaData__'+field+'__contains'
             #papers = papers.filter(** {field: searchdata})
 
-            #if field=='authors':
-            #    papers = papers.filter(metaData__title__contains=searchdata)
+            searchArry = searchdata.split(',')
+            searchArry = [x.strip(' ') for x in searchArry]
+            #print(searchArry)
+
+            if field=='authors':
+                query = reduce(lambda q1, q2: q1.__or__(q2),map(lambda query: Q(authors__name__icontains=query), searchArry))
+                papers = papers.filter(query)
             if field=='category':
-                papers = papers.filter(metaData__category__in=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__category__in=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__category__in=searchdata)
             if field=='organization':
-                papers = papers.filter(metaData__organization__icontains=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__organization__icontains=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__organization__icontains=searchdata)
             if field=='keywords':
-                papers = papers.filter(metaData__keywords__in=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__keywords__in=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__keywords__in=searchdata)
             if field == 'journal':
-                papers = papers.filter(metaData__journal__icontains=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__journal__icontains=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__journal__icontains=searchdata)
             if field=='source':
-                papers = papers.filter(metaData__source__icontains=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__source__icontains=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__source__icontains=searchdata)
             if field=='yearOfArticle':
-                papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__yearOfArticle__icontains=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
             if field=='language':
-                papers = papers.filter(metaData__language__icontains=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__language__icontains=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__language__icontains=searchdata)
             if field=='title':
-                papers = papers.filter(metaData__title__icontains=searchdata)
+                query = reduce(lambda q1, q2: q1.__or__(q2),
+                               map(lambda query: Q(metaData__title__icontains=query), searchArry))
+                papers = papers.filter(query)
+                #papers = papers.filter(metaData__title__icontains=searchdata)
         ##nur titel und id....
         return papers.to_json()
     else:

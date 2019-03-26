@@ -52,11 +52,20 @@
 
         function createPaperTable(papers, korpusid) {
             htmldata = '<h4>' + korpusid + '</h4><table id="datatable-' + korpusid + '" class="searchDataSelector table table-bordered">' +
-                '<thead><tr><th>Ausgewählt</th><th>Titel</th><th>ID</th>' +
+                '<thead><tr><th>Ausgewählt</th><th>Titel</th><th>Autoren</th>' +
                 '</tr></thead><tbody>';
             for (let paper of papers) {
                 htmldata += '<tr><td><input type="checkbox" name="' + korpusid + '" value="' + paper._id.$oid + '"/></td>' +
-                    '<td>' + paper.titleRaw.text + '</td><td>' + paper._id.$oid + '</td></tr>'
+                    '<td>' + paper.titleRaw.text + '</td><td>';
+                for(let i = 0; i < paper.authors.length; i++){
+                    let autor = paper.authors[i];
+                    if (i !== paper.authors.length - 1) {
+                        htmldata += autor.name+' ,'
+                    }else{
+                        htmldata += autor.name
+                    }
+                }
+                htmldata +='</td></tr>';
             }
             return htmldata
         }
