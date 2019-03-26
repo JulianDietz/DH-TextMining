@@ -145,78 +145,94 @@ def filterDB(querydata):
 
             searchArry = searchdata.split(',')
             searchArry = [x.strip(' ') for x in searchArry]
-            #print(searchArry)
-
-            if field=='authors':
-                query = reduce(lambda q1, q2: q1.__or__(q2),map(lambda query: Q(authors__name__icontains=query), searchArry))
-                papers = papers.filter(query)
-            if field=='category':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__category__in=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__category__in=searchdata)
-            if field=='organization':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__organization__icontains=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__organization__icontains=searchdata)
-            if field=='keywords':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__keywords__in=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__keywords__in=searchdata)
-            if field == 'journal':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__journal__icontains=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__journal__icontains=searchdata)
-            if field=='source':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__source__icontains=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__source__icontains=searchdata)
-            if field=='yearOfArticle':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__yearOfArticle__icontains=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
-            if field=='language':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__language__icontains=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__language__icontains=searchdata)
-            if field=='title':
-                query = reduce(lambda q1, q2: q1.__or__(q2),
-                               map(lambda query: Q(metaData__title__icontains=query), searchArry))
-                papers = papers.filter(query)
-                #papers = papers.filter(metaData__title__icontains=searchdata)
+            searchArry = list(filter(None, searchArry))
+            print(searchArry)
+            if searchArry:
+                if field=='authors':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),map(lambda query: Q(authors__name__icontains=query), searchArry))
+                    papers = papers.filter(query)
+                if field=='category':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__category__in=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__category__in=searchdata)
+                if field=='organization':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__organization__icontains=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__organization__icontains=searchdata)
+                if field=='keywords':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__keywords__in=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__keywords__in=searchdata)
+                if field == 'journal':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__journal__icontains=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__journal__icontains=searchdata)
+                if field=='source':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__source__icontains=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__source__icontains=searchdata)
+                if field=='yearOfArticle':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__yearOfArticle__icontains=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
+                if field=='language':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__language__icontains=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__language__icontains=searchdata)
+                if field=='title':
+                    query = reduce(lambda q1, q2: q1.__or__(q2),
+                                   map(lambda query: Q(metaData__title__icontains=query), searchArry))
+                    papers = papers.filter(query)
+                    #papers = papers.filter(metaData__title__icontains=searchdata)
         ##nur titel und id....
         return papers.to_json()
     else:
         return ''
 
 def startAnalyse(request):
-    if(request.method=="GET"):
-        print(request.GET)
-        if request.GET.get('Korpus1'):
-            korpus1liste=request.GET.get('Korpus1').split(',')
-            korpus1=Paper.objects.filter(id__in=korpus1liste)
+    if(request.method=="POST"):
+        print(request.POST)
+        testvariante=request.POST.get('textVariante')
+        if request.POST.get('Korpus1'):
+            korpus1liste =request.POST.getlist('Korpus1')
+            korpus1 = Paper.objects.filter(id__in=korpus1liste)
         else:
-            korpus1=None
-        if request.GET.get('Korpus2'):
-            korpus2liste=request.GET.get('Korpus2').split(',')
+            korpus1 = None
+        if request.POST.get('Korpus2'):
+            korpus2liste = request.POST.getlist('Korpus1')
             korpus2 = Paper.objects.filter(id__in=korpus2liste)
         else:
-            korpus2=None
+            korpus2 = None
 
-        '''analyse=analyseCorpora('NltkStw', korpus1, korpus2, charCountWhiteSpace=True, charCountNoWhiteSpace=True,
-                       wordCount=True,
-                       punctCount=True, citationCount=True, authorCount=True, referenceCount=True, universityCount=True,
-                       countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
-                       tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True, keywordFrequency=True)
-        print(analyse)'''
+        analyse = analyseCorpora(testvariante, korpus1, korpus2, charCountWhiteSpace=True, charCountNoWhiteSpace=True,
+                                 wordCount=True,
+                                 punctCount=True, citationCount=True, authorCount=True, referenceCount=True,
+                                 universityCount=True,
+                                 countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
+                                 tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True,
+                                 keywordFrequency=True)
+        #print(analyse)
 
-        return render(request, 'results/results.html')
+        metricList = {
+            "metrics": [{"metric": "authorsCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl"},
+                        {"metric": "punctuationCount", "dataDisplayType": "numeric-section",
+                         "germanTitle": "Satzzeichenanzahl"},
+                        {"metric": "referencesCount", "dataDisplayType": "numeric-total",
+                         "germanTitle": "Referenzenanzahl"},
+                        {"metric": "characterCount", "dataDisplayType": "numeric-section",
+                         "germanTitle": "Zeichenanzahl"},
+                        {"metric": "keywordDisplay", "dataDisplayType": "text-total", "germanTitle": "Keywords"},
+                        {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-section",
+                         "germanTitle": "Häufigste Wörter"}]}
+
+        return render(request, 'results/results.html', metricList)
 
 
 # Testen obs klappt

@@ -8,9 +8,19 @@
     <link href='{% static "css/corpusSelection.css" %}' rel="stylesheet">
 
     <div id="siteContainer">
+        <!-- Auswahldropdown für Textarten: Raw,NltkStw,NltkStem-->
+        <div>
+            <span>Textvariante: </span>
+            <select id="textVariante">
+            <option value="Raw">Raw</option>
+            <option value="NltkStw">NltkStw</option>
+            <option value="NltkStem">NltkStem</option>
+            </select>
+        </div>
+
         <form id="container" action="{% url 'getSelectedPaper' %}" method="post">
             {% csrf_token %}
-            <button id="startAnalysisButton" class="cust_button">Analyse starten</button>
+            <button id="startAnalysisButton" class="cust_button">verfügbare Paper anzeigen</button>
         </form>
     </div>
 
@@ -19,9 +29,11 @@
 
     <script>
         overridestartAjaxFilter();
+
         function overridestartAjaxFilter() {
             $('#container').submit(function (event) {
                 event.preventDefault();
+                $('#addCorpusButton').hide();
                 $.ajax({
                     url: $('#container').attr('action'),
                     type: $('#container').attr('method'),
@@ -57,27 +69,27 @@
             for (let paper of papers) {
                 htmldata += '<tr><td><input type="checkbox" name="' + korpusid + '" value="' + paper._id.$oid + '"/></td>' +
                     '<td>' + paper.titleRaw.text + '</td><td>';
-                for(let i = 0; i < paper.authors.length; i++){
+                for (let i = 0; i < paper.authors.length; i++) {
                     let autor = paper.authors[i];
                     if (i !== paper.authors.length - 1) {
-                        htmldata += autor.name+' ,'
-                    }else{
+                        htmldata += autor.name + ' ,'
+                    } else {
                         htmldata += autor.name
                     }
                 }
-                htmldata +='</td></tr>';
+                htmldata += '</td></tr>';
             }
             return htmldata
         }
 
         function changeButton() {
-            $("#startAnalysisButton").attr('type', 'button').click(function () {
+            $("#startAnalysisButton").attr('type', 'button').text('Analyse starten').click(function () {
                 sendPaperlist();
             });
         }
 
         function sendPaperlist() {
-            console.log('send paperlist');
+            //console.log('send paperlist');
             let korpus1data = [];
             $.each($("input[name='Korpus1']:checked"), function () {
                 korpus1data.push($(this).val());
@@ -86,7 +98,22 @@
             $.each($("input[name='Korpus2']:checked"), function () {
                 korpus2data.push($(this).val());
             });
-            window.location = '{% url 'startAnalyse' %}?Korpus1=' + korpus1data + '&Korpus2=' + korpus2data;
+            //window.location = '{% url 'startAnalyse' %}?Korpus1=' + korpus1data + '&Korpus2=' + korpus2data;
+
+            let variante=$('#textVariante').val();
+            let form = '<form id="postform" action="{% url 'startAnalyse' %}" method="POST">' +
+                '{% csrf_token %}';
+            for (paperid of korpus1data) {
+                form += '<input type="hidden" name="Korpus1" value="' + paperid + '">'
+            }
+            for (paperid of korpus2data) {
+                form += '<input type="hidden" name="Korpus2" value="' + paperid + '">'
+            }
+            form += '<input type="hidden" name="textVariante" value="' + variante + '">';
+            form += '</form>';
+            let target = document.getElementById('siteContainer');
+            target.insertAdjacentHTML('afterEnd', form);
+            $('#postform').submit();
         }
     </script>
 {% endblock %}
