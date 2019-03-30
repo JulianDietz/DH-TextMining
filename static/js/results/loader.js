@@ -12,12 +12,10 @@ $(document).ready(function () {
 
 
         if ($this.attr("data-ready") == "false") {
-
             $.ajax({
-                url: "http://127.0.0.1:8000/textMining/getCalculation/",
+                url: calculateURL,
                 type: 'GET',
-                //TODO variante für beide Korpora und übergeben
-                data: {fieldname: $this.attr("id").split('_')[2],Korpus1_variante:'Raw',Korpus2_variante:'Raw'},
+                data: {fieldname: $this.attr("id").split('_')[2], Korpus1_variante: varianteKorpus1, Korpus2_variante: varianteKorpus2},
                 beforeSend: function () {
                     $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
                 },
@@ -82,21 +80,16 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
     //recalculate Metric
     recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
 
-    let textVarSelect = metricSectionSelectorContainer
+    //Text Variante Korpus 1
+    let textVarSelect1 = metricSectionSelectorContainer
         .append("div")
         .classed("textVarSelectContainer", true)
-        .text("Text:")
+        .text("Korpus 1:")
         .append("select")
         .classed("textVarSelect", true)
-        .attr("id", "textVar_" + IDMetricEl)
-        .attr("data-textVariant", "orig")
-        .on("change", function () {
-            d3.select(this).attr("data-textVariant", function () {
-                return this.options[this.selectedIndex].value;
-            })
-        });
+        .attr("id", "textVar_Korpus1_" + IDMetricEl);
 
-    textVarSelect
+    textVarSelect1
         .selectAll("option")
         .data(textVariants)
         .enter()
@@ -108,9 +101,43 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
             return d.display;
         });
 
+    //update selection for korpus1
+    for (let i = 0; i < textVarSelect1.node().options.length; i++) {
+        if (textVarSelect1.node().options[i].value = data2[IDMetricEl.split("_")[2]].Corpus1.variant) {
+            textVarSelect1.node().selectedIndex = i;
+        }
+        ;
+    }
+    ;
+
+
+    //text Variante Korpus2
+    let textVarSelect2 = metricSectionSelectorContainer
+        .append("div")
+        .classed("textVarSelectContainer", true)
+        .text("Korpus 2:")
+        .append("select")
+        .classed("textVarSelect", true)
+        .attr("id", "textVar_Korpus2_" + IDMetricEl);
+
+    textVarSelect2
+        .selectAll("option")
+        .data(textVariants)
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+            return d.value;
+        })
+        .text(function (d) {
+            return d.display;
+        });
+
+
+    //recalculate
     recalcButton.on("click", function () {
-        selectedTextVar = $("#textVar_" + IDMetricEl).attr("data-textVariant");
-        recalculateMetric(IDMetricEl, selectedTextVar);
+        selectedTextVar1 = d3.select("#textVar_Korpus1_" + IDMetricEl).node().options[d3.select("#textVar_Korpus1_" + IDMetricEl).node().selectedIndex].value;
+        selectedTextVar2 = d3.select("#textVar_Korpus2_" + IDMetricEl).node().options[d3.select("#textVar_Korpus2_" + IDMetricEl).node().selectedIndex].value;
+        recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
     });
 
     // Metrik
@@ -136,7 +163,7 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
     drawBoxplot(metricContainer, statisticalData, rawData);
 
     //Create CSV file and download
-    createCSVdownload(IDMetricEl, rawData);
+    createCSVdownload(IDMetricEl, rawData, data2);
 };
 
 function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
@@ -327,13 +354,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
         .text("Text:")
         .append("select")
         .classed("textVarSelect", true)
-        .attr("id", "textVar_" + IDMetricEl)
-        .attr("data-textVariant", "orig")
-        .on("change", function () {
-            d3.select(this).attr("data-textVariant", function () {
-                return this.options[this.selectedIndex].value;
-            })
-        });
+        .attr("id", "textVar_" + IDMetricEl);
 
     textVarSelect
         .selectAll("option")
@@ -348,8 +369,9 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
         });
 
     recalcButton.on("click", function () {
-        selectedTextVar = $("#textVar_" + IDMetricEl).attr("data-textVariant");
-        recalculateMetric(IDMetricEl, selectedTextVar);
+        //selectedTextVar1 = $("#textVar_" + IDMetricEl)TODO
+        //selectedTextVar2 = $("#textVar_" + IDMetricEl)
+        recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
     });
 
 
@@ -513,7 +535,9 @@ function drawBoxplot(container, statisticsData, dataPoints) {
 
 }
 
-function createCSVdownload(metricID, dataPoints) {
+function createCSVdownload(metricID, dataPoints, data3) {
+
+    console.log(Object.keys(data3)[0]);
 
     let metric_name = metricID.split("_")[2]
     let downloadButton = d3.select("#download_" + metric_name);
@@ -527,7 +551,7 @@ function createCSVdownload(metricID, dataPoints) {
 
     let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
-    downloadButton.attr("download", metric_name + "_csvdata");
+    downloadButton.attr("download", metric_name + "_csvdata" + Object.keys(data3)[0].toString());
 
     function convertJSONtoCSV(data) {
 
@@ -547,9 +571,54 @@ function createCSVdownload(metricID, dataPoints) {
     };
 };
 
-function recalculateMetric(metricID, textVariant) {
+function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
     console.log(metricID);
-    console.log(textVariant);
+    $.ajax({
+        url: calculateURL,
+        type: 'GET',
+        data: {fieldname: metricID.split('_')[2], Korpus1_variante: textVariantKorpus1, Korpus2_variante: textVarianteKorpus2},
+        beforeSend: function () {
+            //$this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
+        },
+        success: function (response) {
+            console.log(response);
+            onSuccess(JSON.parse(response));
+        }
+    });
+
+    function onSuccess(data) {
+
+        console.log(d3.select('#'+metricID));
+
+        //d3.select('#'+metricID).select("metricDescription").remove()
+        //d3.select('#'+metricID).select("graphContainer").remove()
+
+        const textVariants = [{"key": "orig", "value": "Raw", "display": "Original"},
+            {"key": "stpw", "value": "NltkStw", "display": "Stopwortgefiltert"},
+            {"key": "stmd", "value": "NltkStem", "display": "Gestemmt"}];
+
+        let collapseEl = $($('#'+metricID).attr("data-collapse"));
+        let statisticDisplayType = $('#'+metricID).attr("data-statisticdisplaytype");
+
+
+        switch (statisticDisplayType) {
+            case "numeric-total":
+                returnGraphNumericTotal(metricID, collapseEl, data, textVariants);
+                break;
+            case "numeric-section":
+                returnGraphNumericSection(metricID, collapseEl, data, textVariants);
+                break;
+            case "text-total":
+
+                break;
+            case "text-section":
+                break;
+        }
+        //d3.select('#'+metricID).toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
+        //collapseEl.collapse('toggle');
+        d3.select('#'+metricID).attr("data-ready", "true");
+        d3.select('#'+metricID).next().children(".indicator").attr("src", "/static/img/results/verified.png")
+    }
 }
 
 
