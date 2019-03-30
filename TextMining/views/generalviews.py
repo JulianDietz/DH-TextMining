@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 from functools import reduce
-
+from statistics import mean
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -318,7 +318,7 @@ def testMethode(request):
 #TODO total und min max jetzt ints, rest float... außer mode, das ist array => so lasssen?
 def getStatisticalValues(inputarray):
     if inputarray == [] or inputarray is None:
-        total = None
+        sum = None
         average = None
         modes = None
         variance = None
@@ -326,7 +326,8 @@ def getStatisticalValues(inputarray):
         min = None
         max = None
     else:
-        total = int(np.sum(inputarray))
+        inputarray = [entry['value'] for entry in inputarray]
+        sum = int(np.sum(inputarray))
         average = float(np.mean(inputarray))
         mode = stats.mode(inputarray)
         modes = []
@@ -339,17 +340,7 @@ def getStatisticalValues(inputarray):
         upperQuartile = float(upperQuartile)
         min = int(np.amin(inputarray))
         max = int(np.amax(inputarray))
-        print(total)
-        print(average)
-        print(mode)
-        print(modes)
-        print(variance)
-        print(lowerQuartile)
-        print(median)
-        print(upperQuartile)
-        print(min)
-        print(max)
-    return {'total': total,'average': average, 'median': median, 'mode': modes,
+    return {'sum': sum,'average': average, 'median': median, 'mode': modes,
             'variance': variance, 'lowerQuartile': lowerQuartile,
             'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max}
 
@@ -357,14 +348,28 @@ def getStatisticalValues(inputarray):
 #TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
 #TODO was gemeint mit Größe/Dichte Wortschatz, Anzahl Überschriften (=alle Titles? dann ja nur einfach alle Sektionen?)
 #TODO die können alle über den Text berechnet werden => text raw in dict werfen?
+#TODO 'totalContentTitles': [], 'totalContentText': []
 
 #TODO Schauen welche Felder immer in db, und welche mit if abfragen? Alle Liste in db immer mit [] machen wenn leer? Metadata für jedes da? Keywords
 #TODO wenn leer []? was wenn zb. Sektion keinen titel hat? None immer abfragen?
 #TODO Die einzelnen ifs in den Schleifen raus und immer appenden? Performance dann besser oder nicht?
 
+
+# Metrik corpusLength
+
+# metrik alle zu {'titles: {type:flat;data:[]}, oder liste welche flach und welche nicht
+#liste welche metriken flach und welche MetrikDict haben
+
+def createNewValueAndPaperDict(value, paper):
+    return {'value': value, 'paperTitle': paper.titleRaw.text, 'authors': [author.name for author in paper.authors],
+            'year': paper.metaData.year}
+
 def createNewMetrikDict():
-    return {'titles': [], 'totalContentTitles': [], 'totalContentText': [], 'abstractTitles': [], 'abstractText': [],
-            'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
+    totals = {'titles': [] , 'abstractTitles': [], 'abstractText': [],
+              'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
+    sectioned = {'abstractTitles': [], 'abstractText': [],
+                 'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
+    return {'totals': totals, 'sectioned': sectioned}
 
 
 def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
@@ -387,8 +392,8 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
         metriks2 = None
     results = {'Corpus1': metriks1, 'Corpus2': metriks2}
     print(json.dumps(results))
-    #with open('data.txt', 'w') as outfile:
-    #    json.dump(results, outfile)
+    with open('data.txt', 'w') as outfile:
+        json.dump(results, outfile)
     return json.dumps(results)
 
 
@@ -401,7 +406,7 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
                universityCount, countryCount, keywordCount, tableCount, pictureCount,
                tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency):
 
-    print('start!!!!!!!!')
+
     abstractHelper = []
     sectionHelper = []
     subsectionHelper = []
@@ -432,6 +437,8 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
         if possibleFieldMetrik['condition']:
             UsedFieldMetriks.append(possibleFieldMetrik)
 
+
+
     for paper in corpus:
         # Allgemeine Metriken
         # Kein Extraloop für alle drei mehr, oder?
@@ -449,77 +456,113 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
                         if country not in countries:
                             countries.append(country)
 
-            resultsAuthorCount.append(len(authors))
-            resultsUniversityCount.append(len(universities))
-            resultsCountryCount.append(len(countries))
+            resultsAuthorCount.append(createNewValueAndPaperDict(len(authors),paper))
+            resultsUniversityCount.append(createNewValueAndPaperDict(len(universities),paper))
+            resultsCountryCount.append(createNewValueAndPaperDict(len(countries),paper))
 
         keywords = paper.metaData.keywords
         if keywordCount:
-            resultsKeywordCount.append(len(keywords))
+            resultsKeywordCount.append(createNewValueAndPaperDict(len(keywords),paper))
         if keywordFrequency:
-            resultsKeywordText.append(keywords)
+            resultsKeywordText.append(createNewValueAndPaperDict(keywords,paper))
 
         if referenceCount:
-            resultsReferenceCount.append(len(paper.references))
+            resultsReferenceCount.append(createNewValueAndPaperDict(len(paper.references),paper))
 
         # Feldmetriken Titel
         paperTitle = getattr(paper, "title" + variant)
         if paperTitle:
             paperTitleMetrik = getattr(paperTitle, 'metrik')
             for fieldMetrik in UsedFieldMetriks:
-        #TODO für jede Textvariante existieren Metriken immer, oder auch abfragen?
-                fieldMetrik['values']['titles'].append(getattr(paperTitleMetrik, fieldMetrik['modelField']))
+                fieldMetrik['values']['totals']['titles'].append(createNewValueAndPaperDict(
+                    getattr(paperTitleMetrik, fieldMetrik['modelField']),paper))
 
 
         # Feldmetriken Abstracts
+        totalHelperAbstractTitles = {}
+        totalHelperAbstractText = {}
+        for fieldMetrik in UsedFieldMetriks:
+            totalHelperAbstractTitles[fieldMetrik['modelField']] = []
+            totalHelperAbstractText[fieldMetrik['modelField']] = []
+
         for abstractCount, abstract in enumerate(paper.abstract):
             if abstractCount == len(abstractHelper):
                 abstractHelper.append([])
                 for fieldMetrik in UsedFieldMetriks:
-                    fieldMetrik['values']['abstractTitles'].append([])
-                    fieldMetrik['values']['abstractText'].append([])
+                    fieldMetrik['values']['sectioned']['abstractTitles'].append([])
+                    fieldMetrik['values']['sectioned']['abstractText'].append([])
 
             abstractTitle = getattr(abstract, "title" + variant)
             if abstractTitle:
                 abstractTitleMetrik = getattr(abstractTitle, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
-                    fieldMetrik['values']['abstractTitles'][abstractCount].append(
+                    fieldMetrik['values']['sectioned']['abstractTitles'][abstractCount].append(createNewValueAndPaperDict(
+                        getattr(abstractTitleMetrik, fieldMetrik['modelField']),paper))
+                    totalHelperAbstractTitles[fieldMetrik['modelField']].append(
                         getattr(abstractTitleMetrik, fieldMetrik['modelField']))
             abstractText = getattr(abstract, "text" + variant)
             if abstractText:
                 abstractTextMetrik = getattr(abstractText, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
-                    fieldMetrik['values']['abstractText'][abstractCount].append(
+                    fieldMetrik['values']['sectioned']['abstractText'][abstractCount].append(createNewValueAndPaperDict(
+                        getattr(abstractTextMetrik, fieldMetrik['modelField']),paper))
+                    totalHelperAbstractText[fieldMetrik['modelField']].append(
                         getattr(abstractTextMetrik, fieldMetrik['modelField']))
 
+        for fieldMetrik in UsedFieldMetriks:
+            if totalHelperAbstractTitles[fieldMetrik['modelField']] != []:
+                fieldMetrik['values']['totals']['abstractTitles'].append(createNewValueAndPaperDict(
+                    mean(totalHelperAbstractTitles[fieldMetrik['modelField']]),paper))
+            if totalHelperAbstractText[fieldMetrik['modelField']] != []:
+                fieldMetrik['values']['totals']['abstractText'].append(createNewValueAndPaperDict(
+                    mean(totalHelperAbstractText[fieldMetrik['modelField']]),paper))
+
         # Feldmetriken Sectionen und Subsectionen
+        totalHelperSectionTitles = {}
+        totalHelperSectionText = {}
+        for fieldMetrik in UsedFieldMetriks:
+            totalHelperSectionTitles[fieldMetrik['modelField']] = []
+            totalHelperSectionText[fieldMetrik['modelField']] = []
+
+        totalHelperSubsectionTitles = {}
+        totalHelperSubsectionText = {}
+        for fieldMetrik in UsedFieldMetriks:
+            totalHelperSubsectionTitles[fieldMetrik['modelField']] = []
+            totalHelperSubsectionText[fieldMetrik['modelField']] = []
+
         for sectionCount, section in enumerate(paper.content):
             if sectionCount == len(sectionHelper):
                 sectionHelper.append([])
-                subsectionHelper.append([])
                 resultsTableCount.append([])
                 resultsPictureCount.append([])
                 resultsTableDescLengthCount.append([])
                 resultsPictureDescLengthCount.append([])
                 for fieldMetrik in UsedFieldMetriks:
-                    fieldMetrik['values']['sectionTitles'].append([])
-                    fieldMetrik['values']['sectionText'].append([])
-                    fieldMetrik['values']['subsectionTitles'].append([])
-                    fieldMetrik['values']['subsectionText'].append([])
+                    fieldMetrik['values']['sectioned']['sectionTitles'].append([])
+                    fieldMetrik['values']['sectioned']['sectionText'].append([])
+                    fieldMetrik['values']['sectioned']['subsectionTitles'].append([])
+                    fieldMetrik['values']['sectioned']['subsectionText'].append([])
 
             sectionTitle = getattr(section, "title" + variant)
             if sectionTitle:
                 sectionTitleMetrik = getattr(sectionTitle, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
-                    fieldMetrik['values']['sectionTitles'][sectionCount].append(
+                    fieldMetrik['values']['sectioned']['sectionTitles'][sectionCount].append(createNewValueAndPaperDict(
+                        getattr(sectionTitleMetrik, fieldMetrik['modelField']),paper))
+                    totalHelperSectionTitles[fieldMetrik['modelField']].append(
                         getattr(sectionTitleMetrik, fieldMetrik['modelField']))
+
             sectionText = getattr(section, "text" + variant)
             if sectionText:
                 sectionTextMetrik = getattr(sectionText, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
-                    fieldMetrik['values']['sectionText'][sectionCount].append(
+                    fieldMetrik['values']['sectioned']['sectionText'][sectionCount].append(createNewValueAndPaperDict(
+                        getattr(sectionTextMetrik, fieldMetrik['modelField']),paper))
+                    totalHelperSectionText[fieldMetrik['modelField']].append(
                         getattr(sectionTextMetrik, fieldMetrik['modelField']))
 
+            #TODO wie tables und pictures machen, da ja nur sectionen
+            '''''
             tables = section.tables
             if tableCount:
                 resultsTableCount[sectionCount].append(len(tables))
@@ -539,26 +582,48 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
                 for picture in pictures:
                     countPictureDescription.append(len(picture.description))
                 resultsPictureDescLengthCount[sectionCount].append(countPictureDescription)
+            '''''
 
             for subsectionCount, subsection in enumerate(section.subsection):
-                if subsectionCount == len(subsectionHelper[sectionCount]):
-                    subsectionHelper[sectionCount].append([])
+                if subsectionCount == len(subsectionHelper):
+                    subsectionHelper.append([])
                     for fieldMetrik in UsedFieldMetriks:
-                        fieldMetrik['values']['subsectionTitles'][sectionCount].append([])
-                        fieldMetrik['values']['subsectionText'][sectionCount].append([])
+                        fieldMetrik['values']['sectioned']['subsectionTitles'].append([])
+                        fieldMetrik['values']['sectioned']['subsectionText'].append([])
 
                     subsectionTitle = getattr(subsection, "title" + variant)
                     if subsectionTitle:
                         subsectionTitleMetrik = getattr(subsectionTitle, 'metrik')
                         for fieldMetrik in UsedFieldMetriks:
-                            fieldMetrik['values']['subsectionTitles'][sectionCount][subsectionCount].append(
+                            fieldMetrik['values']['sectioned']['subsectionTitles'][subsectionCount].append(createNewValueAndPaperDict(
+                                getattr(subsectionTitleMetrik, fieldMetrik['modelField']),paper))
+                            totalHelperSubsectionTitles[fieldMetrik['modelField']].append(
                                 getattr(subsectionTitleMetrik, fieldMetrik['modelField']))
                     subsectionText = getattr(subsection, "text" + variant)
                     if subsectionText:
                         subsectionTextMetrik = getattr(subsectionText, 'metrik')
                         for fieldMetrik in UsedFieldMetriks:
-                            fieldMetrik['values']['subsectionText'][sectionCount][subsectionCount].append(
+                            fieldMetrik['values']['sectioned']['subsectionText'][subsectionCount].append(createNewValueAndPaperDict(
+                                getattr(subsectionTextMetrik, fieldMetrik['modelField']),paper))
+                            totalHelperSubsectionText[fieldMetrik['modelField']].append(
                                 getattr(subsectionTextMetrik, fieldMetrik['modelField']))
+
+
+        for fieldMetrik in UsedFieldMetriks:
+            if totalHelperSectionTitles[fieldMetrik['modelField']] != []:
+                fieldMetrik['values']['totals']['sectionTitles'].append(createNewValueAndPaperDict(
+                    mean(totalHelperSectionTitles[fieldMetrik['modelField']]),paper))
+            if totalHelperSectionText[fieldMetrik['modelField']] != []:
+                fieldMetrik['values']['totals']['sectionText'].append(createNewValueAndPaperDict(
+                    mean(totalHelperSectionText[fieldMetrik['modelField']]),paper))
+
+        for fieldMetrik in UsedFieldMetriks:
+            if totalHelperSubsectionTitles[fieldMetrik['modelField']] != []:
+                fieldMetrik['values']['totals']['subsectionTitles'].append(createNewValueAndPaperDict(
+                    mean(totalHelperSubsectionTitles[fieldMetrik['modelField']]),paper))
+            if totalHelperSubsectionText[fieldMetrik['modelField']] != []:
+                fieldMetrik['values']['totals']['subsectionText'].append(createNewValueAndPaperDict(
+                    mean(totalHelperSubsectionText[fieldMetrik['modelField']]),paper))
 
     results = {}
     if authorCount:
@@ -574,6 +639,8 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
     #TODO aus keyword-listen die tatsächliche Frequenz berechnen
     if keywordFrequency:
         results['keywordFrequency'] = resultsKeywordText
+    #TODO tables und pictures wieder an neues anpassen
+    '''''
     if tableCount:
         #TableCount ist Liste an Sektionen, wird für statistische Werte zusammengefasst
         #TODO flat list auch mit übergeben?
@@ -586,6 +653,7 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
         flatTableDescriptionCount = [item for sublist in resultsTableDescLengthCount for subsublist in sublist for item in subsublist]
         results['tableDescriptionLengthCount'] = {'rawValues': resultsTableDescLengthCount,
                                                   'statisticalValues': getStatisticalValues(flatTableDescriptionCount)}
+    #TODO mit totals und sectioned machen, ist etwas komisch da spezielfall da nur für sektionen
     if pictureCount:
         flatPictureCount = [item for sublist in resultsPictureCount for item in sublist]
         results['pictureCount'] = {'rawValues': resultsPictureCount,
@@ -594,6 +662,8 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
         flatTableDescriptionCount = [item for sublist in resultsPictureDescLengthCount for subsublist in sublist for item in subsublist]
         results['pictureDescriptionLengthCount'] = {'rawValues': resultsPictureDescLengthCount,
                                                     'statisticalValues': getStatisticalValues(flatTableDescriptionCount)}
+        '''''
+
     for fieldMetrik in UsedFieldMetriks:
         if fieldMetrik['modelField'] == 'charCountWhiteSpace' and charCountWhiteSpace:
             results['charCountWhiteSpace'] = {'rawValues': fieldMetrik['values'],
@@ -622,8 +692,6 @@ def getStatisticalValuesForFieldMetriks(input):
     flatSectionText  = []
     flatSubsectionTitles = []
     flatSubsectionText = []
-    flattenedSubsectionTitles = []
-    flattenedSubsectionText = []
 
     resultsArrayAbstractTitles = []
     resultsArrayAbstractText = []
@@ -632,59 +700,32 @@ def getStatisticalValuesForFieldMetriks(input):
     resultsArraySubsectionTitles = []
     resultsArraySubsectionText = []
 
-    for list in input['abstractTitles']:
+    for list in input['sectioned']['abstractTitles']:
         resultsArrayAbstractTitles.append(getStatisticalValues(list))
-        for item in list:
-            flatAbstractTitles.append(item)
-    for list in input['abstractText']:
+        flatAbstractTitles = flatAbstractTitles + list
+    for list in input['sectioned']['abstractText']:
         resultsArrayAbstractText.append(getStatisticalValues(list))
-        for item in list:
-            flatAbstractText.append(item)
-    for list in input['sectionTitles']:
+        flatAbstractText  = flatAbstractText + list
+    for list in input['sectioned']['sectionTitles']:
         resultsArraySectionTitles.append(getStatisticalValues(list))
-        for item in list:
-            flatSectionTitles.append(item)
-    for list in input['sectionText']:
+        flatSectionTitles = flatSectionTitles + list
+    for list in input['sectioned']['sectionText']:
         resultsArraySectionText.append(getStatisticalValues(list))
-        for item in list:
-            flatSectionText.append(item)
-    #subsection titles
-    totalSubsectionsForTitles = 0
-    for list in input['subsectionTitles']:
-        subsectionCount = len(list)
-        if subsectionCount > totalSubsectionsForTitles:
-            totalSubsectionsForTitles = subsectionCount
-    for i in range(totalSubsectionsForTitles):
-        flattenedSubsectionTitles.append([])
-    for list in input['subsectionTitles']:
-        for sublistCount, sublist in enumerate(list):
-            for item in sublist:
-                flatSubsectionTitles.append(item)
-                flattenedSubsectionTitles[sublistCount].append(item)
-    for list in flattenedSubsectionTitles:
+        flatSectionText = flatSectionText + list
+    for list in input['sectioned']['subsectionTitles']:
         resultsArraySubsectionTitles.append(getStatisticalValues(list))
-    #subscection text
-    totalSubsectionsForText = 0
-    for list in input['subsectionText']:
-        subsectionCount = len(list)
-        if subsectionCount > totalSubsectionsForText:
-            totalSubsectionsForText = subsectionCount
-    for i in range(totalSubsectionsForText):
-        flattenedSubsectionText.append([])
-    for list in input['subsectionText']:
-        for sublistCount, sublist in enumerate(list):
-            for item in sublist:
-                flatSubsectionText.append(item)
-                flattenedSubsectionText[sublistCount].append(item)
-    for list in flattenedSubsectionText:
+        flatSubsectionTitles = flatSubsectionTitles + list
+    for list in input['sectioned']['subsectionText']:
         resultsArraySubsectionText.append(getStatisticalValues(list))
+        flatSubsectionText + list
 
-
-    results =  {'totalTitles': getStatisticalValues(input['titles']),
-            'totalAbstractTitles': getStatisticalValues(flatAbstractTitles), 'totalAbstractText': getStatisticalValues(flatAbstractText),
-            'totalSectionTitles': getStatisticalValues(flatSectionTitles), 'totalSectionText': getStatisticalValues(flatSectionText),
-            'totalSubsectionTitles': getStatisticalValues(flatSubsectionTitles), 'totalSubsectionText': getStatisticalValues(flatSubsectionText),
-            'arrayAbstractTitles': resultsArrayAbstractTitles, 'arrayAbstractText': resultsArrayAbstractText,
-            'arraySectionTitles': resultsArraySectionTitles, 'arraySectionText': resultsArraySectionText,
-            'arraySubsectionTitles': resultsArraySubsectionTitles, 'arraySubsectionText': resultsArraySubsectionText}
+    totals = {'titles': getStatisticalValues(input['totals']['titles']),
+            'abstractTitles': getStatisticalValues(flatAbstractTitles),'abstractText': getStatisticalValues(flatAbstractText),
+            'sectionTitles': getStatisticalValues(flatSectionTitles), 'sectionText': getStatisticalValues(flatSectionText),
+            'subsectionTitles': getStatisticalValues(flatSubsectionTitles), 'subsectionText': getStatisticalValues(flatSubsectionText)}
+    sectioned = {'abstractTitles': resultsArrayAbstractTitles,'abstractText': resultsArrayAbstractText,
+            'sectionTitles': resultsArraySectionTitles, 'sectionText': resultsArraySectionText,
+            'subsectionTitles': resultsArraySubsectionTitles, 'subsectionText': resultsArraySubsectionText}
+    results =  {'totals': totals, 'sectioned': sectioned}
     return results
+
