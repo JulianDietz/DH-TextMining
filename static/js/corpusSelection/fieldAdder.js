@@ -37,7 +37,7 @@ function addCorpusSelection(corpusID) {
 
 
     //text varaints
-    const textVariants = [{"key": "orig", "value": "raw", "display": "Original"},
+    const textVariants = [{"key": "orig", "value": "Raw", "display": "Original"},
         {"key": "stpw", "value": "NltkStw", "display": "Stopwortgefiltert"},
         {"key": "stmd", "value": "NltkStem", "display": "Gestemmt"}];
 
