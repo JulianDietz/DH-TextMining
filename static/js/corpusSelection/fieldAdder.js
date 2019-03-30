@@ -29,9 +29,39 @@ function addCorpusSelection(corpusID) {
         .attr("id", "corpus_" + corpusID);
 
     //Header
-    corpusContainer.append("h3")
-        .text("Korpus " + corpusID)
+    let headerContainer = corpusContainer.append("div")
         .classed("corpusSelectionHeader", true);
+
+    headerContainer.append("h3")
+        .text("Korpus " + corpusID)
+
+
+    //text varaints
+    const textVariants = [{"key": "orig", "value": "orig", "display": "Original"},
+        {"key": "stpw", "value": "stpw", "display": "Stopwortgefiltert"},
+        {"key": "stmd", "value": "stmd", "display": "Gestemmt"},
+        {"key": "stpwstmd", "value": "stpwstmd", "display": "Stopwortgefiltert und gestemmt"}];
+
+    let textVarSelect = headerContainer
+        .append("div")
+        .classed("textVarSelectContainer", true)
+        .text("Text:")
+        .append("select")
+        .classed("textVarSelect", true)
+        .attr("name", "textVarSelect_CorpusID_" + corpusID);
+
+    textVarSelect
+        .selectAll("option")
+        .data(textVariants)
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+            return d.value;
+        })
+        .text(function (d) {
+            return d.display;
+        })
+
 
     //Field-Adder
     corpusContainer.append("div")
@@ -73,7 +103,7 @@ function addSelector(element, corpusID) {
 
     //Container element
     let searchDataSelector = element
-        .insert("div", ":nth-Child(2)")
+        .insert("div", "last-Child")
         .classed("searchDataSelector", true)
         .attr("name", "dataselector_" + numDataSelector);
 
@@ -95,7 +125,6 @@ function addSelector(element, corpusID) {
         .text(function (d) {
             return d.display
         })
-        .attr("name", "optionField_" + numDataSelector);
 
     //Inputfield
     searchDataSelector.append("input").classed("searchDataUserInput", true)

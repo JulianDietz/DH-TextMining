@@ -5,6 +5,10 @@
 
 }
 
+.metricSectionSelectorContainer{
+    border-bottom: 1px solid #d1d1d1;
+}
+
 .toggle_button {
     float: right;
     height: 32px;
@@ -13,7 +17,6 @@
     background-color: transparent;
     box-shadow: none;
     border: 0px;
-
 }
 
 
@@ -53,11 +56,14 @@
     color: #000000 !important;
 }
 
+.panel-collapse{
+    border-top: 1px solid #d1d1d1;
+    margin-top: 15px;
+    padding-top: 15px;
+}
 
 .metricDescription {
-    padding-top: 15px;
-    border-top: #d1d1d1 solid 1px;
-    margin: 15px auto 15px auto;
+    margin: 0 auto;
     text-align: center
 }
 
@@ -96,4 +102,25 @@
 
 .svg-chart {
     width: 100%;
+}
+
+.paperAreaSelector{
+    display: inline-block;
+    margin-left: 1em;
+}
+
+.textVarSelectContainer{
+    display: inline-block;
+    float: right;
+}
+
+.textVarSelect{
+    margin-left: .5em;
+}
+
+.btn-rclc{
+    font-size: .7em;
+    margin-left: 1em;
+    margin-right: 1em;
+    float: right;
 }

@@ -33,12 +33,23 @@ def helloWorld(request):
 
 
 def results(request):
-    metricList = {"metrics": [{"metric": "authorsCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl"},
-                              {"metric": "punctuationCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl"},
-                              {"metric": "referencesCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl"},
-                              {"metric": "characterCount", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl"},
-                              {"metric": "keywordDisplay", "dataDisplayType": "text-total", "germanTitle": "Keywords"},
-                              {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-section", "germanTitle": "Häufigste Wörter"}]}
+    metricList = {
+        "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl"},
+                    {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl"},
+                    {"metric": "referenceCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl"},
+                    {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl"},
+                    {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen"},
+                    {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl"},
+                    {"metric": "citationCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl der Zitate"},
+                    {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten"},
+                    {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder"},
+                    {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl"},
+                    {"metric": "tableCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenanzahl"},
+                    {"metric": "pictureCount", "dataDisplayType": "numeric-total", "germanTitle": "Bilderanzahl"},
+                    {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenbeschriftungslängen"},
+                    {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-total", "germanTitle": "Bildbeschriftungslängen"},
+                    {"metric": "keywordFrequency", "dataDisplayType": "numeric-total", "germanTitle": "Keywordauftreten"},
+                    {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-section", "germanTitle": "Häufigste Wörter"}]}
 
     return render(request, 'results/results.html', metricList)
 
@@ -196,12 +207,13 @@ def filterDB(querydata):
     else:
         return ''
 
+
 def startAnalyse(request):
-    if(request.method=="POST"):
+    if (request.method == "POST"):
         print(request.POST)
-        testvariante=request.POST.get('textVariante')
+        testvariante = request.POST.get('textVariante')
         if request.POST.get('Korpus1'):
-            korpus1liste =request.POST.getlist('Korpus1')
+            korpus1liste = request.POST.getlist('Korpus1')
             korpus1 = Paper.objects.filter(id__in=korpus1liste)
         else:
             korpus1 = None
@@ -211,26 +223,41 @@ def startAnalyse(request):
         else:
             korpus2 = None
 
-        analyse = analyseCorpora(testvariante, korpus1, korpus2, charCountWhiteSpace=True, charCountNoWhiteSpace=True,
+        analyse = analyseCorpora(testvariante, korpus1, korpus2,
+                                 charCountWhiteSpace=True,
+                                 charCountNoWhiteSpace=True,
                                  wordCount=True,
-                                 punctCount=True, citationCount=True, authorCount=True, referenceCount=True,
+                                 punctCount=True,
+                                 citationCount=True,
+                                 authorCount=True,
+                                 referenceCount=True,
                                  universityCount=True,
-                                 countryCount=True, keywordCount=True, tableCount=True, pictureCount=True,
-                                 tableDescriptionLengthCount=True, pictureDescriptionLengthCount=True,
+                                 countryCount=True,
+                                 keywordCount=True,
+                                 tableCount=True,
+                                 pictureCount=True,
+                                 tableDescriptionLengthCount=True,
+                                 pictureDescriptionLengthCount=True,
                                  keywordFrequency=True)
-        #print(analyse)
+        # print(analyse)
 
         metricList = {
-            "metrics": [{"metric": "authorsCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl"},
-                        {"metric": "punctuationCount", "dataDisplayType": "numeric-section",
-                         "germanTitle": "Satzzeichenanzahl"},
-                        {"metric": "referencesCount", "dataDisplayType": "numeric-total",
-                         "germanTitle": "Referenzenanzahl"},
-                        {"metric": "characterCount", "dataDisplayType": "numeric-section",
-                         "germanTitle": "Zeichenanzahl"},
-                        {"metric": "keywordDisplay", "dataDisplayType": "text-total", "germanTitle": "Keywords"},
-                        {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-section",
-                         "germanTitle": "Häufigste Wörter"}]}
+            "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl"},
+                        {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl"},
+                        {"metric": "referenceCount", "dataDisplayType": "numeric-total","germanTitle": "Referenzenanzahl"},
+                        {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section","germanTitle": "Zeichenanzahl"},
+                        {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen"},
+                        {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl"},
+                        {"metric": "citationCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl der Zitate"},
+                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten"},
+                        {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder"},
+                        {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl"},
+                        {"metric": "tableCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenanzahl"},
+                        {"metric": "pictureCount", "dataDisplayType": "numeric-total", "germanTitle": "Bilderanzahl"},
+                        {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenbeschriftungslängen"},
+                        {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-total", "germanTitle": "Bildbeschriftungslängen"},
+                        {"metric": "keywordFrequency", "dataDisplayType": "numeric-total", "germanTitle": "Keywordauftreten"},
+                        {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-section","germanTitle": "Häufigste Wörter"}]}
 
         return render(request, 'results/results.html', metricList)
 
@@ -287,7 +314,9 @@ def showVergleichPage(request):
 
 #TODO DB files download!
 '''
-#TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?
+
+
+# TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?
 def getTotalAmountOfDistinctAuthors(corpus):
     return len(corpus.distinct('authors.name'))
 
@@ -465,8 +494,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     for possibleFieldMetrik in FieldMetriks:
         if possibleFieldMetrik['condition']:
             UsedFieldMetriks.append(possibleFieldMetrik)
-
-
 
     for paper in corpus:
         # Allgemeine Metriken
@@ -726,6 +753,8 @@ def getStatisticalValuesForFieldMetriks(input):
     flatSectionText  = []
     flatSubsectionTitles = []
     flatSubsectionText = []
+    flattenedSubsectionTitles = []
+    flattenedSubsectionText = []
 
     resultsArrayAbstractTitles = []
     resultsArrayAbstractText = []

@@ -1,6 +1,11 @@
 $(document).ready(function () {
     $(".toggle_button").click(function () {
 
+        const textVariants = [{"key": "orig", "value": "orig", "display": "Original"},
+            {"key": "stpw", "value": "stpw", "display": "Stopwortgefiltert"},
+            {"key": "stmd", "value": "stmd", "display": "Gestemmt"},
+            {"key": "stpwstmd", "value": "stpwstmd", "display": "Stopwortgefiltert und gestemmt"}];
+
         let $this = $(this);
         let collapseEl = $($this.attr("data-collapse"));
 
@@ -9,14 +14,12 @@ $(document).ready(function () {
 
         if ($this.attr("data-ready") == "false") {
             setTimeout(function () {
-                console.log(statisticDisplayType)
                 switch (statisticDisplayType) {
-
                     case "numeric-total":
-                        returnGraphNumericTotal($this.attr("id"), collapseEl, null);
+                        returnGraphNumericTotal($this.attr("id"), collapseEl, null, textVariants);
                         break;
                     case "numeric-section":
-                        returnGraphNumericSection($this.attr("id"), collapseEl, null)
+                        returnGraphNumericSection($this.attr("id"), collapseEl, null, textVariants)
                         break;
                     case "text-total":
 
@@ -28,7 +31,6 @@ $(document).ready(function () {
                 collapseEl.collapse('toggle');
                 $this.attr("data-ready", "true");
                 $this.next().children(".indicator").attr("src", "/static/img/results/verified.png")
-
             }, 0);
 
             $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png")
@@ -50,10 +52,7 @@ $(document).ready(function () {
 });
 
 
-response.AutorCount.Stat.key
-response.AutorCount.RawData
-
-function returnGraphNumericTotal(IDMetricEl, htmlEl, data2) {
+function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
     //TODO debug v
     let sumstat = [
         {"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}},
@@ -66,14 +65,51 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2) {
     let statisticalData = sumstat;
     //TODO debug ^
 
+    //Section selector
+    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true);
+    metricSectionSelectorContainer.append("p").text("Diese Metrik bezieht sich auf das gesamte Dokument").style("display", "inline-block");
+
+    //recalculate Metric
+    recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
+
+    let textVarSelect = metricSectionSelectorContainer
+        .append("div")
+        .classed("textVarSelectContainer", true)
+        .text("Text:")
+        .append("select")
+        .classed("textVarSelect", true)
+        .attr("id", "textVar_" + IDMetricEl)
+        .attr("data-textVariant", "orig")
+        .on("change", function () {
+            d3.select(this).attr("data-textVariant", function () {
+                return this.options[this.selectedIndex].value;
+            })
+        });
+
+    textVarSelect
+        .selectAll("option")
+        .data(textVariants)
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+            return d.value;
+        })
+        .text(function (d) {
+            return d.display;
+        });
+
+    recalcButton.on("click", function () {
+        selectedTextVar = $("#textVar_" + IDMetricEl).attr("data-textVariant");
+        recalculateMetric(IDMetricEl, selectedTextVar);
+    });
+
+    // Metrik
     let metricContainer = d3.select(htmlEl[0]);
 
     let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true);
 
     //Add a statistical overview for each corpus
     for (corpus of statisticalData) {
-        console.log(corpus);
-
         let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
         metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus.key);
         let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
@@ -93,14 +129,14 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2) {
     createCSVdownload(IDMetricEl, rawData);
 };
 
-function returnGraphNumericSection(IDMetricEl, htmlEl, data2) {
+function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
     //TODO debug v
     let sumstat = [
         {"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}},
         {"key": "Korpus 2", "value": {"q1": 5.6, "median": 5.9, "q3": 6.3, "interQuantileRange": 0.7000000000000002, "min": 4.549999999999999, "max": 7.35}}]
 
     let rawData = [{
-        "section" : "h1","rawData": [{"metric_value": "5.1", "corpus": "Korpus 2"}, {"metric_value": "4.9", "corpus": "Korpus 2"}, {"metric_value": "4.7", "corpus": "Korpus 2"}, {
+        "section": "h1", "rawData": [{"metric_value": "5.1", "corpus": "Korpus 2"}, {"metric_value": "4.9", "corpus": "Korpus 2"}, {"metric_value": "4.7", "corpus": "Korpus 2"}, {
             "metric_value": "4.6",
             "corpus": "Korpus 2"
         }, {"metric_value": "5", "corpus": "Korpus 2"}, {"metric_value": "5.4", "corpus": "Korpus 2"}, {"metric_value": "4.6", "corpus": "Korpus 2"}, {
@@ -175,7 +211,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2) {
         }, {"metric_value": "5.7", "corpus": "Korpus 1"}, {"metric_value": "6.2", "corpus": "Korpus 1"}, {"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "5.7", "corpus": "Korpus 1"}]
     }
         , {
-            "section": "h2" , "rawData": [{"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "4.9", "corpus": "Korpus 1"}, {"metric_value": "4.7", "corpus": "Korpus 1"}, {
+            "section": "h2", "rawData": [{"metric_value": "5.1", "corpus": "Korpus 1"}, {"metric_value": "4.9", "corpus": "Korpus 1"}, {"metric_value": "4.7", "corpus": "Korpus 1"}, {
                 "metric_value": "4.6",
                 "corpus": "Korpus 1"
             }, {"metric_value": "5", "corpus": "Korpus 1"}, {"metric_value": "5.4", "corpus": "Korpus 1"}, {"metric_value": "4.6", "corpus": "Korpus 1"}, {
@@ -257,20 +293,63 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2) {
     let statisticalData = sumstat;
     //TODO debug ^
 
+
+    //Section selector
     let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true);
-    metricSectionSelectorContainer.append("p").text("Abschnitt:");
-    let sectionSelector = metricSectionSelectorContainer.append("select").classed("metricSectionSelector", true);
+    metricSectionSelectorContainer.append("p").text("Abschnitt:").style("display", "inline-block");
+    let sectionSelector = metricSectionSelectorContainer.append("select").classed("paperAreaSelector", true);
 
-        sectionSelector.selectAll("option").data(rawData).enter().append("option").attr("value", function(d) {return d.section}).text(function (d) {return d.section});
-        sectionSelector.on("change", function () {console.log("datachangeld")});
+    sectionSelector.selectAll("option").data(rawData).enter().append("option").attr("value", function (d) {
+        return d.section
+    }).text(function (d) {
+        return d.section
+    });
+    sectionSelector.on("change", function () {
+        console.log("Abschnitt changed");
+    });
 
+    //recalculate Metric
+    recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
+
+    let textVarSelect = metricSectionSelectorContainer
+        .append("div")
+        .classed("textVarSelectContainer", true)
+        .text("Text:")
+        .append("select")
+        .classed("textVarSelect", true)
+        .attr("id", "textVar_" + IDMetricEl)
+        .attr("data-textVariant", "orig")
+        .on("change", function () {
+            d3.select(this).attr("data-textVariant", function () {
+                return this.options[this.selectedIndex].value;
+            })
+        });
+
+    textVarSelect
+        .selectAll("option")
+        .data(textVariants)
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+            return d.value;
+        })
+        .text(function (d) {
+            return d.display;
+        });
+
+    recalcButton.on("click", function () {
+        selectedTextVar = $("#textVar_" + IDMetricEl).attr("data-textVariant");
+        recalculateMetric(IDMetricEl, selectedTextVar);
+    });
+
+
+    //Description
     let metricContainer = d3.select(htmlEl[0]);
 
     let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true);
 
     //Add a statistical overview for each corpus
     for (corpus of statisticalData) {
-        console.log(corpus);
 
         let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
         metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus.key);
@@ -281,7 +360,8 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2) {
         metricDescriptionTags.append("p").classed("metric-data median-text", true).text(corpus.value.median).attr("data-before", "Median: ");
         metricDescriptionTags.append("p").classed("metric-data average-text", true).text(corpus.value.q3).attr("data-before", "Durchschnitt: ");
         metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(corpus.value.interQuantileRange.toFixed(2)).attr("data-before", "Varianz: ");
-    };
+    }
+    ;
 
     //drat the boxplot
     //drawBoxplot(metricContainer, statisticalData, rawData);
@@ -290,10 +370,10 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2) {
     createCSVdownload(IDMetricEl, rawData);
 };
 
-function returnGraphTextSection(IDMetricEl, htmlEl, data2){
+function returnGraphTextSection(IDMetricEl, htmlEl, data2, textVariants) {
 }
 
-function returnGraphTextTotal(IDMetricEl, htmlEl, data2){
+function returnGraphTextTotal(IDMetricEl, htmlEl, data2, textVariants) {
 }
 
 
@@ -456,5 +536,10 @@ function createCSVdownload(metricID, dataPoints) {
         return csv_text;
     };
 };
+
+function recalculateMetric(metricID, textVariant) {
+    console.log(metricID);
+    console.log(textVariant);
+}
 
 

@@ -5,6 +5,11 @@
 
 .page-header {
     text-align: center;
+    margin-top: 15px;
+}
+
+.site-text-container {
+    text-align: center;
 }
 
 .hidden {
@@ -35,6 +40,7 @@
     font-family: Helvetica;
     text-transform: uppercase;
     font-weight: lighter;
+    cursor: pointer;
 
 }
 
@@ -42,4 +48,26 @@
     color: white;
     border: 1px solid black;
     background-color: black;
+    cursor: pointer;
 }
+
+.btn-dh-black {
+    color: white;
+    border: 1px solid black;
+    background-color: black;
+    padding: 0.5em 2em;
+    transition: all .4s;
+    font-family: Helvetica;
+    text-transform: uppercase;
+    font-weight: lighter;
+    cursor: pointer;
+
+}
+
+.btn-dh-black:hover {
+    color: black;
+    border: 1px solid black;
+    background-color: white;
+    cursor: pointer;
+}
+
