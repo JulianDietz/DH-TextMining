@@ -213,19 +213,21 @@ def filterDB(querydata):
 def startAnalyse(request):
     if (request.method == "POST"):
         print(request.POST)
-        testvariante = request.POST.get('textVariante')
+        varianteKorpus1 = request.POST.get('Korpus1_textVariante')
         if request.POST.get('Korpus1'):
+            varianteKorpus1 = request.POST.get('Korpus1_textVariante')
             korpus1liste = request.POST.getlist('Korpus1')
             korpus1 = Paper.objects.filter(id__in=korpus1liste)
         else:
             korpus1 = None
         if request.POST.get('Korpus2'):
+            varianteKorpus2 = request.POST.get('Korpus2_textVariante')
             korpus2liste = request.POST.getlist('Korpus1')
             korpus2 = Paper.objects.filter(id__in=korpus2liste)
         else:
             korpus2 = None
 
-        analyse = analyseCorpora(testvariante, korpus1, korpus2,
+        analyse = analyseCorpora(varianteKorpus1, korpus1, korpus2,
                                  charCountWhiteSpace=True,
                                  charCountNoWhiteSpace=True,
                                  wordCount=True,
@@ -268,54 +270,6 @@ def startAnalyse(request):
 def startDB(request):
     system('mongod')
 
-
-'''def calculateMetriken(request):
-    papers = Paper.objects.all()
-    for paper in papers:
-        words=metriken.calculateWords(paper)
-        print(words)
-    # save words in DB
-    context = {'info': 'metriken werden berechnet'}
-    categories = Metadata.objekts.distinct('category')
-    return render(request, 'startseite.html', context, categories)
-
-def calculateFreqWords(request):
-    corpus1=metriken.calculateWordFrequency(Paper.objects.filter(metaData__category='Food & Nutrition'))
-    #print(corpus1)
-    corpus2 = metriken.calculateWordFrequency(Paper.objects.filter(metaData__category='Mathematics'))
-    #print(corpus2)
-    return render(request, 'old/freqWords.html', {"corpus1":corpus1, "corpus2":corpus2})
-
-def showStartPage(request):
-    return render(request, 'startseite.html')
-
-def calculateMeanImpactFactor(impact):
-    sum = 0
-    counter = 0
-    for factor in impact:
-        sum += factor
-        counter += 1
-    mean = sum/counter
-    return mean
-
-
-
-#hier alles was benötigt wird rein, wird bei url:http://127.0.0.1:8000/textMining/vergleich/ aufgerufen
-def showVergleichPage(request):
-    categories = Paper.objects.distinct('metaData.category')
-    #countries = Paper.objects.distinct('authors.authorList.university.university_universityCountry')
-    #authors = Paper.objects.distinct('authors_authorList.authorName')
-    #journals = Paper.objects.distinct('metaData.journalTitle')
-    #impactfactor = Paper.objects.distinct('metaData.impactfactor')
-    #meanimpact = calculateMeanImpactFactor(impactfactor)
-    #keywords = Paper.objects.distinct('metaData.keywords')
-    context = {'categories': categories}
-    #context = {'categories': categories, 'countries':countries, 'authors': authors, 'journals': journals,
-     #          'impactfactor': impactfactor, 'keywords':keywords}
-    return render(request, 'vergleich.html',context)
-
-#TODO DB files download!
-'''
 
 
 # TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?

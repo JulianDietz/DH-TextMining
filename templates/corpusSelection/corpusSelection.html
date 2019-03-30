@@ -100,7 +100,8 @@
             });
             //window.location = '{% url 'startAnalyse' %}?Korpus1=' + korpus1data + '&Korpus2=' + korpus2data;
 
-            let variante=$('#textVariante').val();
+            let varianteKorpus1=$('#textVarSelect_CorpusID_1').val();
+            let varianteKorpus2=$('#textVarSelect_CorpusID_2').val();
             let form = '<form id="postform" action="{% url 'startAnalyse' %}" method="POST">' +
                 '{% csrf_token %}';
             for (paperid of korpus1data) {
@@ -109,7 +110,8 @@
             for (paperid of korpus2data) {
                 form += '<input type="hidden" name="Korpus2" value="' + paperid + '">'
             }
-            form += '<input type="hidden" name="textVariante" value="' + variante + '">';
+            form += '<input type="hidden" name="Korpus1_textVariante" value="' + varianteKorpus1 + '">';
+            form += '<input type="hidden" name="Korpus2_textVariante" value="' + varianteKorpus2 + '">';
             form += '</form>';
             let target = document.getElementById('siteContainer');
             target.insertAdjacentHTML('afterEnd', form);

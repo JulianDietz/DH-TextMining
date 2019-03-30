@@ -48,7 +48,7 @@ function addCorpusSelection(corpusID) {
         .text("Text:")
         .append("select")
         .classed("textVarSelect", true)
-        .attr("name", "textVarSelect_CorpusID_" + corpusID);
+        .attr("id", "textVarSelect_CorpusID_" + corpusID);
 
     textVarSelect
         .selectAll("option")
