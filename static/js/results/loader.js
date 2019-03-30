@@ -1,10 +1,9 @@
 $(document).ready(function () {
     $(".toggle_button").click(function () {
 
-        const textVariants = [{"key": "orig", "value": "orig", "display": "Original"},
-            {"key": "stpw", "value": "stpw", "display": "Stopwortgefiltert"},
-            {"key": "stmd", "value": "stmd", "display": "Gestemmt"},
-            {"key": "stpwstmd", "value": "stpwstmd", "display": "Stopwortgefiltert und gestemmt"}];
+        const textVariants = [{"key": "orig", "value": "raw", "display": "Original"},
+            {"key": "stpw", "value": "NltkStw", "display": "Stopwortgefiltert"},
+            {"key": "stmd", "value": "NltkStem", "display": "Gestemmt"}];
 
         let $this = $(this);
         let collapseEl = $($this.attr("data-collapse"));
