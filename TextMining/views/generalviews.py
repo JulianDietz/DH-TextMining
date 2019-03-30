@@ -112,8 +112,9 @@ def getSelectedPaper(request):
         corpus1 = {}
         corpus2 = {}
         querydata=request.POST
+        print(querydata)
         for key in querydata:
-            if 'CorpusID_1' in key:
+            if 'CorpusID_1' in key and not 'textVarSelect' in key:
                 number = key.replace('_CorpusID_1', '').replace('optionfield_', '').replace('inputfield_', '')
                 if not corpus1.get(number):
                     corpus1[number]={}
@@ -121,7 +122,7 @@ def getSelectedPaper(request):
                     corpus1[number]['optionfield'] = querydata[key]
                 if 'inputfield' in key:
                     corpus1[number]['inputfield'] = querydata[key]
-            if 'CorpusID_2' in key:
+            if 'CorpusID_2' in key and not 'textVarSelect' in key:
                 number = key.replace('_CorpusID_2', '').replace('optionfield_', '').replace('inputfield_', '')
                 if not corpus2.get(number):
                     corpus2[number] = {}
@@ -130,12 +131,13 @@ def getSelectedPaper(request):
                 if 'inputfield' in key:
                     corpus2[number]['inputfield'] = querydata[key]
         #print('korpus1')
-        #print(corpus1)
+        print(corpus1)
         #print('korpus2')
-        #print(corpus2)
+        print(corpus2)
         #korpus1= {'2': {'optionfield': 'journal', 'inputfield': '1111'}, '1': {'optionfield': 'authors', 'inputfield': '1111'}}
         #korpus2= {'2': {'optionfield': 'journal', 'inputfield': '2222'}, '1': {'optionfield': 'authors', 'inputfield': '2222'}}
-
+        print(corpus1)
+        print(corpus2)
         ####### filterDBs
         paperCorpus1= filterDB(corpus1)
         paperCorpus2 = filterDB(corpus2)
