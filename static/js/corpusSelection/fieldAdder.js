@@ -44,7 +44,7 @@ function addCorpusSelection(corpusID) {
 
     let textVarSelect = headerContainer
         .append("div")
-        .classed("textVarSelectContainer", true)
+        .classed("textVarSelectContainerCorpus", true)
         .text("Text:")
         .append("select")
         .classed("textVarSelect", true)

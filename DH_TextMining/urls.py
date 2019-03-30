@@ -30,7 +30,7 @@ urlpatterns = [
     path('textMining/processPaperView/', views.processPaperView, name='processPaperView'),
     path('textMining/corpusSelection/', views.corpusSelection, name='corpusSelection'),
     path('textMining/getSelectedPaper/', views.getSelectedPaper, name='getSelectedPaper'),
-    path('textMining/results/', views.results, name='startAnalyse'),
+    path('textMining/results/', views.startAnalyse, name='startAnalyse'),
 
 
     #ajax read .json files
