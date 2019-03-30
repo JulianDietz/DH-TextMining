@@ -447,7 +447,7 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
     if corpus2:
         corpusIdentifier = "Corpus2"
-        resultDict = getMetriks(corpus2, variant,corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+        results = getMetriks(corpus2, variant,corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                    punctCount, citationCount, authorCount, referenceCount,
                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
