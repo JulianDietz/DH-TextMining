@@ -26,7 +26,8 @@ import numpy as np
 import nltk
 nltk.download('stopwords')
 '''
-
+KORPUS1=None
+KORPUS2=None
 
 def helloWorld(request):
     return render(request, 'helloWorld.html')
@@ -213,37 +214,23 @@ def filterDB(querydata):
 def startAnalyse(request):
     if (request.method == "POST"):
         print(request.POST)
-        varianteKorpus1 = request.POST.get('Korpus1_textVariante')
+        global KORPUS1
+        global KORPUS2
         if request.POST.get('Korpus1'):
             varianteKorpus1 = request.POST.get('Korpus1_textVariante')
             korpus1liste = request.POST.getlist('Korpus1')
-            korpus1 = Paper.objects.filter(id__in=korpus1liste)
+            KORPUS1 = Paper.objects.filter(id__in=korpus1liste)
         else:
-            korpus1 = None
+            varianteKorpus1 = None
+            KORPUS1 = None
         if request.POST.get('Korpus2'):
             varianteKorpus2 = request.POST.get('Korpus2_textVariante')
             korpus2liste = request.POST.getlist('Korpus1')
-            korpus2 = Paper.objects.filter(id__in=korpus2liste)
+            KORPUS2 = Paper.objects.filter(id__in=korpus2liste)
         else:
-            korpus2 = None
+            KORPUS2 = None
+            varianteKorpus2 =None
 
-        analyse = analyseCorpora(varianteKorpus1, korpus1, korpus2,
-                                 charCountWhiteSpace=True,
-                                 charCountNoWhiteSpace=True,
-                                 wordCount=True,
-                                 punctCount=True,
-                                 citationCount=True,
-                                 authorCount=True,
-                                 referenceCount=True,
-                                 universityCount=True,
-                                 countryCount=True,
-                                 keywordCount=True,
-                                 tableCount=True,
-                                 pictureCount=True,
-                                 tableDescriptionLengthCount=True,
-                                 pictureDescriptionLengthCount=True,
-                                 keywordFrequency=True)
-        # print(analyse)
 
         metricList = {
             "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl"},
@@ -262,15 +249,26 @@ def startAnalyse(request):
                         {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-total", "germanTitle": "Bildbeschriftungslängen"},
                         {"metric": "keywordFrequency", "dataDisplayType": "numeric-total", "germanTitle": "Keywordauftreten"},
                         {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-section","germanTitle": "Häufigste Wörter"}]}
-
-        return render(request, 'results/results.html', metricList)
+        corpusTextVariants ={"Korpus1":varianteKorpus1,"Korpus2":varianteKorpus2}
+        context={'metricList':metricList,'corpusTextVariants':corpusTextVariants}
+        return render(request, 'results/results.html', context)
 
 
 # Testen obs klappt
 def startDB(request):
     system('mongod')
 
-
+def calculateMetrik(request):
+    if request.method=="GET":
+        print(request.GET)
+        fieldname=request.GET.get('fieldname')
+        #TODO variante für beide!
+        variante=request.GET.get('Korpus1_variante')
+        print('fieldname:' +fieldname)
+        if fieldname:
+            bool=True
+            response=analyseCorpora(variante,KORPUS1,KORPUS2, ** {fieldname: bool})
+        return JsonResponse(response, safe=False)
 
 # TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?
 def getTotalAmountOfDistinctAuthors(corpus):
@@ -395,10 +393,13 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
 
     if corpus1:
         corpusIdentifier = "Corpus1"
+        print('get Metriks')
         results = getMetriks(corpus1, variant, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                    punctCount, citationCount, authorCount, referenceCount,
                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
+        print('done Metriks')
+
     if corpus2:
         corpusIdentifier = "Corpus2"
         results = getMetriks(corpus2, variant,corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,

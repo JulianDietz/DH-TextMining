@@ -8,16 +8,6 @@
     <link href='{% static "css/corpusSelection.css" %}' rel="stylesheet">
 
     <div id="siteContainer">
-        <!-- Auswahldropdown für Textarten: Raw,NltkStw,NltkStem-->
-        <!--<div>
-            <span>Textvariante: </span>
-            <select id="textVariante">
-            <option value="Raw">Raw</option>
-            <option value="NltkStw">NltkStw</option>
-            <option value="NltkStem">NltkStem</option>
-            </select>
-        </div>-->
-
         <form id="container" action="{% url 'getSelectedPaper' %}" method="post">
             {% csrf_token %}
             <button id="startAnalysisButton" class="cust_button">Verfügbare Paper anzeigen</button>

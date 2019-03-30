@@ -11,7 +11,7 @@
 
 
     <div class="container">
-        {% for metric in metrics %}
+        {% for metric in metricList.metrics %}
             <div class="row">
                 <div class="col">
                     <!-- metric-->
@@ -40,6 +40,7 @@
         {% endfor %}
 
     </div>
+    <script> console.log({% autoescape on %}'{{corpusTextVariants}}'{% endautoescape %}) </script>
 
     <div class="credit_section">Icons made by <a href="https://www.flaticon.com/authors/dave-gandy" title="Dave Gandy">Dave Gandy</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
         is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>

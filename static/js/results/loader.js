@@ -12,13 +12,28 @@ $(document).ready(function () {
 
 
         if ($this.attr("data-ready") == "false") {
-            setTimeout(function () {
+
+            $.ajax({
+                url: "http://127.0.0.1:8000/textMining/getCalculation/",
+                type: 'GET',
+                //TODO variante für beide Korpora und übergeben
+                data: {fieldname: $this.attr("id").split('_')[2],Korpus1_variante:'Raw',Korpus2_variante:'Raw'},
+                beforeSend: function () {
+                    $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
+                },
+                success: function (response) {
+                    console.log(response);
+                    onSuccess(JSON.parse(response));
+                }
+            });
+
+            function onSuccess(data) {
                 switch (statisticDisplayType) {
                     case "numeric-total":
-                        returnGraphNumericTotal($this.attr("id"), collapseEl, null, textVariants);
+                        returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants);
                         break;
                     case "numeric-section":
-                        returnGraphNumericSection($this.attr("id"), collapseEl, null, textVariants)
+                        returnGraphNumericSection($this.attr("id"), collapseEl, data, textVariants);
                         break;
                     case "text-total":
 
@@ -30,11 +45,7 @@ $(document).ready(function () {
                 collapseEl.collapse('toggle');
                 $this.attr("data-ready", "true");
                 $this.next().children(".indicator").attr("src", "/static/img/results/verified.png")
-            }, 0);
-
-            $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png")
-
-
+            }
         } else {
             $(collapseEl).collapse('toggle');
             $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
