@@ -376,21 +376,50 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
                punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
                universityCount=False,countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False, keywordFrequency=False):
+    results = {}
+    if charCountWhiteSpace:
+        results['charCountWhiteSpace'] = {}
+    if charCountNoWhiteSpace:
+        results['charCountNoWhiteSpace'] = {}
+    if wordCount:
+        results['wordCount'] = {}
+    if punctCount:
+        results['punctCount'] = {}
+    if citationCount:
+        results['citationCount'] = {}
+    if authorCount:
+        results['authorCount'] = {}
+    if referenceCount:
+        results['referenceCount'] = {}
+    if universityCount:
+        results['universityCount'] = {}
+    if countryCount:
+        results['countryCount'] = {}
+    if keywordCount:
+        results['keywordCount'] = {}
+    if keywordFrequency:
+        results['keywordFrequency'] = {}
+    if tableCount:
+        results['tableCount'] = {}
+    if pictureCount:
+        results['pictureCount'] = {}
+    if tableDescriptionLengthCount:
+        results['tableDescriptionLengthCount'] = {}
+    if pictureDescriptionLengthCount:
+        results['pictureDescriptionLengthCount'] = {}
+
     if corpus1:
-        metriks1 = getMetriks(corpus1, variant,charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+        corpusIdentifier = "Corpus1"
+        results = getMetriks(corpus1, variant, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                    punctCount, citationCount, authorCount, referenceCount,
                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
-    else:
-        metriks1 = None
     if corpus2:
-        metriks2 = getMetriks(corpus2, variant,charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+        corpusIdentifier = "Corpus2"
+        resultDict = getMetriks(corpus2, variant,corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                    punctCount, citationCount, authorCount, referenceCount,
                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
-    else:
-        metriks2 = None
-    results = {'Corpus1': metriks1, 'Corpus2': metriks2}
     print(json.dumps(results))
     with open('data.txt', 'w') as outfile:
         json.dump(results, outfile)
@@ -401,7 +430,7 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
 # TODO wenn Werte leeres Dict-... "0" bisher appendet!
 # TODO werte auch in totalContent werfen
 # TODO empty tag
-def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                punctCount, citationCount, authorCount, referenceCount,
                universityCount, countryCount, keywordCount, tableCount, pictureCount,
                tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency):
@@ -625,20 +654,25 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
                 fieldMetrik['values']['totals']['subsectionText'].append(createNewValueAndPaperDict(
                     mean(totalHelperSubsectionText[fieldMetrik['modelField']]),paper))
 
-    results = {}
+
     if authorCount:
-        results['authorCount'] = {'rawValues': resultsAuthorCount, 'statisticalValues': getStatisticalValues(resultsAuthorCount)}
+        resultDict['authorCount'][corpusIdentifier] = {'rawValues': resultsAuthorCount,
+                                    'statisticalValues': getStatisticalValues(resultsAuthorCount),'variant':variant}
     if referenceCount:
-        results['referenceCount'] = {'rawValues': resultsReferenceCount, 'statisticalValues': getStatisticalValues(resultsReferenceCount)}
+        resultDict['referenceCount'][corpusIdentifier] = {'rawValues': resultsReferenceCount,
+                                    'statisticalValues': getStatisticalValues(resultsReferenceCount),'variant':variant}
     if universityCount:
-        results['universityCount'] = {'rawValues': resultsUniversityCount, 'statisticalValues': getStatisticalValues(resultsUniversityCount)}
+        resultDict['universityCount'][corpusIdentifier] = {'rawValues': resultsUniversityCount,
+                                    'statisticalValues': getStatisticalValues(resultsUniversityCount),'variant':variant}
     if countryCount:
-        results['countryCount'] = {'rawValues': resultsCountryCount, 'statisticalValues': getStatisticalValues(resultsCountryCount)}
+        resultDict['countryCount'][corpusIdentifier] = {'rawValues': resultsCountryCount,
+                                    'statisticalValues': getStatisticalValues(resultsCountryCount),'variant':variant}
     if keywordCount:
-        results['keywordCount'] = {'rawValues': resultsKeywordCount, 'statisticalValues': getStatisticalValues(resultsKeywordCount)}
+        resultDict['keywordCount'][corpusIdentifier] = {'rawValues': resultsKeywordCount,
+                                    'statisticalValues': getStatisticalValues(resultsKeywordCount),'variant':variant}
     #TODO aus keyword-listen die tatsächliche Frequenz berechnen
     if keywordFrequency:
-        results['keywordFrequency'] = resultsKeywordText
+        resultDict['keywordFrequency'][corpusIdentifier] = resultsKeywordText
     #TODO tables und pictures wieder an neues anpassen
     '''''
     if tableCount:
@@ -666,23 +700,23 @@ def getMetriks(corpus, variant, charCountWhiteSpace, charCountNoWhiteSpace, word
 
     for fieldMetrik in UsedFieldMetriks:
         if fieldMetrik['modelField'] == 'charCountWhiteSpace' and charCountWhiteSpace:
-            results['charCountWhiteSpace'] = {'rawValues': fieldMetrik['values'],
-                                              'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
+            resultDict['charCountWhiteSpace'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
+                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
 
         if fieldMetrik['modelField'] == 'charCountNoWhiteSpace' and charCountNoWhiteSpace:
-            results['charCountNoWhiteSpace'] = {'rawValues': fieldMetrik['values'],
-                                                'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
+            resultDict['charCountNoWhiteSpace'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
+                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
         if fieldMetrik['modelField'] == 'wordCount' and wordCount:
-            results['wordCount'] = {'rawValues': fieldMetrik['values'],
-                                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
+            resultDict['wordCount'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
+                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
         if fieldMetrik['modelField'] == 'punctCount' and punctCount:
-            results['punctCount'] = {'rawValues': fieldMetrik['values'],
-                                     'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
+            resultDict['punctCount'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
+                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
         if fieldMetrik['modelField'] == 'citationCount' and citationCount:
-            results['citationCount'] = {'rawValues': fieldMetrik['values'],
-                                        'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values'])}
+            resultDict['citationCount'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
+                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
 
-    return results
+    return resultDict
 
 
 def getStatisticalValuesForFieldMetriks(input):
