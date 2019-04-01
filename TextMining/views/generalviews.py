@@ -359,6 +359,11 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
                punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
                universityCount=False,countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False, keywordFrequency=False):
+
+    sectionedMetriks = {('charCountWhiteSpace',charCountWhiteSpace), ('charCountNoWhiteSpace',charCountNoWhiteSpace),
+                        ('wordCount',wordCount),('punctCount',punctCount),('citationCount',citationCount)}
+    sectionedParts = {'abstractTitles', 'abstractText', 'sectionTitles', 'sectionText', 'subsectionTitles', 'subsectionText'}
+    valueParts = {'rawValues', 'statisticalValues'}
     results = {}
     if charCountWhiteSpace:
         results['charCountWhiteSpace'] = {}
@@ -391,6 +396,7 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
     if pictureDescriptionLengthCount:
         results['pictureDescriptionLengthCount'] = {}
 
+
     if corpus1:
         corpusIdentifier = "Corpus1"
         print('get Metriks')
@@ -406,10 +412,28 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
                    punctCount, citationCount, authorCount, referenceCount,
                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
+        for metrik in sectionedMetriks:
+            if metrik[1]:
+                for part in sectionedParts:
+                    for valuePart in valueParts:
+                        while len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]) < \
+                        len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]):
+                            results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part].append([])
+                        while len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]) < \
+                        len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]):
+                            results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part].append([])
+    '''''
+    for metrik in sectionedMetriks:
+        for part in sectionedParts:
+            for valuePart in valueParts:
+                print("metriklänge")
+                print(len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]))
+                print(len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]))
     print(json.dumps(results))
     with open('data.txt', 'w') as outfile:
         json.dump(results, outfile)
     return json.dumps(results)
+        '''''
 
 
 # TODO if Abfragen für existenz von Feldern
