@@ -429,11 +429,12 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
                 print("metriklänge")
                 print(len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]))
                 print(len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]))
+            '''''
     print(json.dumps(results))
     with open('data.txt', 'w') as outfile:
         json.dump(results, outfile)
     return json.dumps(results)
-        '''''
+
 
 
 # TODO if Abfragen für existenz von Feldern
