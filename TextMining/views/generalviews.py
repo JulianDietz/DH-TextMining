@@ -263,11 +263,12 @@ def calculateMetrik(request):
         print(request.GET)
         fieldname=request.GET.get('fieldname')
         #TODO variante für beide!
-        variante=request.GET.get('Korpus1_variante')
+        variante1=request.GET.get('Korpus1_variante')
+        variante2 = request.GET.get('Korpus2_variante')
         print('fieldname:' +fieldname)
         if fieldname:
             bool=True
-            response=analyseCorpora(variante,KORPUS1,KORPUS2, ** {fieldname: bool})
+            response=analyseCorpora(variante1,variante2,KORPUS1,KORPUS2, ** {fieldname: bool})
         return JsonResponse(response, safe=False)
 
 # TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?
@@ -355,7 +356,7 @@ def createNewMetrikDict():
     return {'totals': totals, 'sectioned': sectioned}
 
 
-def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
+def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
                punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
                universityCount=False,countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False, keywordFrequency=False):
@@ -400,7 +401,7 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
     if corpus1:
         corpusIdentifier = "Corpus1"
         print('get Metriks')
-        results = getMetriks(corpus1, variant, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+        results = getMetriks(corpus1, variant1, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                    punctCount, citationCount, authorCount, referenceCount,
                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
@@ -408,7 +409,7 @@ def analyseCorpora(variant, corpus1, corpus2,charCountWhiteSpace=False, charCoun
 
     if corpus2:
         corpusIdentifier = "Corpus2"
-        results = getMetriks(corpus2, variant,corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+        results = getMetriks(corpus2, variant2,corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                    punctCount, citationCount, authorCount, referenceCount,
                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
                    tableDescriptionLengthCount, pictureDescriptionLengthCount, keywordFrequency)
