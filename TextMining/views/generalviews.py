@@ -310,6 +310,7 @@ def getStatisticalValues(inputarray):
         min = None
         max = None
     else:
+        #TODO: modus geht nicht mit 2
         inputarray = [entry['value'] for entry in inputarray]
         sum = int(np.sum(inputarray))
         average = float(np.mean(inputarray))
@@ -346,7 +347,7 @@ def getStatisticalValues(inputarray):
 
 def createNewValueAndPaperDict(value, paper):
     return {'value': value, 'paperTitle': paper.titleRaw.text, 'authors': [author.name for author in paper.authors],
-            'year': paper.metaData.year}
+            'year': paper.metaData.yearOfArticle}
 
 def createNewMetrikDict():
     totals = {'titles': [] , 'abstractTitles': [], 'abstractText': [],
