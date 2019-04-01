@@ -10,7 +10,6 @@ $(document).ready(function () {
 
         let statisticDisplayType = $this.attr("data-statisticdisplaytype");
 
-
         if ($this.attr("data-ready") == "false") {
             $.ajax({
                 url: calculateURL,
@@ -20,12 +19,13 @@ $(document).ready(function () {
                     $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
                 },
                 success: function (response) {
-                    console.log(JSON.parse(response));
                     onSuccess(JSON.parse(response));
                 }
             });
 
             function onSuccess(data) {
+                console.log(data);
+
                 switch (statisticDisplayType) {
                     case "numeric-total":
                         returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants);
@@ -61,21 +61,8 @@ $(document).ready(function () {
 
 
 function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
-    //TODO debug v
-    let sumstat = [
-        {"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}},
-        {"key": "Korpus 2", "value": {"q1": 5.6, "median": 5.9, "q3": 6.3, "interQuantileRange": 0.7000000000000002, "min": 4.549999999999999, "max": 7.35}}]
-
-    let rawData = JSON.parse('[{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"4.7","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"4.3","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"4.7","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"4.5","corpus":"Korpus 2"},{"metric_value":"4.4","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.8","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"4.6","corpus":"Korpus 2"},{"metric_value":"5.3","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"7","corpus":"Korpus 1"},{"metric_value":"6.4","corpus":"Korpus 1"},{"metric_value":"6.9","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"6.5","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"6.6","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.9","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"6.2","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.9","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"6.4","corpus":"Korpus 1"},{"metric_value":"6.6","corpus":"Korpus 1"},{"metric_value":"6.8","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"6","corpus":"Korpus 1"},{"metric_value":"6.7","corpus":"Korpus 1"},{"metric_value":"6.3","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"6.1","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.6","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"6.2","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"}]');
-    let rawData2 = JSON.parse('[{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"4.7","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"4.4","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"4.3","corpus":"Korpus 1"},{"metric_value":"5.8","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5.7","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"4.7","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"5.4","corpus":"Korpus 1"},{"metric_value":"5.2","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.5","corpus":"Korpus 1"},{"metric_value":"4.9","corpus":"Korpus 1"},{"metric_value":"4.4","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"4.5","corpus":"Korpus 1"},{"metric_value":"4.4","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.8","corpus":"Korpus 1"},{"metric_value":"5.1","corpus":"Korpus 1"},{"metric_value":"4.6","corpus":"Korpus 1"},{"metric_value":"5.3","corpus":"Korpus 1"},{"metric_value":"5","corpus":"Korpus 1"},{"metric_value":"7","corpus":"Korpus 2"},{"metric_value":"6.4","corpus":"Korpus 2"},{"metric_value":"6.9","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"6.5","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"6.3","corpus":"Korpus 2"},{"metric_value":"4.9","corpus":"Korpus 2"},{"metric_value":"6.6","corpus":"Korpus 2"},{"metric_value":"5.2","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.9","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"6.7","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"6.2","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.9","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"6.3","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"6.4","corpus":"Korpus 2"},{"metric_value":"6.6","corpus":"Korpus 2"},{"metric_value":"6.8","corpus":"Korpus 2"},{"metric_value":"6.7","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"5.4","corpus":"Korpus 2"},{"metric_value":"6","corpus":"Korpus 2"},{"metric_value":"6.7","corpus":"Korpus 2"},{"metric_value":"6.3","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"5.5","corpus":"Korpus 2"},{"metric_value":"6.1","corpus":"Korpus 2"},{"metric_value":"5.8","corpus":"Korpus 2"},{"metric_value":"5","corpus":"Korpus 2"},{"metric_value":"5.6","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"},{"metric_value":"6.2","corpus":"Korpus 2"},{"metric_value":"5.1","corpus":"Korpus 2"},{"metric_value":"5.7","corpus":"Korpus 2"}]');
-
-
-    let statisticalData = sumstat;
-    //TODO debug ^
 
     let metricName = IDMetricEl.split("_")[2];
-
-    console.log(data);
 
     //HIER SIND ALLE INTERAKTIONEN
     //Section selector
@@ -85,35 +72,40 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
     //recalculate Metric
     recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
 
-    //text Variante Korpus2
-    let textVarSelect2 = metricSectionSelectorContainer
-        .append("div")
-        .classed("textVarSelectContainer", true)
-        .text("Korpus 2:")
-        .append("select")
-        .classed("textVarSelect", true)
-        .attr("id", "textVar_Korpus2_" + IDMetricEl);
 
-    textVarSelect2
-        .selectAll("option")
-        .data(textVariants)
-        .enter()
-        .append("option")
-        .attr("value", function (d) {
-            return d.value;
-        })
-        .text(function (d) {
-            return d.display;
-        });
+    if (Object.keys(data[metricName]).length > 1) {
+        //text Variante Korpus2
+        let textVarSelect2 = metricSectionSelectorContainer
+            .append("div")
+            .classed("textVarSelectContainer", true)
+            .text("Korpus 2:")
+            .append("select")
+            .classed("textVarSelect", true)
+            .attr("id", "textVar_Korpus2_" + IDMetricEl);
 
-    //update selection for korpus2 TODO abfragen ob Korpus 2 existiert
-    /*for (let i = 0; i < textVarSelect2.node().options.length; i++) {
-        if (textVarSelect2.node().options[i].value = data[IDMetricEl.split("_")[2]].Corpus2.variant) {
-            textVarSelect2.node().selectedIndex = i;
+        textVarSelect2
+            .selectAll("option")
+            .data(textVariants)
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d.value;
+            })
+            .text(function (d) {
+                return d.display;
+            });
+
+        //update selection for korpus2
+        for (let i = 0; i < textVarSelect2.node().options.length; i++) {
+            if (textVarSelect2.node().options[i].value === data[IDMetricEl.split("_")[2]].Corpus2.variant) {
+                textVarSelect2.node().selectedIndex = i;
+            }
+            ;
         }
         ;
     }
-    ;*/
+    ;
+
 
     //Text Variante Korpus 1
     let textVarSelect1 = metricSectionSelectorContainer
@@ -138,7 +130,7 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
 
     //update selection for korpus1
     for (let i = 0; i < textVarSelect1.node().options.length; i++) {
-        if (textVarSelect1.node().options[i].value = data[metricName].Corpus1.variant) {
+        if (textVarSelect1.node().options[i].value === data[metricName].Corpus1.variant) {
             textVarSelect1.node().selectedIndex = i;
         }
         ;
@@ -149,14 +141,16 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
     //recalculate function
     recalcButton.on("click", function () {
         selectedTextVar1 = d3.select("#textVar_Korpus1_" + IDMetricEl).node().options[d3.select("#textVar_Korpus1_" + IDMetricEl).node().selectedIndex].value;
-        selectedTextVar2 = d3.select("#textVar_Korpus2_" + IDMetricEl).node().options[d3.select("#textVar_Korpus2_" + IDMetricEl).node().selectedIndex].value;
+
+        selectedTextVar2 = null;
+        if ((Object.keys(data[metricName]).length > 1)) {
+            selectedTextVar2 = d3.select("#textVar_Korpus2_" + IDMetricEl).node().options[d3.select("#textVar_Korpus2_" + IDMetricEl).node().selectedIndex].value;
+        }
         recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
     });
 
 
     // HIER WERDEN DIE DATEN DER METRIK EINGEFÜLLT
-
-
     let metricContainer = d3.select(htmlEl[0]);
 
     let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
@@ -185,7 +179,7 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
     createCSVdownload(IDMetricEl, calcRawData);
 };
 
-function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
+function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants) {
     //TODO debug v
     let sumstat = [
         {"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}},
@@ -349,33 +343,94 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
     let statisticalData = sumstat;
     //TODO debug ^
 
+    let metricName = IDMetricEl.split("_")[2];
 
     //Section selector
     let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true);
+
     metricSectionSelectorContainer.append("p").text("Abschnitt:").style("display", "inline-block");
     let sectionSelector = metricSectionSelectorContainer.append("select").classed("paperAreaSelector", true);
 
-    sectionSelector.selectAll("option").data(rawData).enter().append("option").attr("value", function (d) {
+    console.log(data);
+
+
+
+        for (area in data[metricName].Corpus1.rawValues.sectioned) {
+            for (section in data[metricName].Corpus1.rawValues.sectioned[area]) {
+                console.log(section)
+                sectionSelector.append("option").attr("value", area).text("Sektion: " + area + (parseInt(section)+1));
+            }
+        };
+        ;
+        for (area in data[metricName].Corpus1.rawValues.totals) {
+            sectionSelector.append("option").attr("value", area).text("Gesamt: " + area);
+
+        }
+        ;
+
+
+
+    /*.data(data).enter().append("option").attr("value", function (d) {
+        console.log(d)
         return d.section
     }).text(function (d) {
         return d.section
-    });
+    });*/
+
+
     sectionSelector.on("change", function () {
         console.log("Abschnitt changed");
     });
 
+    //NEU
     //recalculate Metric
     recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
 
-    let textVarSelect = metricSectionSelectorContainer
+
+    if (Object.keys(data[metricName]).length > 1) {
+        //text Variante Korpus2
+        let textVarSelect2 = metricSectionSelectorContainer
+            .append("div")
+            .classed("textVarSelectContainer", true)
+            .text("Korpus 2:")
+            .append("select")
+            .classed("textVarSelect", true)
+            .attr("id", "textVar_Korpus2_" + IDMetricEl);
+
+        textVarSelect2
+            .selectAll("option")
+            .data(textVariants)
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d.value;
+            })
+            .text(function (d) {
+                return d.display;
+            });
+
+        //update selection for korpus2
+        for (let i = 0; i < textVarSelect2.node().options.length; i++) {
+            if (textVarSelect2.node().options[i].value === data[IDMetricEl.split("_")[2]].Corpus2.variant) {
+                textVarSelect2.node().selectedIndex = i;
+            }
+            ;
+        }
+        ;
+    }
+    ;
+
+
+    //Text Variante Korpus 1
+    let textVarSelect1 = metricSectionSelectorContainer
         .append("div")
         .classed("textVarSelectContainer", true)
-        .text("Text:")
+        .text("Korpus 1:")
         .append("select")
         .classed("textVarSelect", true)
-        .attr("id", "textVar_" + IDMetricEl);
+        .attr("id", "textVar_Korpus1_" + IDMetricEl);
 
-    textVarSelect
+    textVarSelect1
         .selectAll("option")
         .data(textVariants)
         .enter()
@@ -387,38 +442,55 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
             return d.display;
         });
 
+    //update selection for korpus1
+    for (let i = 0; i < textVarSelect1.node().options.length; i++) {
+        if (textVarSelect1.node().options[i].value === data[metricName].Corpus1.variant) {
+            textVarSelect1.node().selectedIndex = i;
+        }
+        ;
+    }
+    ;
+
+
+    //recalculate function
     recalcButton.on("click", function () {
-        //selectedTextVar1 = $("#textVar_" + IDMetricEl)TODO
-        //selectedTextVar2 = $("#textVar_" + IDMetricEl)
+        selectedTextVar1 = d3.select("#textVar_Korpus1_" + IDMetricEl).node().options[d3.select("#textVar_Korpus1_" + IDMetricEl).node().selectedIndex].value;
+
+        selectedTextVar2 = null;
+        if ((Object.keys(data[metricName]).length > 1)) {
+            selectedTextVar2 = d3.select("#textVar_Korpus2_" + IDMetricEl).node().options[d3.select("#textVar_Korpus2_" + IDMetricEl).node().selectedIndex].value;
+        }
         recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
     });
 
 
-    //Description
+    // HIER WERDEN DIE DATEN DER METRIK EINGEFÜLLT
     let metricContainer = d3.select(htmlEl[0]);
 
-    let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true);
-
-    //Add a statistical overview for each corpus
-    for (corpus of statisticalData) {
-
-        let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
-        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus.key);
-        let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
-
-        //TODO keys abgleichen
-        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(corpus.value.max.toFixed(2)).attr("data-before", "Modus: ");
-        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(corpus.value.median).attr("data-before", "Median: ");
-        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(corpus.value.q3).attr("data-before", "Durchschnitt: ");
-        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(corpus.value.interQuantileRange.toFixed(2)).attr("data-before", "Varianz: ");
-    }
+    let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
     ;
 
+    //Add a statistical overview for each corpus
+    /*for (corpus in data[metricName]) {
+        let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
+        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus);
+        let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
+
+        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(data[metricName][corpus].statisticalValues.mode.join(", ")).attr("data-before", "Modus: ");
+        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(data[metricName][corpus].statisticalValues.median.toFixed(2)).attr("data-before", "Median: ");
+        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(data[metricName][corpus].statisticalValues.average.toFixed(2)).attr("data-before", "Durchschnitt: ");
+        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(data[metricName][corpus].statisticalValues.variance.toFixed(2)).attr("data-before", "Varianz: ");
+    }
+    ;*/
+
+    //let calcRawData = convertDataTotalNumericRawValues(data, metricName);
+    //let calcStatsticalData = convertDataTotalNumericStatistics(data, metricName);
+    //NEU ENDE
     //drat the boxplot
-    //drawBoxplot(metricContainer, statisticalData, rawData);
+    //drawBoxplot(metricContainer, calcStatisticalData, calcRawData);
 
     //Create CSV file and download
-    createCSVdownload(IDMetricEl, rawData);
+    //createCSVdownload(IDMetricEl, calcrawData);
 };
 
 function returnGraphTextSection(IDMetricEl, htmlEl, data2, textVariants) {
@@ -457,12 +529,8 @@ function drawBoxplot(metricID, container, statisticsData, dataPoints) {
     }
     ;
 
-    console.log(domainX);
-
     let min = d3.max([0, parseInt(d3.min(domainX[0])) - 1]);
     let max = parseInt(d3.max(domainX[1])) + 1;
-
-    console.log(min, max);
 
     // Show the Y scale
     var y = d3.scaleBand()
@@ -554,7 +622,8 @@ function drawBoxplot(metricID, container, statisticsData, dataPoints) {
     let tooltip = container
         .append("div")
         .style("opacity", 0)
-        .classed("tooltip-cust", true);
+        .classed("tooltip-cust", true)
+        .attr("id", metricID + "_tooltip");
 
     let mouseover = function (d) {
 
@@ -563,9 +632,7 @@ function drawBoxplot(metricID, container, statisticsData, dataPoints) {
             .duration(200)
             .style("opacity", 1);
         tooltip
-            .html("<span style='color:grey'>Titel: </span>" + d.values.paperTitle)
-            //.style("left", (d3.mouse(this)[0] + 30) + "px")
-            //.style("top", (d3.mouse(this)[1] + 30) + "px")
+            .html("<span style='color:grey'>Titel: </span>" + d.values.paperTitle + " (" + d.values.year + ") " + d.values.authors[0]);
     };
     let mouseleave = function (d) {
         tooltip
@@ -639,7 +706,8 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
         type: 'GET',
         data: {fieldname: metricID.split('_')[2], Korpus1_variante: textVariantKorpus1, Korpus2_variante: textVarianteKorpus2},
         beforeSend: function () {
-            //$this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
+            console.log("beforeSend");
+            $("#collapse_button_" + metricID).next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
         },
         success: function (response) {
             console.log(response);
@@ -650,8 +718,9 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
     function onSuccess(data) {
 
         d3.select("#metricDescription_" + metricID).remove();
-        d3.select("#metricSectionSelectorContainer_" + metricID).remove()
-        d3.select("#graphContainer_" + metricID).remove()
+        d3.select("#metricSectionSelectorContainer_" + metricID).remove();
+        d3.select("#graphContainer_" + metricID).remove();
+        d3.select("#" + metricID + "_tooltip").remove();
 
         const textVariants = [{"key": "orig", "value": "Raw", "display": "Original"},
             {"key": "stpw", "value": "NltkStw", "display": "Stopwortgefiltert"},
@@ -674,13 +743,14 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
             case "text-section":
                 break;
         }
-        //d3.select('#'+metricID).toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
-        //collapseEl.collapse('toggle');
-        d3.select('#' + metricID).attr("data-ready", "true");
-        d3.select('#' + metricID).next().children(".indicator").attr("src", "/static/img/results/verified.png")
+
+        //d3.select('#' + metricID).attr("data-ready", "true");
+        $("#collapse_button_" + metricID).next().children(".indicator").attr("src", "/static/img/results/verified.png")
     }
 }
 
+
+//Converters
 function convertDataTotalNumericStatistics(data, metricName) {
     statisticsArr = []
     for (corpus in data[metricName]) {
