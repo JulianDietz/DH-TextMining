@@ -225,7 +225,7 @@ def startAnalyse(request):
             KORPUS1 = None
         if request.POST.get('Korpus2'):
             varianteKorpus2 = request.POST.get('Korpus2_textVariante')
-            korpus2liste = request.POST.getlist('Korpus1')
+            korpus2liste = request.POST.getlist('Korpus2')
             KORPUS2 = Paper.objects.filter(id__in=korpus2liste)
         else:
             KORPUS2 = None
