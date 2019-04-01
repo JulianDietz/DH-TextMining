@@ -6,11 +6,11 @@
         <p>Es befinden sich <b>{{ numberPaper }}</b> Einträge in der Datenbank.</p>
         <p>Es sind <b>{{ numberFiles }}</b> Dateien bereit zum Einlesen.</p>
 
-        <div class="spinner-border hidden" role="status">
+        <div style="text-align: center" class="spinner-border hidden" role="status">
             <span class="sr-only">Loading...</span>
         </div>
         <div>
-            <p id='resultText' class="hidden">Paper erfolgreich eingelesen. Nächster Schritt Paper vorberechnen: <a class="btn btn-primary" href="{% url 'processPaperView' %}" role="button">Link</a>
+            <p id='resultText' class="hidden">Paper erfolgreich eingelesen. Nächster Schritt Paper vorberechnen: <a class="btn-dh-white" href="{% url 'processPaperView' %}" role="button">Vorberechnen</a>
             </p>
         </div>
 

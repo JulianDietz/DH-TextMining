@@ -20,7 +20,7 @@ $(document).ready(function () {
                     $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
                 },
                 success: function (response) {
-                    console.log(response);
+                    console.log(JSON.parse(response));
                     onSuccess(JSON.parse(response));
                 }
             });
@@ -60,7 +60,7 @@ $(document).ready(function () {
 });
 
 
-function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
+function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
     //TODO debug v
     let sumstat = [
         {"key": "Korpus 1", "value": {"q1": 4.8, "median": 5, "q3": 5.2, "interQuantileRange": 0.40000000000000036, "min": 4.199999999999999, "max": 5.800000000000001}},
@@ -73,12 +73,47 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
     let statisticalData = sumstat;
     //TODO debug ^
 
+    let metricName = IDMetricEl.split("_")[2];
+
+    console.log(data);
+
+    //HIER SIND ALLE INTERAKTIONEN
     //Section selector
-    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true);
+    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true).attr("id", "metricSectionSelectorContainer_" + IDMetricEl);
     metricSectionSelectorContainer.append("p").text("Diese Metrik bezieht sich auf das gesamte Dokument").style("display", "inline-block");
 
     //recalculate Metric
     recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
+
+    //text Variante Korpus2
+    let textVarSelect2 = metricSectionSelectorContainer
+        .append("div")
+        .classed("textVarSelectContainer", true)
+        .text("Korpus 2:")
+        .append("select")
+        .classed("textVarSelect", true)
+        .attr("id", "textVar_Korpus2_" + IDMetricEl);
+
+    textVarSelect2
+        .selectAll("option")
+        .data(textVariants)
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+            return d.value;
+        })
+        .text(function (d) {
+            return d.display;
+        });
+
+    //update selection for korpus2 TODO abfragen ob Korpus 2 existiert
+    /*for (let i = 0; i < textVarSelect2.node().options.length; i++) {
+        if (textVarSelect2.node().options[i].value = data[IDMetricEl.split("_")[2]].Corpus2.variant) {
+            textVarSelect2.node().selectedIndex = i;
+        }
+        ;
+    }
+    ;*/
 
     //Text Variante Korpus 1
     let textVarSelect1 = metricSectionSelectorContainer
@@ -103,7 +138,7 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
 
     //update selection for korpus1
     for (let i = 0; i < textVarSelect1.node().options.length; i++) {
-        if (textVarSelect1.node().options[i].value = data2[IDMetricEl.split("_")[2]].Corpus1.variant) {
+        if (textVarSelect1.node().options[i].value = data[metricName].Corpus1.variant) {
             textVarSelect1.node().selectedIndex = i;
         }
         ;
@@ -111,59 +146,43 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data2, textVariants) {
     ;
 
 
-    //text Variante Korpus2
-    let textVarSelect2 = metricSectionSelectorContainer
-        .append("div")
-        .classed("textVarSelectContainer", true)
-        .text("Korpus 2:")
-        .append("select")
-        .classed("textVarSelect", true)
-        .attr("id", "textVar_Korpus2_" + IDMetricEl);
-
-    textVarSelect2
-        .selectAll("option")
-        .data(textVariants)
-        .enter()
-        .append("option")
-        .attr("value", function (d) {
-            return d.value;
-        })
-        .text(function (d) {
-            return d.display;
-        });
-
-
-    //recalculate
+    //recalculate function
     recalcButton.on("click", function () {
         selectedTextVar1 = d3.select("#textVar_Korpus1_" + IDMetricEl).node().options[d3.select("#textVar_Korpus1_" + IDMetricEl).node().selectedIndex].value;
         selectedTextVar2 = d3.select("#textVar_Korpus2_" + IDMetricEl).node().options[d3.select("#textVar_Korpus2_" + IDMetricEl).node().selectedIndex].value;
         recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
     });
 
-    // Metrik
+
+    // HIER WERDEN DIE DATEN DER METRIK EINGEFÜLLT
+
+
     let metricContainer = d3.select(htmlEl[0]);
 
-    let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true);
+    let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
+    ;
 
     //Add a statistical overview for each corpus
-    for (corpus of statisticalData) {
+    for (corpus in data[metricName]) {
         let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
-        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus.key);
+        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus);
         let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
 
-        //TODO keys abgleichen
-        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(corpus.value.max.toFixed(2)).attr("data-before", "Modus: ");
-        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(corpus.value.median).attr("data-before", "Median: ");
-        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(corpus.value.q3).attr("data-before", "Durchschnitt: ");
-        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(corpus.value.interQuantileRange.toFixed(2)).attr("data-before", "Varianz: ");
+        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(data[metricName][corpus].statisticalValues.mode.join(", ")).attr("data-before", "Modus: ");
+        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(data[metricName][corpus].statisticalValues.median.toFixed(2)).attr("data-before", "Median: ");
+        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(data[metricName][corpus].statisticalValues.average.toFixed(2)).attr("data-before", "Durchschnitt: ");
+        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(data[metricName][corpus].statisticalValues.variance.toFixed(2)).attr("data-before", "Varianz: ");
     }
     ;
 
+    let calcRawData = convertDataTotalNumericRawValues(data, metricName);
+    let calcStatsticalData = convertDataTotalNumericStatistics(data, metricName);
+
     //drat the boxplot
-    drawBoxplot(metricContainer, statisticalData, rawData);
+    drawBoxplot(IDMetricEl, metricContainer, calcStatsticalData, calcRawData);
 
     //Create CSV file and download
-    createCSVdownload(IDMetricEl, rawData, data2);
+    createCSVdownload(IDMetricEl, calcRawData);
 };
 
 function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
@@ -403,13 +422,16 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data2, textVariants) {
 };
 
 function returnGraphTextSection(IDMetricEl, htmlEl, data2, textVariants) {
+    console.log("test")
 }
 
 function returnGraphTextTotal(IDMetricEl, htmlEl, data2, textVariants) {
+    console.log("test")
 }
 
 
-function drawBoxplot(container, statisticsData, dataPoints) {
+//General functions
+function drawBoxplot(metricID, container, statisticsData, dataPoints) {
     var margin = {top: 20, right: 40, bottom: 60, left: 120};
 
     let height = 200 - margin.bottom - margin.top;
@@ -417,6 +439,7 @@ function drawBoxplot(container, statisticsData, dataPoints) {
 
     let svg = container.append("div")
         .classed("graphContainer", true)
+        .attr("id", "graphContainer_" + metricID)
         .append("svg")
         .classed("svg-chart", true)
         .attr("preserveAspectRatio", "xMinYMin meet")
@@ -424,20 +447,36 @@ function drawBoxplot(container, statisticsData, dataPoints) {
         .append("g").attr("transform",
             "translate(" + margin.left + "," + margin.top + ")");
 
+    //Create domain
+    let domainY = [];
+    let domainX = [[], []];
+    for (corpus of statisticsData) {
+        domainY.unshift(corpus.corpus);
+        domainX[0].push([corpus.value.minimum]);
+        domainX[1].push([corpus.value.maximum]);
+    }
+    ;
 
-    //TODO domain dynamisch
+    console.log(domainX);
+
+    let min = d3.max([0, parseInt(d3.min(domainX[0])) - 1]);
+    let max = parseInt(d3.max(domainX[1])) + 1;
+
+    console.log(min, max);
+
     // Show the Y scale
     var y = d3.scaleBand()
         .range([height, 0])
-        .domain(["Korpus 2", "Korpus 1"])
+        .domain(domainY)
         .padding(.4);
     svg.append("g")
         .call(d3.axisLeft(y).tickSize(0))
         .select(".domain").remove()
 
+
     // Show the X scale
     var x = d3.scaleLinear()
-        .domain([4, 8])
+        .domain([min, max])
         .range([0, width])
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -447,7 +486,7 @@ function drawBoxplot(container, statisticsData, dataPoints) {
     // Color scale
     var myColor = d3.scaleSequential()
         .interpolator(d3.interpolateInferno)
-        .domain([4, 8])
+        .domain([min, max])
 
     // Show the main vertical line
     svg
@@ -456,16 +495,16 @@ function drawBoxplot(container, statisticsData, dataPoints) {
         .enter()
         .append("line")
         .attr("x1", function (d) {
-            return (x(d.value.min))
+            return (x(d.value.minimum))
         })
         .attr("x2", function (d) {
-            return (x(d.value.max))
+            return (x(d.value.maximum))
         })
         .attr("y1", function (d) {
-            return (y(d.key) + y.bandwidth() / 2)
+            return (y(d.corpus) + y.bandwidth() / 2)
         })
         .attr("y2", function (d) {
-            return (y(d.key) + y.bandwidth() / 2)
+            return (y(d.corpus) + y.bandwidth() / 2)
         })
         .attr("stroke", "black")
         .style("width", 40)
@@ -477,14 +516,14 @@ function drawBoxplot(container, statisticsData, dataPoints) {
         .enter()
         .append("rect")
         .attr("x", function (d) {
-            return (x(d.value.q1))
+            return (x(d.value.lowerQuartile))
         })
         .attr("width", function (d) {
             ;
-            return (x(d.value.q3) - x(d.value.q1))
+            return (x(d.value.upperQuartile) - x(d.value.lowerQuartile))
         })
         .attr("y", function (d) {
-            return y(d.key);
+            return y(d.corpus);
         })
         .attr("height", y.bandwidth())
         .attr("stroke", "black")
@@ -498,10 +537,10 @@ function drawBoxplot(container, statisticsData, dataPoints) {
         .enter()
         .append("line")
         .attr("y1", function (d) {
-            return (y(d.key) + y.bandwidth() / 2 + (height / 4))
+            return (y(d.corpus) + y.bandwidth() / 2 + (height / 4))
         })
         .attr("y2", function (d) {
-            return (y(d.key) + y.bandwidth() / 2 - (height / 4))
+            return (y(d.corpus) + y.bandwidth() / 2 - (height / 4))
         })
         .attr("x1", function (d) {
             return (x(d.value.median))
@@ -511,33 +550,55 @@ function drawBoxplot(container, statisticsData, dataPoints) {
         })
         .attr("stroke", "black");
 
+    //tooltip
+    let tooltip = container
+        .append("div")
+        .style("opacity", 0)
+        .classed("tooltip-cust", true);
+
+    let mouseover = function (d) {
+
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 1);
+        tooltip
+            .html("<span style='color:grey'>Titel: </span>" + d.values.paperTitle)
+            //.style("left", (d3.mouse(this)[0] + 30) + "px")
+            //.style("top", (d3.mouse(this)[1] + 30) + "px")
+    };
+    let mouseleave = function (d) {
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 0)
+    };
+
 
     // Add individual points with jitter
-    var jitterWidth = 30;
-
-    //TODO debug daten anpassen
+    let jitterWidth = 30;
     svg
         .selectAll("indPoints")
         .data(dataPoints)
         .enter()
         .append("circle")
         .attr("cx", function (d) {
-            return (x(d.metric_value))
+            return (x(d.values.value))
         })
         .attr("cy", function (d) {
             return (y(d.corpus) + (y.bandwidth() / 2) - jitterWidth / 2 + Math.random() * jitterWidth)
         })
         .attr("r", 4)
         .style("fill", function (d) {
-            return (myColor(+d.metric_value))
+            return (myColor(+d.values.value))
         })
         .attr("stroke", "black")
+        .on("mouseover", mouseover)
+        .on("mouseleave", mouseleave)
 
 }
 
-function createCSVdownload(metricID, dataPoints, data3) {
-
-    console.log(Object.keys(data3)[0]);
+function createCSVdownload(metricID, dataPoints) {
 
     let metric_name = metricID.split("_")[2]
     let downloadButton = d3.select("#download_" + metric_name);
@@ -551,7 +612,7 @@ function createCSVdownload(metricID, dataPoints, data3) {
 
     let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
-    downloadButton.attr("download", metric_name + "_csvdata" + Object.keys(data3)[0].toString());
+    downloadButton.attr("download", metric_name + "_csvdata");
 
     function convertJSONtoCSV(data) {
 
@@ -588,17 +649,16 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
 
     function onSuccess(data) {
 
-        console.log(d3.select('#'+metricID));
-
-        //d3.select('#'+metricID).select("metricDescription").remove()
-        //d3.select('#'+metricID).select("graphContainer").remove()
+        d3.select("#metricDescription_" + metricID).remove();
+        d3.select("#metricSectionSelectorContainer_" + metricID).remove()
+        d3.select("#graphContainer_" + metricID).remove()
 
         const textVariants = [{"key": "orig", "value": "Raw", "display": "Original"},
             {"key": "stpw", "value": "NltkStw", "display": "Stopwortgefiltert"},
             {"key": "stmd", "value": "NltkStem", "display": "Gestemmt"}];
 
-        let collapseEl = $($('#'+metricID).attr("data-collapse"));
-        let statisticDisplayType = $('#'+metricID).attr("data-statisticdisplaytype");
+        let collapseEl = $($('#' + metricID).attr("data-collapse"));
+        let statisticDisplayType = $('#' + metricID).attr("data-statisticdisplaytype");
 
 
         switch (statisticDisplayType) {
@@ -616,9 +676,32 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
         }
         //d3.select('#'+metricID).toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
         //collapseEl.collapse('toggle');
-        d3.select('#'+metricID).attr("data-ready", "true");
-        d3.select('#'+metricID).next().children(".indicator").attr("src", "/static/img/results/verified.png")
+        d3.select('#' + metricID).attr("data-ready", "true");
+        d3.select('#' + metricID).next().children(".indicator").attr("src", "/static/img/results/verified.png")
     }
+}
+
+function convertDataTotalNumericStatistics(data, metricName) {
+    statisticsArr = []
+    for (corpus in data[metricName]) {
+        statisticsArr.push({"corpus": corpus, "value": data[metricName][corpus].statisticalValues});
+    }
+    ;
+    return statisticsArr;
+};
+
+function convertDataTotalNumericRawValues(data, metricName) {
+    let rawValuesArr = [];
+
+    for (corpus in data[metricName]) {
+        for (entry of data[metricName][corpus].rawValues) {
+            rawValuesArr.push({"corpus": corpus, "values": entry});
+        }
+        ;
+    }
+    ;
+
+    return rawValuesArr;
 }
 
 

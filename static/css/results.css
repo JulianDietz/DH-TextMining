@@ -124,3 +124,8 @@
     margin-right: 1em;
     float: right;
 }
+
+.tooltip-cust{
+    margin-bottom: .5em;
+    padding-bottom: .5em;
+}

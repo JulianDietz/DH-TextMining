@@ -11,13 +11,11 @@ body {
     transition: .4s;
     margin-top: 2em;
     cursor: pointer;
+    width: 20em;
     position: absolute;
     bottom: 3%;
-    margin-left: auto;
-    margin-right: auto;
-    left: 0;
-    right: 0;
-    max-width: 20em;
+    left: 50%;
+    margin-left: -10em;
 }
 
 #startAnalysisButton:hover {

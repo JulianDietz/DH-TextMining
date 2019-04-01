@@ -3,10 +3,14 @@
 
 {% block body %}
 
-    <div class="container-fluid">
+    {% load static %}
+     <link href='{% static "css/uploadSummary.css" %}' rel="stylesheet">
+
+
+    <div class="container-fluid" style="text-align: center">
         <h3><span id="validPaperNum">{{ validPaper|length }} </span> Valide Paper:</h3>
-        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
-                aria-expanded="false" aria-controls="collapseExample">
+        <button class="btn-dh-white" type="button" data-toggle="collapse" data-target="#collapseExample"
+                aria-expanded="false" aria-controls="collapseExample" id="detailsbutton" >
             Details
         </button>
         <div class="collapse" id="collapseExample">
@@ -21,7 +25,7 @@
                 {% for paper in validPaper %}
                     <tr>
                         <td><span><i class="far fa-check-circle"></i></span></td>
-                        <td>{{ paper.name }}</td>
+                        <td style="text-align: left">{{ paper.name }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -31,9 +35,9 @@
     <hr>
     {% if invalidPaper %}
         <div id="invalidPaper">
-            <a href="{% url "completeUpload" %}" class=" row float-right btn btn-primary" role="button">Paper hochladen ohne fehlerhafte
+            <a href="{% url "completeUpload" %}" class="row float-right btn-dh-white" role="button">Paper hochladen ohne fehlerhafte
                 Paper</a>
-        <br>
+            <br>
 
             <h3><span id="invalidPaperNum">{{ invalidPaper|length }}</span> Fehlerhafte Paper:</h3>
             {% for paper in invalidPaper %}
@@ -55,7 +59,8 @@
                         <button class="btn btn-light" type="button" onclick="prettyPrint()"><i class="fas fa-broom"></i>prettify
                         </button>
                         <button class="float-right btn btn-primary" type="submit" id="submitSingelPaperButton">Paper zum
-                            Korpus hinzufügen </button>
+                            Korpus hinzufügen
+                        </button>
                     </form>
                 </div>
             {% endfor %}
@@ -84,7 +89,7 @@
             </div>
         </div>
     {% else %}
-        <a href="{% url "completeUpload" %}" class="float-right btn btn-primary" role="button">Paper hochladen</a>
+        <a href="{% url "completeUpload" %}" class="btn-dh-white float-right" role="button">Paper hochladen</a>
     {% endif %}
 
     </div>
