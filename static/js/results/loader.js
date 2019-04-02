@@ -172,6 +172,9 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
     let calcRawData = convertDataTotalNumericRawValues(data, metricName);
     let calcStatsticalData = convertDataTotalNumericStatistics(data, metricName);
 
+    console.log(calcRawData);
+    console.log(calcStatsticalData);
+
     //drat the boxplot
     drawBoxplot(IDMetricEl, metricContainer, calcStatsticalData, calcRawData);
 
@@ -346,47 +349,32 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants) {
     let metricName = IDMetricEl.split("_")[2];
 
     //Section selector
-    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true);
+    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true).attr("id", "metricSectionSelectorContainer_" + IDMetricEl);
 
     metricSectionSelectorContainer.append("p").text("Abschnitt:").style("display", "inline-block");
     let sectionSelector = metricSectionSelectorContainer.append("select").classed("paperAreaSelector", true);
 
-    console.log(data);
-
-
-
-        for (area in data[metricName].Corpus1.rawValues.sectioned) {
-            for (section in data[metricName].Corpus1.rawValues.sectioned[area]) {
-                console.log(section)
-                sectionSelector.append("option").attr("value", area).text("Sektion: " + area + (parseInt(section)+1));
-            }
-        };
-        ;
-        for (area in data[metricName].Corpus1.rawValues.totals) {
-            sectionSelector.append("option").attr("value", area).text("Gesamt: " + area);
-
+    for (area in data[metricName].Corpus1.rawValues.totals) {
+        //TODO debug
+        if (area != "titles") {
+            sectionSelector.append("option").attr("value", area).text(area);
         }
         ;
-
-
-
-    /*.data(data).enter().append("option").attr("value", function (d) {
-        console.log(d)
-        return d.section
-    }).text(function (d) {
-        return d.section
-    });*/
-
+    }
+    ;
 
     sectionSelector.on("change", function () {
-        console.log("Abschnitt changed");
+        d3.select("#metricDescription_" + IDMetricEl).remove();
+        //TODO andere sachen mitentfernen
+
+        drawInfo();
     });
 
     //NEU
     //recalculate Metric
     recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
 
-
+    //text Variant selector
     if (Object.keys(data[metricName]).length > 1) {
         //text Variante Korpus2
         let textVarSelect2 = metricSectionSelectorContainer
@@ -451,7 +439,6 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants) {
     }
     ;
 
-
     //recalculate function
     recalcButton.on("click", function () {
         selectedTextVar1 = d3.select("#textVar_Korpus1_" + IDMetricEl).node().options[d3.select("#textVar_Korpus1_" + IDMetricEl).node().selectedIndex].value;
@@ -463,34 +450,98 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants) {
         recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
     });
 
+    //draw the table for the first time
+    drawInfo();
+
 
     // HIER WERDEN DIE DATEN DER METRIK EINGEFÜLLT
-    let metricContainer = d3.select(htmlEl[0]);
+    function drawInfo() {
+        let metricContainer = d3.select(htmlEl[0]);
 
-    let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
-    ;
+        let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
+        ;
 
-    //Add a statistical overview for each corpus
-    /*for (corpus in data[metricName]) {
-        let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
-        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus);
-        let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
+        let tableEl = metricDescription.append("table").classed("table", true);
+        let tableHeader = tableEl.append("thead").append("tr");
+        let areaSelected = sectionSelector.node().options[sectionSelector.node().selectedIndex].value;
 
-        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(data[metricName][corpus].statisticalValues.mode.join(", ")).attr("data-before", "Modus: ");
-        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(data[metricName][corpus].statisticalValues.median.toFixed(2)).attr("data-before", "Median: ");
-        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(data[metricName][corpus].statisticalValues.average.toFixed(2)).attr("data-before", "Durchschnitt: ");
-        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(data[metricName][corpus].statisticalValues.variance.toFixed(2)).attr("data-before", "Varianz: ");
-    }
-    ;*/
 
-    //let calcRawData = convertDataTotalNumericRawValues(data, metricName);
-    //let calcStatsticalData = convertDataTotalNumericStatistics(data, metricName);
-    //NEU ENDE
-    //drat the boxplot
-    //drawBoxplot(metricContainer, calcStatisticalData, calcRawData);
+        //data table
+        tableEl = tableEl.append("tbody");
+        let tableTotalRow = tableEl.append("tr");
+        tableTotalRow.append("th").text("Gesamt");
+        tableTotalRow.append("th").append("i").classed("fas fa-chart-bar", true).style("cursor", "pointer").on("click", function () {
+            updateGraph(areaSelected, "totals")
+        });
 
-    //Create CSV file and download
-    //createCSVdownload(IDMetricEl, calcrawData);
+        tableHeader.append("th").text("Bereich");
+        tableHeader.append("th").text("Graph");
+
+        //header and Total
+        for (corpus in data[metricName]) {
+            tableHeader.append("th").text(corpus);
+
+
+            let cell = tableTotalRow.append("td")
+            let mode = data[metricName][corpus].statisticalValues.totals[areaSelected].mode != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].mode.join(", ") : "-";
+            let med = data[metricName][corpus].statisticalValues.totals[areaSelected].median != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].median.toFixed(2) : "-";
+            let avg = data[metricName][corpus].statisticalValues.totals[areaSelected].average != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].average.toFixed(2) : "-";
+            let variance = data[metricName][corpus].statisticalValues.totals[areaSelected].variance != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].variance.toFixed(2) : "-";
+
+            cell.append("p").classed("metric-data modus-text", true).text(mode).attr("data-before", "Modus: ");
+            cell.append("p").classed("metric-data median-text", true).text(med).attr("data-before", "Median: ");
+            cell.append("p").classed("metric-data average-text", true).text(avg).attr("data-before", "Durchschnitt: ");
+            cell.append("p").classed("metric-data variance-text", true).text(variance).attr("data-before", "Varianz: ");
+        }
+
+        //Add a statistical overview for each corpus
+        for (area in data[metricName].Corpus1.statisticalValues.sectioned[areaSelected]) {
+            let row = tableEl.append("tr")
+            row.append("th").attr("scope", "row").text(areaSelected + " " + (parseInt(area) + 1));
+            row.append("th").append("i").classed("fas fa-chart-bar", true).style("cursor", "pointer").attr("data-sectionNum", area).on("click", function () {
+                updateGraph(areaSelected, d3.select(this).attr("data-sectionNum"))
+            });
+            ;
+            for (corpus in data[metricName]) {
+
+                let cell = row.append("td")
+                let mode = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode.join(", ") : "-";
+                let med = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].median != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].median.toFixed(2) : "-";
+                let avg = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].average != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].average.toFixed(2) : "-";
+                let variance = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].variance != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].variance.toFixed(2) : "-";
+
+                cell.append("p").classed("metric-data modus-text", true).text(mode).attr("data-before", "Modus: ");
+                cell.append("p").classed("metric-data median-text", true).text(med).attr("data-before", "Median: ");
+                cell.append("p").classed("metric-data average-text", true).text(avg).attr("data-before", "Durchschnitt: ");
+                cell.append("p").classed("metric-data variance-text", true).text(variance).attr("data-before", "Varianz: ");
+
+            }
+            ;
+        }
+        ;
+
+        function updateGraph(section, sectionNum) {
+
+            d3.select("#graphContainer_" + IDMetricEl).remove();
+            d3.select("#" + IDMetricEl + "_tooltip").remove();
+
+
+            let calcRawData = convertDataSectionNumericRawValues(data, metricName, section, sectionNum);
+            let calcStatisticalData = convertDataSectionNumericStatistics(data, metricName, section, sectionNum);
+
+            console.log(calcRawData);
+            console.log(calcStatisticalData);
+            //NEU ENDE
+            //draw the boxplot
+            drawBoxplot(IDMetricEl, metricContainer, calcStatisticalData, calcRawData);
+
+            //Create CSV file and download
+            //createCSVdownload(IDMetricEl, calcrawData);
+
+        }
+
+
+    };
 };
 
 function returnGraphTextSection(IDMetricEl, htmlEl, data2, textVariants) {
@@ -673,9 +724,16 @@ function createCSVdownload(metricID, dataPoints) {
 
     let csv_text = convertJSONtoCSV(dataPoints);
 
-    //add CSV header
-    csv_text = metric_name + "_values," + "corpus" + "\r\n" + csv_text;
+    let csv_header = "";
+    for (key of Object.keys(dataPoints[0].values)) {
+        if (csv_header != "") {
+            csv_header += ", "
+        }
+        csv_header += key
+    }
+    csv_header += ", corpus" + "\r\n";
 
+    csv_text = csv_header + csv_text;
 
     let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
@@ -687,13 +745,17 @@ function createCSVdownload(metricID, dataPoints) {
 
         for (let i = 0; i < data.length; i++) {
             let data_row = "";
-            for (let col in data[i]) {
+            for (key of Object.keys(dataPoints[i].values)) {
                 if (data_row != "") {
-                    data_row += ",";
+                    data_row += ", "
                 }
-                data_row += data[i][col];
+                if (Array.isArray(dataPoints[i].values[key])) {
+                    data_row += dataPoints[i].values[key].join(";");
+                } else {
+                    data_row += dataPoints[i].values[key];
+                }
             }
-            csv_text += data_row + "\r\n";
+            csv_text += data_row + ", " + dataPoints[i].corpus + "\r\n";
         }
         return csv_text;
     };
@@ -706,11 +768,9 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
         type: 'GET',
         data: {fieldname: metricID.split('_')[2], Korpus1_variante: textVariantKorpus1, Korpus2_variante: textVarianteKorpus2},
         beforeSend: function () {
-            console.log("beforeSend");
             $("#collapse_button_" + metricID).next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
         },
         success: function (response) {
-            console.log(response);
             onSuccess(JSON.parse(response));
         }
     });
@@ -762,7 +822,6 @@ function convertDataTotalNumericStatistics(data, metricName) {
 
 function convertDataTotalNumericRawValues(data, metricName) {
     let rawValuesArr = [];
-
     for (corpus in data[metricName]) {
         for (entry of data[metricName][corpus].rawValues) {
             rawValuesArr.push({"corpus": corpus, "values": entry});
@@ -770,7 +829,42 @@ function convertDataTotalNumericRawValues(data, metricName) {
         ;
     }
     ;
+    return rawValuesArr;
+}
 
+function convertDataSectionNumericStatistics(data, metricName, section, sectionNum) {
+    statisticsArr = []
+    for (corpus in data[metricName]) {
+        if (sectionNum === "totals") {
+            statisticsArr.push({"corpus": corpus, "value": data[metricName][corpus].statisticalValues.totals[section]});
+        } else {
+            statisticsArr.push({"corpus": corpus, "value": data[metricName][corpus].statisticalValues.sectioned[section]});
+        }
+        ;
+    }
+    ;
+    return statisticsArr;
+};
+
+function convertDataSectionNumericRawValues(data, metricName, section, sectionNum) {
+    let rawValuesArr = [];
+
+    for (corpus in data[metricName]) {
+        if (section === "totals") {
+            for (entry of data[metricName][corpus].rawValues.totals[section]) {
+                rawValuesArr.push({"corpus": corpus, "values": entry});
+            }
+            ;
+
+        } else {
+            for (entry of data[metricName][corpus].rawValues.sectioned[section]) {
+                rawValuesArr.push({"corpus": corpus, "values": entry});
+            }
+            ;
+        }
+    }
+    ;
+    console.log(rawValuesArr)
     return rawValuesArr;
 }
 
