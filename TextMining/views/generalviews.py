@@ -570,6 +570,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             totalHelperSubsectionTitles[fieldMetrik['modelField']] = []
             totalHelperSubsectionText[fieldMetrik['modelField']] = []
 
+
         for sectionCount, section in enumerate(paper.content):
             if sectionCount == len(sectionHelper):
                 sectionHelper.append([])
@@ -580,8 +581,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 for fieldMetrik in UsedFieldMetriks:
                     fieldMetrik['values']['sectioned']['sectionTitles'].append([])
                     fieldMetrik['values']['sectioned']['sectionText'].append([])
-                    fieldMetrik['values']['sectioned']['subsectionTitles'].append([])
-                    fieldMetrik['values']['sectioned']['subsectionText'].append([])
+
 
             sectionTitle = getattr(section, "title" + variant)
             if sectionTitle:
@@ -631,22 +631,22 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                         fieldMetrik['values']['sectioned']['subsectionTitles'].append([])
                         fieldMetrik['values']['sectioned']['subsectionText'].append([])
 
-                    subsectionTitle = getattr(subsection, "title" + variant)
-                    if subsectionTitle:
-                        subsectionTitleMetrik = getattr(subsectionTitle, 'metrik')
-                        for fieldMetrik in UsedFieldMetriks:
-                            fieldMetrik['values']['sectioned']['subsectionTitles'][subsectionCount].append(createNewValueAndPaperDict(
-                                getattr(subsectionTitleMetrik, fieldMetrik['modelField']),paper))
-                            totalHelperSubsectionTitles[fieldMetrik['modelField']].append(
-                                getattr(subsectionTitleMetrik, fieldMetrik['modelField']))
-                    subsectionText = getattr(subsection, "text" + variant)
-                    if subsectionText:
-                        subsectionTextMetrik = getattr(subsectionText, 'metrik')
-                        for fieldMetrik in UsedFieldMetriks:
-                            fieldMetrik['values']['sectioned']['subsectionText'][subsectionCount].append(createNewValueAndPaperDict(
-                                getattr(subsectionTextMetrik, fieldMetrik['modelField']),paper))
-                            totalHelperSubsectionText[fieldMetrik['modelField']].append(
-                                getattr(subsectionTextMetrik, fieldMetrik['modelField']))
+                subsectionTitle = getattr(subsection, "title" + variant)
+                if subsectionTitle:
+                    subsectionTitleMetrik = getattr(subsectionTitle, 'metrik')
+                    for fieldMetrik in UsedFieldMetriks:
+                        fieldMetrik['values']['sectioned']['subsectionTitles'][subsectionCount].append(createNewValueAndPaperDict(
+                            getattr(subsectionTitleMetrik, fieldMetrik['modelField']),paper))
+                        totalHelperSubsectionTitles[fieldMetrik['modelField']].append(
+                            getattr(subsectionTitleMetrik, fieldMetrik['modelField']))
+                subsectionText = getattr(subsection, "text" + variant)
+                if subsectionText:
+                    subsectionTextMetrik = getattr(subsectionText, 'metrik')
+                    for fieldMetrik in UsedFieldMetriks:
+                        fieldMetrik['values']['sectioned']['subsectionText'][subsectionCount].append(createNewValueAndPaperDict(
+                            getattr(subsectionTextMetrik, fieldMetrik['modelField']),paper))
+                        totalHelperSubsectionText[fieldMetrik['modelField']].append(
+                            getattr(subsectionTextMetrik, fieldMetrik['modelField']))
 
 
         for fieldMetrik in UsedFieldMetriks:
