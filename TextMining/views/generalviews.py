@@ -764,7 +764,7 @@ def getStatisticalValuesForFieldMetriks(input):
         flatSubsectionTitles = flatSubsectionTitles + list
     for list in input['sectioned']['subsectionText']:
         resultsArraySubsectionText.append(getStatisticalValues(list))
-        flatSubsectionText + list
+        flatSubsectionText = flatSubsectionText + list
 
     totals = {'titles': getStatisticalValues(input['totals']['titles']),
             'abstractTitles': getStatisticalValues(flatAbstractTitles),'abstractText': getStatisticalValues(flatAbstractText),
