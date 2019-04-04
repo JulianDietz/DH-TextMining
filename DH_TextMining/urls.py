@@ -37,6 +37,8 @@ urlpatterns = [
     path('textMining/readPaper/', views.readJsonFiles , name='readJsonFiles'),
     path('textMining/processPaper/', views.processPaper , name='processPaper'),
     path('textMining/getCalculation/', views.calculateMetrik, name='calculateMetrik'),
+    #test
+    path('textMining/test/', views.testMethode, name='test'),
 ]
 
 '''

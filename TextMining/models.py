@@ -13,6 +13,8 @@ class Metric(EmbeddedDocument):
     wordCount = IntField()
     punctCount = IntField()
     citationCount = IntField()
+    averageWordLength = FloatField()
+    averageSentenceLength = FloatField()
 
 
 class Table(EmbeddedDocument):
@@ -80,7 +82,6 @@ class Abstract(EmbeddedDocument):
     textNltkStem = EmbeddedDocumentField('TextVariant')
 
 
-
 class Metadata(EmbeddedDocument):
     keywords = ListField()
     yearOfArticle = IntField()
@@ -125,6 +126,25 @@ class Metadata(EmbeddedDocument):
     location = StringField()
 
 
+class TotalValues(EmbeddedDocument):
+    totalPaper = FloatField()
+    totalAbstractTitles = FloatField()
+    totalAbstractText = FloatField()
+    totalSectionTitles = FloatField()
+    totalSectionText = FloatField()
+    totalSubsectionTitles = FloatField()
+    totalSubsectionText = FloatField()
+
+
+class TotalValuesForAveragedMetriks(EmbeddedDocument):
+    totalsAverageSentenceLengthRaw = EmbeddedDocumentField('TotalValues')
+    totalsAverageSentenceLengthNltkStw = EmbeddedDocumentField('TotalValues')
+    totalsAverageSentenceLengthNltkStem = EmbeddedDocumentField('TotalValues')
+    totalsAverageWordLengthRaw = EmbeddedDocumentField('TotalValues')
+    totalsAverageWordLengthNltkStw = EmbeddedDocumentField('TotalValues')
+    totalsAverageWordLengthNltkStem = EmbeddedDocumentField('TotalValues')
+
+
 class Paper(Document):
     titleRaw = EmbeddedDocumentField('TextVariant')
     titleNltkStw = EmbeddedDocumentField('TextVariant')
@@ -134,3 +154,5 @@ class Paper(Document):
     references = EmbeddedDocumentListField('Reference')
     abstract = EmbeddedDocumentListField('Abstract')
     content = EmbeddedDocumentListField('Section')
+    totalValuesForAveragedMetriks = EmbeddedDocumentField('TotalValuesForAveragedMetriks')
+
