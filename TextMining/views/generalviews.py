@@ -17,6 +17,7 @@ from TextMining import metriken
 from TextMining.saveFile import savePaper
 from scipy import stats
 import os
+import math
 
 import TextMining.models
 from mongoengine.queryset.visitor import Q
@@ -347,9 +348,10 @@ def getStatisticalValues(inputarray):
         min = int(np.amin(inputarray))
         max = int(np.amax(inputarray))
         count = len(inputarray)
+        std = math.sqrt(variance)
     return {'sum': sum,'average': average, 'median': median, 'mode': modes,
             'variance': variance, 'lowerQuartile': lowerQuartile,
-            'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max, 'count':count}
+            'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max, 'count':count, 'std': std}
 
 
 #TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
@@ -426,8 +428,7 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=Fals
         results['tableDescriptionLengthCount'] = {}
     if pictureDescriptionLengthCount:
         results['pictureDescriptionLengthCount'] = {}
-
-
+    #TODO tables und pictures gleich lang
     if corpus1:
         corpusIdentifier = "Corpus1"
         results = getMetriks(corpus1, variant1, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
