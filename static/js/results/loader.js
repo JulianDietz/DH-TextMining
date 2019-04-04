@@ -6,7 +6,6 @@ $(document).ready(function () {
             {"key": "stmd", "value": "NltkStem", "display": "Gestemmt"}];
 
         let $this = $(this);
-        console.log($this);
 
         let collapseEl = $($this.attr("data-collapse"));
 
@@ -27,7 +26,6 @@ $(document).ready(function () {
 
             function onSuccess(data) {
                 console.log(data);
-
                 switch (statisticDisplayType) {
                     case "numeric-total":
                         returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants);
@@ -36,7 +34,7 @@ $(document).ready(function () {
                         returnGraphNumericSection($this.attr("id"), collapseEl, data, textVariants);
                         break;
                     case "text-total":
-
+                        returnGraphTextTotal($this.attr("id"), collapseEl, data, textVariants)
                         break;
                     case "text-section":
                         break;
@@ -171,10 +169,10 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants) {
         metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus);
         let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
 
-        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(data[metricName][corpus].statisticalValues.mode.join(", ")).attr("data-before", "Modus: ");
-        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(data[metricName][corpus].statisticalValues.median.toFixed(2)).attr("data-before", "Median: ");
-        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(data[metricName][corpus].statisticalValues.average.toFixed(2)).attr("data-before", "Durchschnitt: ");
-        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(data[metricName][corpus].statisticalValues.variance.toFixed(2)).attr("data-before", "Varianz: ");
+        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(data[metricName][corpus].statisticalValues.mode.join(", ")).attr("data-before", "Mod: ");
+        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(data[metricName][corpus].statisticalValues.median.toFixed(2)).attr("data-before", "Med: ");
+        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(data[metricName][corpus].statisticalValues.average.toFixed(2)).attr("data-before", "Avg: ");
+        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(data[metricName][corpus].statisticalValues.variance.toFixed(2)).attr("data-before", "Var: ");
     }
     ;
 
@@ -198,10 +196,339 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants) {
     let sectionSelector = metricSectionSelectorContainer.append("select").classed("paperAreaSelector", true);
 
     for (area in data[metricName].Corpus1.rawValues.totals) {
-        //TODO debug
-        //if (area != "titles") {
         sectionSelector.append("option").attr("value", area).text(area);
-        //};
+    }
+    ;
+
+    sectionSelector.on("change", function () {
+        d3.select("#metricDescription_" + IDMetricEl).remove();
+        d3.select("#graphContainer_" + IDMetricEl).remove();
+        d3.select("#" + IDMetricEl + "_tooltip").remove();
+
+
+        drawInfo();
+    });
+
+    //NEU
+    //recalculate Metric
+    recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
+
+    //text Variant selector
+    if (Object.keys(data[metricName]).length > 1) {
+        //text Variante Korpus2
+        let textVarSelect2 = metricSectionSelectorContainer
+            .append("div")
+            .classed("textVarSelectContainer", true)
+            .text("Korpus 2:")
+            .append("select")
+            .classed("textVarSelect", true)
+            .attr("id", "textVar_Corpus2_" + IDMetricEl)
+            .on("change", function () {
+                $("#" + IDMetricEl).next().children(".indicator").attr("src", "/static/img/results/not-available.png");
+            });
+
+        textVarSelect2
+            .selectAll("option")
+            .data(textVariants)
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d.value;
+            })
+            .text(function (d) {
+                return d.display;
+            })
+        ;
+
+        //update selection for korpus2
+        for (let i = 0; i < textVarSelect2.node().options.length; i++) {
+            if (textVarSelect2.node().options[i].value === data[IDMetricEl.split("_")[2]].Corpus2.variant) {
+                textVarSelect2.node().selectedIndex = i;
+            }
+            ;
+        }
+        ;
+    }
+    ;
+
+
+    //Text Variante Korpus 1
+    let textVarSelect1 = metricSectionSelectorContainer
+        .append("div")
+        .classed("textVarSelectContainer", true)
+        .text("Korpus 1:")
+        .append("select")
+        .classed("textVarSelect", true)
+        .attr("id", "textVar_Corpus1_" + IDMetricEl)
+        .on("change", function () {
+            $("#" + IDMetricEl).next().children(".indicator").attr("src", "/static/img/results/not-available.png");
+        });
+    ;
+
+    textVarSelect1
+        .selectAll("option")
+        .data(textVariants)
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+            return d.value;
+        })
+        .text(function (d) {
+            return d.display;
+        })
+
+    ;
+
+    //update selection for korpus1
+    for (let i = 0; i < textVarSelect1.node().options.length; i++) {
+        if (textVarSelect1.node().options[i].value === data[metricName].Corpus1.variant) {
+            textVarSelect1.node().selectedIndex = i;
+        }
+        ;
+    }
+    ;
+
+    //recalculate function
+    recalcButton.on("click", function () {
+        selectedTextVar1 = d3.select("#textVar_Corpus1_" + IDMetricEl).node().options[d3.select("#textVar_Corpus1_" + IDMetricEl).node().selectedIndex].value;
+
+        selectedTextVar2 = null;
+        if ((Object.keys(data[metricName]).length > 1)) {
+            selectedTextVar2 = d3.select("#textVar_Corpus2_" + IDMetricEl).node().options[d3.select("#textVar_Corpus2_" + IDMetricEl).node().selectedIndex].value;
+        }
+        recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
+    });
+
+    //draw the table for the first time
+    drawInfo();
+
+
+    // HIER WERDEN DIE DATEN DER METRIK EINGEFÜLLT
+    function drawInfo() {
+        let metricContainer = d3.select(htmlEl[0]);
+
+        let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
+        ;
+
+        let tableEl = metricDescription.append("table").classed("table", true);
+        let tableHeader = tableEl.append("thead").append("tr");
+        let areaSelected = sectionSelector.node().options[sectionSelector.node().selectedIndex].value;
+
+
+        //data table
+        tableEl = tableEl.append("tbody");
+        let tableTotalRow = tableEl.append("tr");
+        tableTotalRow.append("th").text("Gesamt");
+        tableTotalRow.append("th").append("i").classed("fas fa-chart-bar graph-icon_" + metricName, true).style("color", "lightgrey").style("cursor", "pointer").on("click", function () {
+            let all = d3.selectAll(".graph-icon_" + metricName).style("color", "lightgrey");
+            d3.select(this).style("color", "black");
+            updateGraph(areaSelected, "totals");
+        });
+
+        tableHeader.append("th").text("Bereich");
+        tableHeader.append("th").text("Graph");
+
+        //header and Total
+        for (corpus in data[metricName]) {
+            tableHeader.append("th").text(corpus);
+
+            let cell = tableTotalRow.append("td")
+            let mode = data[metricName][corpus].statisticalValues.totals[areaSelected].mode != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].mode.join(", ") : "-";
+            let med = data[metricName][corpus].statisticalValues.totals[areaSelected].median != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].median.toFixed(2) : "-";
+            let avg = data[metricName][corpus].statisticalValues.totals[areaSelected].average != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].average.toFixed(2) : "-";
+            let variance = data[metricName][corpus].statisticalValues.totals[areaSelected].variance != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].variance.toFixed(2) : "-";
+
+            cell.append("p").classed("metric-data modus-text", true).text(mode).attr("data-before", "Mod: ");
+            cell.append("p").classed("metric-data median-text", true).text(med).attr("data-before", "Med: ");
+            cell.append("p").classed("metric-data average-text", true).text(avg).attr("data-before", "Avg: ");
+            cell.append("p").classed("metric-data variance-text", true).text(variance).attr("data-before", "Var: ");
+        }
+
+        //Add a statistical overview for each corpus
+        for (area in data[metricName].Corpus1.statisticalValues.sectioned[areaSelected]) {
+            let row = tableEl.append("tr")
+            row.append("th").attr("scope", "row").text(areaSelected + " " + (parseInt(area) + 1));
+            row.append("th").append("i").classed("fas fa-chart-bar graph-icon_" + metricName, true).style("color", "lightgrey").style("cursor", "pointer").attr("data-sectionNum", area).on("click", function () {
+                d3.selectAll(".graph-icon_" + metricName).style("color", "lightgrey");
+                d3.select(this).style("color", "black");
+                updateGraph(areaSelected, d3.select(this).attr("data-sectionNum"))
+            });
+            ;
+            for (corpus in data[metricName]) {
+
+                let cell = row.append("td")
+                let mode = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode.join(", ") : "-";
+                let med = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].median != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].median.toFixed(2) : "-";
+                let avg = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].average != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].average.toFixed(2) : "-";
+                let variance = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].variance != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].variance.toFixed(2) : "-";
+
+                cell.append("p").classed("metric-data modus-text", true).text(mode).attr("data-before", "Mod: ");
+                cell.append("p").classed("metric-data median-text", true).text(med).attr("data-before", "Med: ");
+                cell.append("p").classed("metric-data average-text", true).text(avg).attr("data-before", "Avg: ");
+                cell.append("p").classed("metric-data variance-text", true).text(variance).attr("data-before", "Var: ");
+
+            }
+            ;
+        }
+        ;
+
+        function updateGraph(section, sectionNum) {
+
+            d3.select("#graphContainer_" + IDMetricEl).remove();
+            d3.select("#" + IDMetricEl + "_tooltip").remove();
+
+            let calcRawData = convertDataSectionNumericRawValues(data, metricName, section, sectionNum);
+            let calcStatisticalData = convertDataSectionNumericStatistics(data, metricName, section, sectionNum);
+
+            //NEU ENDE
+            //draw the boxplot
+            drawBoxplot(IDMetricEl, metricContainer, calcStatisticalData, calcRawData);
+
+            //Create CSV file and download
+            createCSVdownload(IDMetricEl, calcRawData, section, sectionNum);
+
+        }
+
+
+    };
+};
+
+function returnGraphTextTotal(IDMetricEl, htmlEl, data, textVariants) {
+    let metricName = IDMetricEl.split("_")[2];
+
+    //HIER SIND ALLE INTERAKTIONEN
+    //Section selector
+    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true).attr("id", "metricSectionSelectorContainer_" + IDMetricEl);
+    metricSectionSelectorContainer.append("p").text("Diese Metrik bezieht sich auf das gesamte Dokument").style("display", "inline-block");
+
+    //recalculate Metric
+    recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
+
+
+    if (Object.keys(data[metricName]).length > 1) {
+        //text Variante Korpus2
+        let textVarSelect2 = metricSectionSelectorContainer
+            .append("div")
+            .classed("textVarSelectContainer", true)
+            .text("Korpus 2:")
+            .append("select")
+            .classed("textVarSelect", true)
+            .attr("id", "textVar_Corpus2_" + IDMetricEl)
+            .on("change", function () {
+                $("#" + IDMetricEl).next().children(".indicator").attr("src", "/static/img/results/not-available.png");
+            });
+
+        textVarSelect2
+            .selectAll("option")
+            .data(textVariants)
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d.value;
+            })
+            .text(function (d) {
+                return d.display;
+            })
+            .on("change", function () {
+                $("#" + IDMetricEl).next().children(".indicator").attr("src", "/static/img/results/not-available.png");
+            });
+
+
+        //update selection for korpus2
+        for (let i = 0; i < textVarSelect2.node().options.length; i++) {
+            if (textVarSelect2.node().options[i].value === data[IDMetricEl.split("_")[2]].Corpus2.variant) {
+                textVarSelect2.node().selectedIndex = i;
+            }
+            ;
+        }
+        ;
+    }
+    ;
+
+
+    //Text Variante Korpus 1
+    let textVarSelect1 = metricSectionSelectorContainer
+        .append("div")
+        .classed("textVarSelectContainer", true)
+        .text("Korpus 1:")
+        .append("select")
+        .classed("textVarSelect", true)
+        .attr("id", "textVar_Corpus1_" + IDMetricEl);
+
+    textVarSelect1
+        .selectAll("option")
+        .data(textVariants)
+        .enter()
+        .append("option")
+        .attr("value", function (d) {
+            return d.value;
+        })
+        .text(function (d) {
+            return d.display;
+        });
+
+    //update selection for korpus1
+    for (let i = 0; i < textVarSelect1.node().options.length; i++) {
+        if (textVarSelect1.node().options[i].value === data[metricName].Corpus1.variant) {
+            textVarSelect1.node().selectedIndex = i;
+        }
+        ;
+    }
+    ;
+
+
+    //recalculate function
+    recalcButton.on("click", function () {
+        selectedTextVar1 = d3.select("#textVar_Corpus1_" + IDMetricEl).node().options[d3.select("#textVar_Corpus1_" + IDMetricEl).node().selectedIndex].value;
+
+        selectedTextVar2 = null;
+        if ((Object.keys(data[metricName]).length > 1)) {
+            selectedTextVar2 = d3.select("#textVar_Corpus2_" + IDMetricEl).node().options[d3.select("#textVar_Corpus2_" + IDMetricEl).node().selectedIndex].value;
+        }
+        recalculateMetric(IDMetricEl, selectedTextVar1, selectedTextVar2);
+    });
+
+
+    // HIER WERDEN DIE DATEN DER METRIK EINGEFÜLLT
+    let metricContainer = d3.select(htmlEl[0]);
+
+    let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
+    ;
+
+    //Add a statistical overview for each corpus
+    for (corpus in data[metricName]) {
+        let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
+        metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus);
+        let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
+
+        metricDescriptionTags.append("p").classed("metric-data modus-text", true).text(data[metricName][corpus].statisticalValues.mode.join(", ")).attr("data-before", "Mod: ");
+        metricDescriptionTags.append("p").classed("metric-data median-text", true).text(data[metricName][corpus].statisticalValues.median.toFixed(2)).attr("data-before", "Med: ");
+        metricDescriptionTags.append("p").classed("metric-data average-text", true).text(data[metricName][corpus].statisticalValues.average.toFixed(2)).attr("data-before", "Avg: ");
+        metricDescriptionTags.append("p").classed("metric-data variance-text", true).text(data[metricName][corpus].statisticalValues.variance.toFixed(2)).attr("data-before", "Var: ");
+    }
+    ;
+
+    let calcRawData = convertDataTotalNumericRawValues(data, metricName);
+    let calcStatsticalData = convertDataTotalNumericStatistics(data, metricName);
+
+    //drat the boxplot
+    drawLollipopGraph(IDMetricEl, metricContainer, calcStatsticalData, calcRawData);
+
+    //Create CSV file and download
+    createCSVdownload(IDMetricEl, calcRawData);
+}
+
+function returnGraphTextSection(IDMetricEl, htmlEl, data, textVariants) {
+    let metricName = IDMetricEl.split("_")[2];
+
+    //Section selector
+    let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true).attr("id", "metricSectionSelectorContainer_" + IDMetricEl);
+
+    metricSectionSelectorContainer.append("p").text("Abschnitt:").style("display", "inline-block");
+    let sectionSelector = metricSectionSelectorContainer.append("select").classed("paperAreaSelector", true);
+
+    for (area in data[metricName].Corpus1.rawValues.totals) {
+        sectionSelector.append("option").attr("value", area).text(area);
     }
     ;
 
@@ -396,16 +723,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants) {
 
 
     };
-};
-
-function returnGraphTextSection(IDMetricEl, htmlEl, data2, textVariants) {
-    console.log("test")
 }
-
-function returnGraphTextTotal(IDMetricEl, htmlEl, data2, textVariants) {
-    console.log("test")
-}
-
 
 //General functions
 function drawBoxplot(metricID, container, statisticsData, dataPoints) {
@@ -429,8 +747,8 @@ function drawBoxplot(metricID, container, statisticsData, dataPoints) {
     let domainX = [[], []];
     for (corpus of statisticsData) {
         domainY.unshift(corpus.corpus);
-        domainX[0].push([corpus.value.minimum]);
-        domainX[1].push([corpus.value.maximum]);
+        domainX[0].push(corpus.value.minimum);
+        domainX[1].push(corpus.value.maximum);
     }
     ;
 
@@ -468,10 +786,10 @@ function drawBoxplot(metricID, container, statisticsData, dataPoints) {
         .enter()
         .append("line")
         .attr("x1", function (d) {
-            return (x(d.value.minimum))
+            return (x(d3.max([min, d.value.lowerQuartile - 1.5*(d.value.upperQuartile -d.value.lowerQuartile)])));
         })
         .attr("x2", function (d) {
-            return (x(d.value.maximum))
+            return (x(d3.min([max, d.value.upperQuartile + 1.5*(d.value.upperQuartile -d.value.lowerQuartile)])));
         })
         .attr("y1", function (d) {
             return (y(d.corpus) + y.bandwidth() / 2)
@@ -573,6 +891,96 @@ function drawBoxplot(metricID, container, statisticsData, dataPoints) {
 
 }
 
+function drawLollipopGraph(metricID, container, statisticsData, dataPoints){
+    var margin = {top: 20, right: 40, bottom: 60, left: 120};
+
+    console.log("lollipop")
+    console.log(statisticsData);
+    console.log(dataPoints);
+
+    let height = 500 - margin.bottom - margin.top;
+    let width = 960 - margin.right - margin.left
+
+    let svg = container.append("div")
+        .classed("graphContainer", true)
+        .attr("id", "graphContainer_" + metricID)
+        .append("svg")
+        .classed("svg-chart", true)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 960 200")
+        .append("g").attr("transform",
+            "translate(" + margin.left + "," + margin.top + ")");
+
+    //Create domain
+    let domainY = [];
+    let domainX = [[], []];
+    for (corpus of statisticsData) {
+        domainY.unshift(corpus.corpus);
+        domainX[0].push(corpus.value.minimum);
+        domainX[1].push(corpus.value.maximum);
+    }
+    ;
+
+    let min = d3.max([0, parseInt(d3.min(domainX[0])) - 1]);
+    let max = parseInt(d3.max(domainX[1])) + 1;
+
+    // Show the Y scale
+    var y = d3.scaleBand()
+        .range([height, 0])
+        .domain(domainY)
+        .padding(.4);
+    svg.append("g")
+        .call(d3.axisLeft(y).tickSize(0))
+        .select(".domain").remove()
+
+
+    // Show the X scale
+    var x = d3.scaleLinear()
+        .domain([min, max])
+        .range([0, width])
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).ticks(5))
+        .select(".domain").remove()
+
+    // Color scale
+    var myColor = d3.scaleSequential()
+        .interpolator(d3.interpolateInferno)
+        .domain([min, max])
+
+
+
+
+
+
+    //tooltip
+    let tooltip = container
+        .append("div")
+        .style("opacity", 0)
+        .classed("tooltip-cust", true)
+        .attr("id", metricID + "_tooltip");
+
+    let mouseover = function (d) {
+        d3.select(this).style("stroke-width", "2px");
+
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 1);
+        tooltip
+            .html("<span style='color:grey'>Wert: </span>" + d.values.value + "<span style='color:grey'> Titel: </span>" + d.values.paperTitle + " (" + d.values.year + ") " + d.values.authors[0]);
+    };
+    let mouseleave = function (d) {
+        tooltip
+            .transition()
+            .duration(200)
+            .style("opacity", 0)
+
+        d3.select(this).style("stroke-width", "1px");
+    };
+
+}
+
 function createCSVdownload(metricID, dataPoints, section, sectionNum) {
 
     let metric_name = metricID.split("_")[2]
@@ -590,8 +998,6 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
         }
         csv_header += key
     }
-
-    console.log(section, sectionNum);
 
     if (section == undefined && sectionNum == undefined) {
         csv_header += ", corpus" + ", variant" + "\r\n";
@@ -623,7 +1029,6 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
 
 
             }
-            console.log("#textVar_" + dataPoints[i].corpus.toString() + "_" + metricID);
             let textVar = d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).node().options[d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).node().selectedIndex].value
 
             csv_text += data_row + ", " + dataPoints[i].corpus + ", " + textVar + ", " + section + ", " + sectionNum + "\r\n";
@@ -669,7 +1074,7 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
                 returnGraphNumericSection(metricID, collapseEl, data, textVariants);
                 break;
             case "text-total":
-
+                returnGraphTextTotal($this.attr("id"), collapseEl, data, textVariants)
                 break;
             case "text-section":
                 break;

@@ -82,6 +82,7 @@
 .metric-data {
     display: inline;
     font-size: 0.5em;
+    white-space: nowrap;
 }
 
 .metric-data:before {
@@ -89,6 +90,7 @@
     letter-spacing: 1.5px;
     text-transform: uppercase;
     font-weight: bold;
+
 }
 
 .metric-data:not(:first-child) {

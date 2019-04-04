@@ -243,7 +243,7 @@ def startAnalyse(request):
                         {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen"},
                         {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl"},
                         {"metric": "citationCount", "dataDisplayType": "numeric-section", "germanTitle": "Anzahl der Zitate"},
-                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten"},
+                        {"metric": "universityCount", "dataDisplayType": "text-total", "germanTitle": "Anzahl beteiligter Universitäten"},
                         {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder"},
                         {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl"},
                         {"metric": "tableCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenanzahl"},
