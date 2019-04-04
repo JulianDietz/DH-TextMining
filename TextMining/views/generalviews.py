@@ -330,6 +330,7 @@ def getStatisticalValues(inputarray):
         lowerQuartile, median, upperQuartile = None, None, None
         min = None
         max = None
+        count = 0
     else:
         inputarray = [entry['value'] for entry in inputarray]
         sum = int(np.sum(inputarray))
@@ -345,9 +346,10 @@ def getStatisticalValues(inputarray):
         upperQuartile = float(upperQuartile)
         min = int(np.amin(inputarray))
         max = int(np.amax(inputarray))
+        count = len(inputarray)
     return {'sum': sum,'average': average, 'median': median, 'mode': modes,
             'variance': variance, 'lowerQuartile': lowerQuartile,
-            'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max}
+            'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max, 'count':count}
 
 
 #TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability
@@ -367,7 +369,7 @@ def getStatisticalValues(inputarray):
 
 def createNewValueAndPaperDict(value, paper):
     return {'value': value, 'paperTitle': paper.titleRaw.text, 'authors': [author.name for author in paper.authors],
-            'year': paper.metaData.yearOfArticle}
+            'year': paper.metaData.yearOfArticle, 'paperID':str(paper.id)}
 
 def createNewMetrikDict():
     totals = {'paperTitles': [] , 'paperText': [] ,'abstractTitles': [], 'abstractText': [],
@@ -468,6 +470,9 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=Fals
 # TODO wenn Werte leeres Dict-... "0" bisher appendet!
 # TODO werte auch in totalContent werfen
 # TODO empty tag
+
+#TODO raw values wie autoren mit rawValues : [{'wort': x, 'Häufigkeit':y},{...}]
+#TODO ID mit rein, bei statistical values länge mit rein bei sum avg etc
 def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                punctCount, citationCount, authorCount, referenceCount,
                universityCount, countryCount, keywordCount, tableCount, pictureCount,
@@ -721,6 +726,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                            totalHelperSubsectionTitles[fieldMetrik['modelField']] + \
                            totalHelperSubsectionText[fieldMetrik['modelField']]
 
+            #TODO hier summe da ja totales?
             if totalContent != []:
                 fieldMetrik['values']['totals']['paperText'].append(createNewValueAndPaperDict(
                     sum(totalContent),paper))
