@@ -695,24 +695,24 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         for fieldMetrik in UsedFieldMetriks:
             if totalHelperAbstractTitles[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['abstractTitles'].append(createNewValueAndPaperDict(
-                    sum(totalHelperAbstractTitles[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperAbstractTitles[fieldMetrik['modelField']]),paper))
             if totalHelperAbstractText[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['abstractText'].append(createNewValueAndPaperDict(
-                    sum(totalHelperAbstractText[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperAbstractText[fieldMetrik['modelField']]),paper))
 
             if totalHelperSectionTitles[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['sectionTitles'].append(createNewValueAndPaperDict(
-                    sum(totalHelperSectionTitles[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSectionTitles[fieldMetrik['modelField']]),paper))
             if totalHelperSectionText[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['sectionText'].append(createNewValueAndPaperDict(
-                    sum(totalHelperSectionText[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSectionText[fieldMetrik['modelField']]),paper))
 
             if totalHelperSubsectionTitles[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['subsectionTitles'].append(createNewValueAndPaperDict(
-                    sum(totalHelperSubsectionTitles[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSubsectionTitles[fieldMetrik['modelField']]),paper))
             if totalHelperSubsectionText[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['subsectionText'].append(createNewValueAndPaperDict(
-                    sum(totalHelperSubsectionText[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSubsectionText[fieldMetrik['modelField']]),paper))
 
             totalContent = [] + totalHelperAbstractTitles[fieldMetrik['modelField']] + \
                            totalHelperAbstractText[fieldMetrik['modelField']] + \
