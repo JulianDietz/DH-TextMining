@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
 from functools import reduce
+from statistics import mean
+from django.http import JsonResponse, HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -259,11 +261,25 @@ def startAnalyse(request):
 def startDB(request):
     system('mongod')
 
+def downloadResults(request,Corpus):
+    if request.method == 'GET':
+        global KORPUS1
+        global KORPUS2
+        korpusname = Corpus
+        if korpusname == 'Korpus1':
+            response=KORPUS1.to_json()
+        elif korpusname == 'Korpus2':
+            response = KORPUS2.to_json()
+        else:
+            response={'fehler':'Fehler aufgetreten'}
+        response = HttpResponse(response,content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="'+korpusname+'.json"'
+        return response
+
 def calculateMetrik(request):
     if request.method=="GET":
         print(request.GET)
         fieldname=request.GET.get('fieldname')
-        #TODO variante für beide!
         variante1=request.GET.get('Korpus1_variante')
         variante2 = request.GET.get('Korpus2_variante')
         print('fieldname:' +fieldname)
