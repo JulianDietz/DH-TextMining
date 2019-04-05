@@ -1,7 +1,10 @@
 from TextMining.metriken import MET_char_count_WhiteSpace, MET_char_count_No_WhiteSpace, MET_word_count, \
     MET_punctuation_count, MET_citation_count, MET_average_word_length, MET_average_sentence_length
-from TextMining.models import Metric
+from TextMining.models import Metric, TotalValues
+import TextMining.models
+
 def calculateAllMetrics(paper):
+    splitters = ['.','!','?']
     #Total text to compute averaged metriks
     paperText = createTotalsDict()
     abstractTitles = createTotalsDict()
@@ -26,19 +29,35 @@ def calculateAllMetrics(paper):
         addMetricForPart(section.titleNltkStem)
 
         paperText['NltkStw'].append(section.textNltkStw.text)
-        paperText['NltkStw'].append(section.titleNltkStw.text)
-        paperText['Raw'].append(section.textRaw.text)
-        paperText['Raw'].append(section.titleRaw.text)
         paperText['NltkStem'].append(section.textNltkStem.text)
-        paperText['NltkStem'].append(section.titleNltkStem.text)
-
-        abstractTitles['NltkStw'].append(section.titleNltkStw.text)
-        abstractTitles['Raw'].append(section.titleRaw.text)
-        abstractTitles['NltkStem'].append(section.titleNltkStem.text)
+        paperText['Raw'].append(section.textRaw.text)
 
         abstractText['NltkStw'].append(section.textNltkStw.text)
         abstractText['Raw'].append(section.textRaw.text)
         abstractText['NltkStem'].append(section.textNltkStem.text)
+
+        if section.titleRaw.text[-1] not in splitters:
+            paperText['Raw'].append(section.titleRaw.text + ".")
+            abstractTitles['Raw'].append(section.titleRaw.text + ".")
+        else:
+            paperText['Raw'].append(section.titleRaw.text)
+            abstractTitles['Raw'].append(section.titleRaw.text)
+
+        if section.titleNltkStem.text[-1] not in splitters:
+            paperText['NltkStem'].append(section.titleNltkStem.text + ".")
+            abstractTitles['NltkStem'].append(section.titleNltkStem.text + ".")
+        else:
+            paperText['NltkStem'].append(section.titleNltkStem.text)
+            abstractTitles['NltkStem'].append(section.titleNltkStem.text)
+
+        if section.titleNltkStw.text[-1] not in splitters:
+            paperText['NltkStw'].append(section.titleNltkStw.text + ".")
+            abstractTitles['NltkStw'].append(section.titleNltkStw.text + ".")
+        else:
+            paperText['NltkStw'].append(section.titleNltkStw.text)
+            abstractTitles['NltkStw'].append(section.titleNltkStw.text)
+
+
 
     #Text
     for section in paper.content:
@@ -50,19 +69,34 @@ def calculateAllMetrics(paper):
         addMetricForPart(section.titleNltkStem)
 
         paperText['NltkStw'].append(section.textNltkStw.text)
-        paperText['NltkStw'].append(section.titleNltkStw.text)
         paperText['Raw'].append(section.textRaw.text)
-        paperText['Raw'].append(section.titleRaw.text)
         paperText['NltkStem'].append(section.textNltkStem.text)
-        paperText['NltkStem'].append(section.titleNltkStem.text)
-
-        sectionTitles['NltkStw'].append(section.titleNltkStw.text)
-        sectionTitles['Raw'].append(section.titleRaw.text)
-        sectionTitles['NltkStem'].append(section.titleNltkStem.text)
 
         sectionText['NltkStw'].append(section.textNltkStw.text)
         sectionText['Raw'].append(section.textRaw.text)
         sectionText['NltkStem'].append(section.textNltkStem.text)
+
+        if section.titleRaw.text[-1] not in splitters:
+            paperText['Raw'].append(section.titleRaw.text + ".")
+            sectionTitles['Raw'].append(section.titleRaw.text + ".")
+        else:
+            paperText['Raw'].append(section.titleRaw.text)
+            sectionTitles['Raw'].append(section.titleRaw.text)
+
+        if section.titleNltkStem.text[-1] not in splitters:
+            paperText['NltkStem'].append(section.titleNltkStem.text + ".")
+            sectionTitles['NltkStem'].append(section.titleNltkStem.text + ".")
+        else:
+            paperText['NltkStem'].append(section.titleNltkStem.text)
+            sectionTitles['NltkStem'].append(section.titleNltkStem.text)
+
+        if section.titleNltkStw.text[-1] not in splitters:
+            paperText['NltkStw'].append(section.titleNltkStw.text + ".")
+            sectionTitles['NltkStw'].append(section.titleNltkStw.text + ".")
+        else:
+            paperText['NltkStw'].append(section.titleNltkStw.text)
+            sectionTitles['NltkStw'].append(section.titleNltkStw.text)
+
 
         #Subtext
         for subsection in section.subsection:
@@ -74,19 +108,43 @@ def calculateAllMetrics(paper):
             addMetricForPart(subsection.titleNltkStem)
 
             paperText['NltkStw'].append(section.textNltkStw.text)
-            paperText['NltkStw'].append(section.titleNltkStw.text)
             paperText['Raw'].append(section.textRaw.text)
-            paperText['Raw'].append(section.titleRaw.text)
             paperText['NltkStem'].append(section.textNltkStem.text)
-            paperText['NltkStem'].append(section.titleNltkStem.text)
-
-            subsectionTitles['NltkStw'].append(section.titleNltkStw.text)
-            subsectionTitles['Raw'].append(section.titleRaw.text)
-            subsectionTitles['NltkStem'].append(section.titleNltkStem.text)
 
             subsectionText['NltkStw'].append(section.textNltkStw.text)
             subsectionText['Raw'].append(section.textRaw.text)
             subsectionText['NltkStem'].append(section.textNltkStem.text)
+
+            if section.titleRaw.text[-1] not in splitters:
+                paperText['Raw'].append(section.titleRaw.text + ".")
+                subsectionTitles['Raw'].append(section.titleRaw.text + ".")
+            else:
+                paperText['Raw'].append(section.titleRaw.text)
+                subsectionTitles['Raw'].append(section.titleRaw.text)
+
+            if section.titleNltkStem.text[-1] not in splitters:
+                paperText['NltkStem'].append(section.titleNltkStem.text + ".")
+                subsectionTitles['NltkStem'].append(section.titleNltkStem.text + ".")
+            else:
+                paperText['NltkStem'].append(section.titleNltkStem.text)
+                subsectionTitles['NltkStem'].append(section.titleNltkStem.text)
+
+            if section.titleNltkStw.text[-1] not in splitters:
+                paperText['NltkStw'].append(section.titleNltkStw.text +".")
+                subsectionTitles['NltkStw'].append(section.titleNltkStw.text + ".")
+            else:
+                paperText['NltkStw'].append(section.titleNltkStw.text)
+                subsectionTitles['NltkStw'].append(section.titleNltkStw.text)
+
+    variants = ['Raw','NltkStem','NltkStw']
+    for variant in variants:
+        paperText[variant] = "" + (" ".join(paperText[variant]))
+        abstractTitles[variant] = "" + (" ".join(abstractTitles[variant]))
+        abstractText[variant] = "" + (" ".join(abstractText[variant]))
+        sectionTitles[variant] = "" + (" ".join(sectionTitles[variant]))
+        sectionText[variant] = "" + (" ".join(sectionText[variant]))
+        subsectionTitles[variant] = "" + (" ".join(subsectionTitles[variant]))
+        subsectionText[variant] = "" + (" ".join(subsectionText[variant]))
 
     addTotalsForAveragedMetriks(paper,paperText,abstractTitles,abstractText,sectionTitles,sectionText,
                                 subsectionTitles,subsectionText)
@@ -125,28 +183,136 @@ def createTotalsDict():
     return {'Raw': [], 'NltkStem': [], 'NltkStw': []}
 
 
-def addTotalMetrik(part):
-    return ""
 
 def addTotalsForAveragedMetriks(paper,paperText,abstractTitles,abstractText,sectionTitles,sectionText,
                                 subsectionTitles,subsectionText):
-    for section in paper.content:
-        print(section.textRaw.text)
-    paperText = []
-    abstractTitles = []
-    abstractText = []
-    sectionTitles = []
-    sectionText = []
-    subsectionTitles = []
-    subsectionText = []
 
-    return ""
+    averageWordLengthPaperTextRaw = MET_average_word_length(paperText['Raw'])
+    averageWordLengthAbstractTitlesRaw = MET_average_word_length(abstractTitles['Raw'])
+    averageWordLengthAbstractTextRaw = MET_average_word_length(abstractText['Raw'])
+    averageWordLengthSectionTitlesRaw = MET_average_word_length(sectionTitles['Raw'])
+    averageWordLengthSectionTextRaw = MET_average_word_length(sectionText['Raw'])
+    averageWordLengthSubsectionTitlesRaw = MET_average_word_length(subsectionTitles['Raw'])
+    averageWordLengthSubsectionTextRaw = MET_average_word_length(subsectionText['Raw'])
+
+    averageWordLengthPaperTextNltkStem = MET_average_word_length(paperText['NltkStem'])
+    averageWordLengthAbstractTitlesNltkStem = MET_average_word_length(abstractTitles['NltkStem'])
+    averageWordLengthAbstractTextNltkStem = MET_average_word_length(abstractText['NltkStem'])
+    averageWordLengthSectionTitlesNltkStem = MET_average_word_length(sectionTitles['NltkStem'])
+    averageWordLengthSectionTextNltkStem = MET_average_word_length(sectionText['NltkStem'])
+    averageWordLengthSubsectionTitlesNltkStem = MET_average_word_length(subsectionTitles['NltkStem'])
+    averageWordLengthSubsectionTextNltkStem = MET_average_word_length(subsectionText['NltkStem'])
+
+    averageWordLengthPaperTextNltkStw = MET_average_word_length(paperText['NltkStw'])
+    averageWordLengthAbstractTitlesNltkStw = MET_average_word_length(abstractTitles['NltkStw'])
+    averageWordLengthAbstractTextNltkStw = MET_average_word_length(abstractText['NltkStw'])
+    averageWordLengthSectionTitlesNltkStw = MET_average_word_length(sectionTitles['NltkStw'])
+    averageWordLengthSectionTextNltkStw = MET_average_word_length(sectionText['NltkStw'])
+    averageWordLengthSubsectionTitlesNltkStw = MET_average_word_length(subsectionTitles['NltkStw'])
+    averageWordLengthSubsectionTextNltkStw = MET_average_word_length(subsectionText['NltkStw'])
+
+    averageSentenceLengthPaperTextRaw = MET_average_sentence_length(paperText['Raw'],
+                                                                        MET_word_count(paperText['Raw']))
+    averageSentenceLengthAbstractTitlesRaw = MET_average_sentence_length(abstractTitles['Raw'],
+                                                                        MET_word_count(abstractTitles['Raw']))
+    averageSentenceLengthAbstractTextRaw = MET_average_sentence_length(abstractText['Raw'],
+                                                                        MET_word_count(abstractText['Raw']))
+    averageSentenceLengthSectionTitlesRaw = MET_average_sentence_length(sectionTitles['Raw'],
+                                                                        MET_word_count(sectionTitles['Raw']))
+    averageSentenceLengthSectionTextRaw = MET_average_sentence_length(sectionText['Raw'],
+                                                                        MET_word_count(sectionText['Raw']))
+    averageSentenceLengthSubsectionTitlesRaw = MET_average_sentence_length(subsectionTitles['Raw'],
+                                                                        MET_word_count(subsectionTitles['Raw']))
+    averageSentenceLengthSubsectionTextRaw = MET_average_sentence_length(subsectionText['Raw'],
+                                                                        MET_word_count(subsectionText['Raw']))
+
+    averageSentenceLengthPaperTextNltkStem = MET_average_sentence_length(paperText['NltkStem'],
+                                                                        MET_word_count(paperText['NltkStem']))
+    averageSentenceLengthAbstractTitlesNltkStem = MET_average_sentence_length(abstractTitles['NltkStem'],
+                                                                        MET_word_count(abstractTitles['NltkStem']))
+    averageSentenceLengthAbstractTextNltkStem = MET_average_sentence_length(abstractText['NltkStem'],
+                                                                        MET_word_count(abstractText['NltkStem']))
+    averageSentenceLengthSectionTitlesNltkStem = MET_average_sentence_length(sectionTitles['NltkStem'],
+                                                                        MET_word_count(sectionTitles['NltkStem']))
+    averageSentenceLengthSectionTextNltkStem = MET_average_sentence_length(sectionText['NltkStem'],
+                                                                        MET_word_count(sectionText['NltkStem']))
+    averageSentenceLengthSubsectionTitlesNltkStem = MET_average_sentence_length(subsectionTitles['NltkStem'],
+                                                                        MET_word_count(subsectionTitles['NltkStem']))
+    averageSentenceLengthSubsectionTextNltkStem = MET_average_sentence_length(subsectionText['NltkStem'],
+                                                                        MET_word_count(subsectionText['NltkStem']))
+
+    averageSentenceLengthPaperTextNltkStw = MET_average_sentence_length(paperText['NltkStw'],
+                                                                        MET_word_count(paperText['NltkStw']))
+    averageSentenceLengthAbstractTitlesNltkStw = MET_average_sentence_length(abstractTitles['NltkStw'],
+                                                                        MET_word_count(abstractTitles['NltkStw']))
+    averageSentenceLengthAbstractTextNltkStw = MET_average_sentence_length(abstractText['NltkStw'],
+                                                                        MET_word_count(abstractText['NltkStw']))
+    averageSentenceLengthSectionTitlesNltkStw = MET_average_sentence_length(sectionTitles['NltkStw'],
+                                                                        MET_word_count(sectionTitles['NltkStw']))
+    averageSentenceLengthSectionTextNltkStw = MET_average_sentence_length(sectionText['NltkStw'],
+                                                                        MET_word_count(sectionText['NltkStw']))
+    averageSentenceLengthSubsectionTitlesNltkStw = MET_average_sentence_length(subsectionTitles['NltkStw'],
+                                                                        MET_word_count(subsectionTitles['NltkStw']))
+    averageSentenceLengthSubsectionTextNltkStw = MET_average_sentence_length(subsectionText['NltkStw'],
+                                                                        MET_word_count(subsectionText['NltkStw']))
+
+    totalsRawAverageWordLength = TextMining.models.TotalValues(totalPaper=averageWordLengthPaperTextRaw,
+                                                      totalAbstractTitles=averageWordLengthAbstractTitlesRaw,
+                                                      totalAbstractText=averageWordLengthAbstractTextRaw,
+                                                      totalSectionTitles=averageWordLengthSectionTitlesRaw,
+                                                      totalSectionText=averageWordLengthSectionTextRaw,
+                                                      totalSubsectionTitles=averageWordLengthSubsectionTitlesRaw,
+                                                      totalSubsectionText=averageWordLengthSubsectionTextRaw)
+
+    totalsNltkStemAverageWordLength = TextMining.models.TotalValues(totalPaper=averageWordLengthPaperTextNltkStem,
+                                                      totalAbstractTitles=averageWordLengthAbstractTitlesNltkStem,
+                                                      totalAbstractText=averageWordLengthAbstractTextNltkStem,
+                                                      totalSectionTitles=averageWordLengthSectionTitlesNltkStem,
+                                                      totalSectionText=averageWordLengthSectionTextNltkStem,
+                                                      totalSubsectionTitles=averageWordLengthSubsectionTitlesNltkStem,
+                                                      totalSubsectionText=averageWordLengthSubsectionTextNltkStem)
+
+    totalsNltkStwAverageWordLength = TextMining.models.TotalValues(totalPaper=averageWordLengthPaperTextNltkStw,
+                                                      totalAbstractTitles=averageWordLengthAbstractTitlesNltkStw,
+                                                      totalAbstractText=averageWordLengthAbstractTextNltkStw,
+                                                      totalSectionTitles=averageWordLengthSectionTitlesNltkStw,
+                                                      totalSectionText=averageWordLengthSectionTextNltkStw,
+                                                      totalSubsectionTitles=averageWordLengthSubsectionTitlesNltkStw,
+                                                      totalSubsectionText=averageWordLengthSubsectionTextNltkStw)
+
+    totalsRawAverageSentenceLength = TextMining.models.TotalValues(totalPaper=averageSentenceLengthPaperTextRaw,
+                                                      totalAbstractTitles=averageSentenceLengthAbstractTitlesRaw,
+                                                      totalAbstractText=averageSentenceLengthAbstractTextRaw,
+                                                      totalSectionTitles=averageSentenceLengthSectionTitlesRaw,
+                                                      totalSectionText=averageSentenceLengthSectionTextRaw,
+                                                      totalSubsectionTitles=averageSentenceLengthSubsectionTitlesRaw,
+                                                      totalSubsectionText=averageSentenceLengthSubsectionTextRaw)
+
+    totalsNltkStemAverageSentenceLength = TextMining.models.TotalValues(totalPaper=averageSentenceLengthPaperTextNltkStem,
+                                                      totalAbstractTitles=averageSentenceLengthAbstractTitlesNltkStem,
+                                                      totalAbstractText=averageSentenceLengthAbstractTextNltkStem,
+                                                      totalSectionTitles=averageSentenceLengthSectionTitlesNltkStem,
+                                                      totalSectionText=averageSentenceLengthSectionTextNltkStem,
+                                                      totalSubsectionTitles=averageSentenceLengthSubsectionTitlesNltkStem,
+                                                      totalSubsectionText=averageSentenceLengthSubsectionTextNltkStem)
+
+    totalsNltkStwAverageSentenceLength = TextMining.models.TotalValues(totalPaper=averageSentenceLengthPaperTextNltkStw,
+                                                      totalAbstractTitles=averageSentenceLengthAbstractTitlesNltkStw,
+                                                      totalAbstractText=averageSentenceLengthAbstractTextNltkStw,
+                                                      totalSectionTitles=averageSentenceLengthSectionTitlesNltkStw,
+                                                      totalSectionText=averageSentenceLengthSectionTextNltkStw,
+                                                      totalSubsectionTitles=averageSentenceLengthSubsectionTitlesNltkStw,
+                                                      totalSubsectionText=averageSentenceLengthSubsectionTextNltkStw)
 
 
-    totalPaper = FloatField()
-    totalAbstractTitles = FloatField()
-    totalAbstractText = FloatField()
-    totalSectionTitles = FloatField()
-    totalSectionText = FloatField()
-    totalSubsectionTitles = FloatField()
-    totalSubsectionText = FloatField()
+    totalsForAveragedMetriks = TextMining.models.TotalValuesForAveragedMetriks(
+        totalsAverageSentenceLengthRaw=totalsRawAverageSentenceLength,
+        totalsAverageSentenceLengthNltkStw=totalsNltkStwAverageSentenceLength,
+        totalsAverageSentenceLengthNltkStem=totalsNltkStemAverageSentenceLength,
+        totalsAverageWordLengthRaw=totalsRawAverageWordLength,
+        totalsAverageWordLengthNltkStw=totalsNltkStwAverageWordLength,
+        totalsAverageWordLengthNltkStem=totalsNltkStemAverageWordLength
+        )
+
+
+    paper.totalValuesForAveragedMetriks = totalsForAveragedMetriks

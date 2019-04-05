@@ -1,5 +1,6 @@
 import re
 
+#TODO die auch wie die anderen metriken mit nltk word sequenzieren und dann länge wie bei average Word length berechnen?
 #Stopwortliste nltk(english) word to lowercase
 def MET_char_count_WhiteSpace(text):
     #Remove quotes
