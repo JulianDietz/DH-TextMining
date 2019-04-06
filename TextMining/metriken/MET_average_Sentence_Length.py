@@ -3,10 +3,10 @@ import nltk
 
 def MET_average_sentence_length(text, wordCount):
     sentTokens = nltk.sent_tokenize(text)
-    Punctuation = ['.',',','\\','/','#','!','?','^','&','*',';',':','{','}','=','-','_','`','~','“','”','"','(',')',"'",'""',"''",'<','>']
-    sentenceTokensWithoutPunctuation = [item for item in sentTokens if item not in Punctuation]
-    if sentenceTokensWithoutPunctuation == []:
+    nonWords = ['.',',','\\','/','#','!','?','^','&','*',';',':','{','}','=','-','_','`','~','“','”','"','(',')',"'",'""',"''",'<','>','[',']']
+    sentenceTokensWithoutNonWords = [item for item in sentTokens if item not in nonWords]
+    if sentenceTokensWithoutNonWords == []:
         averageSentenceLength = 0
     else:
-        averageSentenceLength = wordCount/len(sentenceTokensWithoutPunctuation)
+        averageSentenceLength = wordCount/len(sentenceTokensWithoutNonWords)
     return averageSentenceLength
