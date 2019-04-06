@@ -384,7 +384,7 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=Fals
                 universityCount=False,countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                 tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
                 averageWordLength=False, averageSentenceLength=False, mostCommonWords=False, mostCommonKeywords=False,
-                mostPresentWords=True, typeTokenRatio=False):
+                mostPresentWords=False, typeTokenRatio=False):
 
     sectionedMetriks = {('charCountWhiteSpace',charCountWhiteSpace), ('charCountNoWhiteSpace',charCountNoWhiteSpace),
                         ('wordCount',wordCount),('punctCount',punctCount),('citationCount',citationCount),
