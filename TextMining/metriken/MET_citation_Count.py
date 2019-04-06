@@ -10,7 +10,8 @@ def MET_citation_count(text):
             for splitQuote in quotes:
                 if "-" in splitQuote:
                     splitQuote = splitQuote.split("-")
-                    quoteCount += int(splitQuote[1])-int(splitQuote[0]) +1
+                    if splitQuote[1].isdigit() and splitQuote[0].isdigit():
+                        quoteCount += int(splitQuote[1])-int(splitQuote[0]) +1
                 else:
                     quoteCount = quoteCount +1
         else:
