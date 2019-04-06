@@ -113,7 +113,7 @@ def processPaper(request):
         metriken.stemText(paper)  # MET_text_to_STEM_text
         metriken.calculateAllMetrics(paper)
 
-    print("Papersind aufbereitet und vorberechnet")
+    print("Paper sind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
 
 
@@ -332,7 +332,7 @@ def testMethode(request):
                          universityCount=False, countryCount=False, keywordCount=False, tableCount=False,
                          pictureCount=False, tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
                          averageWordLength=False, averageSentenceLength=False, mostCommonWords=False,
-                         mostCommonKeywords=False, mostPresentWords=False, typeTokenRatio=True))
+                         mostCommonKeywords=True, mostPresentWords=False, typeTokenRatio=False))
     return render(request, 'index.html')
 
 
@@ -519,7 +519,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     paperContents = []
     keywordContents = []
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',
-                '“', '”', '"', '(', ')', "'", '""', "''", '<', '>', '[', ']']
+                '“', '”', '"', '(', ')', "'", '""', "''", '<', '>', '[', ']',' ']
 
     resultsMostCommonWords = []
     resultsMostCommonKeywords = []

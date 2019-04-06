@@ -2,29 +2,23 @@ import re
 
 #Count punctuation without citations
 def MET_citation_count(text):
-    # \[[^]]*\]
-    # ['doctors having a degree in internal medicine (MD or DNB', 'Int Med)'] found
-    #[L]
-    # ValueError: invalid literal for int() with base 10: 'Int Med)'
-    #finding = re.findall(r"(\[[(\d+)(\-\d+)?]]*\])", text)
-    finding = re.findall(r"([(\d+)\-(\d+)])", text)
+    finding = re.findall(r"(\[\d+(,*-?\d*)*\])", text)
     quoteCount = 0
     for quote in finding:
-        print(quote)
-        if "-" in quote:
-            quotes = quote.replace("[","").replace("]","").split("-")
-            #print(quotes)
-            while "-" in quotes: quotes.remove("-")
-            #print(quotes)
-            if quotes[1].isdigit() and quotes[0].isdigit():
-                quoteCount += (int(quotes[1]) -int(quotes[0])) + 1
-        elif "," in quote:
-            quotes = (quote.split(","))
-            while "," in quotes: quotes.remove(",")
-            quoteCount += len(quotes)
+        if "," in quote[0]:
+            quotes = quote[0].replace("[","").replace("]","").split(",")
+            for splitQuote in quotes:
+                if "-" in splitQuote:
+                    splitQuote = splitQuote.split("-")
+                    quoteCount += int(splitQuote[1])-int(splitQuote[0]) +1
+                else:
+                    quoteCount = quoteCount +1
         else:
-            quoteCount += 1
-    print(quoteCount)
+            if "-" in quote[0]:
+                splitQuote = quote[0].replace("[","").replace("]","").split("-")
+                quoteCount += int(splitQuote[1]) - int(splitQuote[0]) + 1
+            else:
+                quoteCount = quoteCount + 1
     return quoteCount
 
 

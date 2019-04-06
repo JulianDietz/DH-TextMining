@@ -41,26 +41,17 @@ def stemText(paper):
 
 #PorterStemmer nltk
 def getStemForTextsection(text):
-    #print('Ausgangstext:')
-    #print(text)
     ps = PorterStemmer()
     text_As_Array = RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg??
-    #print('Tokentext:')
-    #print(text_As_Array)
-    #print("text:"+text)
     textstemmed = ""
     #words = word_tokenize(sentence)
     for word in text_As_Array:
         textstemmed += " " + ps.stem(word)
-    #print('stemmedtext:')
-    #print(textstemmed)
     return textstemmed
 
 #checks if section has StemmedText with this method
 def paperIsRehashed(section,fieldname):
     if section[fieldname]:
-        #print('vorhanden')
         return True
     else:
-        #print('noch nicht vorhanden')
         return False
