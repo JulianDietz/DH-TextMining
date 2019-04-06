@@ -36,26 +36,30 @@ def calculateAllMetrics(paper):
         abstractText['Raw'].append(section.textRaw.text)
         abstractText['NltkStem'].append(section.textNltkStem.text)
 
-        if section.titleRaw.text[-1] not in splitters:
-            paperText['Raw'].append(section.titleRaw.text + ".")
-            abstractTitles['Raw'].append(section.titleRaw.text + ".")
-        else:
-            paperText['Raw'].append(section.titleRaw.text)
-            abstractTitles['Raw'].append(section.titleRaw.text)
+        #fails for section.titleRaw.text="" ?
+        if len(section.titleRaw.text) > 0:
+            if section.titleRaw.text[-1] not in splitters:
+                paperText['Raw'].append(section.titleRaw.text + ".")
+                abstractTitles['Raw'].append(section.titleRaw.text + ".")
+            else:
+                paperText['Raw'].append(section.titleRaw.text)
+                abstractTitles['Raw'].append(section.titleRaw.text)
 
-        if section.titleNltkStem.text[-1] not in splitters:
-            paperText['NltkStem'].append(section.titleNltkStem.text + ".")
-            abstractTitles['NltkStem'].append(section.titleNltkStem.text + ".")
-        else:
-            paperText['NltkStem'].append(section.titleNltkStem.text)
-            abstractTitles['NltkStem'].append(section.titleNltkStem.text)
+        if len(section.titleNltkStem.text) > 0:
+            if section.titleNltkStem.text[-1] not in splitters:
+                paperText['NltkStem'].append(section.titleNltkStem.text + ".")
+                abstractTitles['NltkStem'].append(section.titleNltkStem.text + ".")
+            else:
+                paperText['NltkStem'].append(section.titleNltkStem.text)
+                abstractTitles['NltkStem'].append(section.titleNltkStem.text)
 
-        if section.titleNltkStw.text[-1] not in splitters:
-            paperText['NltkStw'].append(section.titleNltkStw.text + ".")
-            abstractTitles['NltkStw'].append(section.titleNltkStw.text + ".")
-        else:
-            paperText['NltkStw'].append(section.titleNltkStw.text)
-            abstractTitles['NltkStw'].append(section.titleNltkStw.text)
+        if len(section.titleNltkStw.text) > 0:
+            if section.titleNltkStw.text[-1] not in splitters:
+                paperText['NltkStw'].append(section.titleNltkStw.text + ".")
+                abstractTitles['NltkStw'].append(section.titleNltkStw.text + ".")
+            else:
+                paperText['NltkStw'].append(section.titleNltkStw.text)
+                abstractTitles['NltkStw'].append(section.titleNltkStw.text)
 
 
 
@@ -76,26 +80,29 @@ def calculateAllMetrics(paper):
         sectionText['Raw'].append(section.textRaw.text)
         sectionText['NltkStem'].append(section.textNltkStem.text)
 
-        if section.titleRaw.text[-1] not in splitters:
-            paperText['Raw'].append(section.titleRaw.text + ".")
-            sectionTitles['Raw'].append(section.titleRaw.text + ".")
-        else:
-            paperText['Raw'].append(section.titleRaw.text)
-            sectionTitles['Raw'].append(section.titleRaw.text)
+        if len(section.titleRaw.text) > 0:
+            if section.titleRaw.text[-1] not in splitters:
+                paperText['Raw'].append(section.titleRaw.text + ".")
+                sectionTitles['Raw'].append(section.titleRaw.text + ".")
+            else:
+                paperText['Raw'].append(section.titleRaw.text)
+                sectionTitles['Raw'].append(section.titleRaw.text)
 
-        if section.titleNltkStem.text[-1] not in splitters:
-            paperText['NltkStem'].append(section.titleNltkStem.text + ".")
-            sectionTitles['NltkStem'].append(section.titleNltkStem.text + ".")
-        else:
-            paperText['NltkStem'].append(section.titleNltkStem.text)
-            sectionTitles['NltkStem'].append(section.titleNltkStem.text)
+        if len(section.titleNltkStem.text) > 0:
+            if section.titleNltkStem.text[-1] not in splitters:
+                paperText['NltkStem'].append(section.titleNltkStem.text + ".")
+                sectionTitles['NltkStem'].append(section.titleNltkStem.text + ".")
+            else:
+                paperText['NltkStem'].append(section.titleNltkStem.text)
+                sectionTitles['NltkStem'].append(section.titleNltkStem.text)
 
-        if section.titleNltkStw.text[-1] not in splitters:
-            paperText['NltkStw'].append(section.titleNltkStw.text + ".")
-            sectionTitles['NltkStw'].append(section.titleNltkStw.text + ".")
-        else:
-            paperText['NltkStw'].append(section.titleNltkStw.text)
-            sectionTitles['NltkStw'].append(section.titleNltkStw.text)
+        if len(section.titleNltkStw.text) > 0:
+            if section.titleNltkStw.text[-1] not in splitters:
+                paperText['NltkStw'].append(section.titleNltkStw.text + ".")
+                sectionTitles['NltkStw'].append(section.titleNltkStw.text + ".")
+            else:
+                paperText['NltkStw'].append(section.titleNltkStw.text)
+                sectionTitles['NltkStw'].append(section.titleNltkStw.text)
 
 
         #Subtext
@@ -115,26 +122,29 @@ def calculateAllMetrics(paper):
             subsectionText['Raw'].append(section.textRaw.text)
             subsectionText['NltkStem'].append(section.textNltkStem.text)
 
-            if section.titleRaw.text[-1] not in splitters:
-                paperText['Raw'].append(section.titleRaw.text + ".")
-                subsectionTitles['Raw'].append(section.titleRaw.text + ".")
-            else:
-                paperText['Raw'].append(section.titleRaw.text)
-                subsectionTitles['Raw'].append(section.titleRaw.text)
+            if len(section.titleRaw.text) > 0:
+                if section.titleRaw.text[-1] not in splitters:
+                    paperText['Raw'].append(section.titleRaw.text + ".")
+                    subsectionTitles['Raw'].append(section.titleRaw.text + ".")
+                else:
+                    paperText['Raw'].append(section.titleRaw.text)
+                    subsectionTitles['Raw'].append(section.titleRaw.text)
 
-            if section.titleNltkStem.text[-1] not in splitters:
-                paperText['NltkStem'].append(section.titleNltkStem.text + ".")
-                subsectionTitles['NltkStem'].append(section.titleNltkStem.text + ".")
-            else:
-                paperText['NltkStem'].append(section.titleNltkStem.text)
-                subsectionTitles['NltkStem'].append(section.titleNltkStem.text)
+            if len(section.titleNltkStem.text) > 0:
+                if section.titleNltkStem.text[-1] not in splitters:
+                    paperText['NltkStem'].append(section.titleNltkStem.text + ".")
+                    subsectionTitles['NltkStem'].append(section.titleNltkStem.text + ".")
+                else:
+                    paperText['NltkStem'].append(section.titleNltkStem.text)
+                    subsectionTitles['NltkStem'].append(section.titleNltkStem.text)
 
-            if section.titleNltkStw.text[-1] not in splitters:
-                paperText['NltkStw'].append(section.titleNltkStw.text +".")
-                subsectionTitles['NltkStw'].append(section.titleNltkStw.text + ".")
-            else:
-                paperText['NltkStw'].append(section.titleNltkStw.text)
-                subsectionTitles['NltkStw'].append(section.titleNltkStw.text)
+            if len(section.titleNltkStw.text) > 0:
+                if section.titleNltkStw.text[-1] not in splitters:
+                    paperText['NltkStw'].append(section.titleNltkStw.text +".")
+                    subsectionTitles['NltkStw'].append(section.titleNltkStw.text + ".")
+                else:
+                    paperText['NltkStw'].append(section.titleNltkStw.text)
+                    subsectionTitles['NltkStw'].append(section.titleNltkStw.text)
 
     variants = ['Raw','NltkStem','NltkStw']
     for variant in variants:

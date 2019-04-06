@@ -13,6 +13,7 @@ def parseHTML():
     outputdirectory = 'outputNew'
     source = 'omics'
     # open file
+    categoryArray=[]
     readpathbasic=path.join(htmlfilesdirectory,source)
     for categoryFolder in listdir(readpathbasic):
         print(categoryFolder)
@@ -24,46 +25,52 @@ def parseHTML():
                 #categoryDirectory=path.join(outputdirectory,folder)
                 if isfile(join(readpath, file)) and file.endswith('.html') and test<=2:
                     file = open(join(readpath, file))
-                    print('parse file: ' + file.name)
+                    print('Start parsing file: ' + file.name)
+                    try:
+                        htmlfile = BeautifulSoup(file, 'html.parser')
+                        output = {}
+                        htmlarticle = htmlfile.article
+                        if not htmlarticle:
+                            continue
+                        titel=getTitel(htmlarticle)
+                        if titel==EMPTYJSONTAG:
+                            continue
+                        #output['title'] = titel
+                        output['metaData']= getMetadata(htmlfile,categoryFolder,source)
+                        output['abstract'] = getAbstract(htmlarticle)
+                        output['authors'] = getAuthors(htmlarticle)
+                        output['references'] = getallReferences(htmlarticle)
+                        text=getSelectionText(htmlfile)
+                        if text==EMPTYJSONTAG:
+                            continue
+                        output['text'] = text
 
-                    htmlfile = BeautifulSoup(file, 'html.parser')
-                    output = {}
-                    htmlarticle = htmlfile.article
-                    if not htmlarticle:
-                        continue
-                    titel=getTitel(htmlarticle)
-                    if titel==EMPTYJSONTAG:
-                        continue
-                    #output['title'] = titel
-                    output['metaData']= getMetadata(htmlfile,categoryFolder,source)
-                    output['abstract'] = getAbstract(htmlarticle)
-                    output['authors'] = getAuthors(htmlarticle)
-                    output['references'] = getallReferences(htmlarticle)
-                    text=getSelectionText(htmlfile)
-                    if text==EMPTYJSONTAG:
-                        continue
-                    output['text'] = text
-
-                    print("output")
-                    print(output)
-
-                    name = path.splitext(basename(file.name))[0]
-                    with open(join(outputdirectory, name + '.json'), 'w') as f:
-                        json.dump(output, f, ensure_ascii=False)
+                        print("output:")
+                        print(output)
+                        print('erledigte Categorien:')
+                        print(categoryArray)
+                        print('###################################################')
+                        name = path.splitext(basename(file.name))[0]
+                        with open(join(outputdirectory, name + '.json'), 'w') as f:
+                            json.dump(output, f, ensure_ascii=False)
+                    except:
+                        print("Paper failed!")
                     #file = open(join(outputdirectory, name + '.json'), 'w', encoding='utf-8')
                     #json.dump(output, file)
                     #file.close()
                     #test+=1
+        categoryArray.append(categoryFolder)
+
 
 def readJsonFiles():
     outputdirectory = 'output'
     for file in listdir(outputdirectory):
         # read json
-        print('read file: ' + file)
+        #print('read file: ' + file)
         name = path.splitext(basename(file))[0]
         file = open(join(outputdirectory, name + '.json'), 'r')
         jsonfile = json.load(file)
-        print(jsonfile["title"])
+        #print(jsonfile["title"])
 
 
 
@@ -90,15 +97,15 @@ def getallReferences(htmlArticle):
 
             #get author
 
-            print("Das ist Referenz")
-            print(reference)
+            #print("Das ist Referenz")
+            #print(reference)
 
             refAuthorName = EMPTYJSONTAG
             for el in reference.contents:
                 if "<" not in str(el):
                     refAuthorNameMatch = re.search(r'[A-Za-z,\s]*',str(el))
                     refAuthorName = refAuthorNameMatch.group(0)
-                    print("Autorname: " + refAuthorName)
+                    #print("Autorname: " + refAuthorName)
 
             references["count"] += 1
 
@@ -108,12 +115,12 @@ def getallReferences(htmlArticle):
 
             referenceIndex = ""
 
-            print("array")
-            print(referenceSubArray)
+            #print("array")
+            #print(referenceSubArray)
 
             for a in referenceSubArray:
                 if "id" in a:
-                    print("Stop gefunden")
+                    #print("Stop gefunden")
 
                     referenceIndex = int(a['d'])
 
@@ -163,14 +170,14 @@ def getPaperType (htmlArticle):
 def getPaperURL (htmlfile):
     url = EMPTYJSONTAG
     urlEl = htmlfile.find("link", {"rel":"canonical"})
-    print("urlelement")
-    print(urlEl)
+    #print("urlelement")
+    #print(urlEl)
 
     if urlEl != None and urlEl != -1:
         url = str(urlEl["href"])
 
-    print("Hier ist die URL")
-    print(url)
+    #print("Hier ist die URL")
+    #print(url)
     return url
 
 
@@ -237,30 +244,30 @@ def getAbstractText(abstract):
             if tag.parent.name!="strong":
                 if titel == "" and tag.text!=":":
                     titel=tag.text
-                    print("überschrift found:" +titel)
-                    print("Passender text dazu:")
-                    print(tag)
+                    #print("überschrift found:" +titel)
+                    #print("Passender text dazu:")
+                    #print(tag)
                     if tag.next_sibling and tag.next_sibling.name != "br" and tag.next_sibling.name != "em" and tag.next_sibling.name != "a": #:
                         text=tag.next_sibling
                     #dppelt name nach strong dann em(doppelt)
                     #elif tag.next_sibling and tag.next_sibling.name == "em":
                     #    text=tag.next_sibling.getText()
-                    print(text)
+                    #print(text)
                 elif tag.text!=":" and tag.text!=None:
 
                     titel=titel.strip().replace(":","")
                     text=text.strip()
-                    print("Abschnitt speichern: titel:"+titel+"   Text: "+text)
+                    #print("Abschnitt speichern: titel:"+titel+"   Text: "+text)
                     result.append({"title":titel,"text":text,"depth":1})
                     #print('section: '+ "title:"+ titel+"text: "+text)
                     if tag.find("strong"):
                         tag=tag.find("strong")
-                        print("Tag")
-                        print(tag)
+                        #print("Tag")
+                        #print(tag)
                     titel=tag.text
-                    print("überschrift found:" + titel)
-                    print("Passender text dazu:")
-                    print(tag.next_sibling)
+                    #print("überschrift found:" + titel)
+                    #print("Passender text dazu:")
+                    #print(tag.next_sibling)
                     if tag.next_sibling:
                         if tag.next_sibling.name != "br" and tag.next_sibling.name != "a":  #:
                             if tag.next_sibling.name!="strong" and tag.text!=":":
@@ -296,6 +303,7 @@ def getAbstractText(abstract):
 def getAbstract(htmlArticle):
     #find abstract
     #print("Abstract")
+    div=None
     for div in htmlArticle.findAll('div'):
         if div.find('h3'):
             container=div.find('h3')
@@ -310,16 +318,16 @@ def getAbstract(htmlArticle):
         #Absätze mit überschriften
         list = []
         if abstract.find('strong'):
-            print("Abstract mit überschriften")
+            #print("Abstract mit überschriften")
             list = getAbstractText(abstract)
         #Absätze ohne überschriften
         else:
-            print("Abstract ohne überschriften")
+            #print("Abstract ohne überschriften")
             list.append({'title':EMPTYJSONTAG,'text':abstract.getText(),'depth':1})
     else:
         list = [{'title': EMPTYJSONTAG, 'text': EMPTYJSONTAG}]
-    print("final Abstract:")
-    print(list)
+    #print("final Abstract:")
+    #print(list)
     return list
 
 def getMetadata(htmlfile,category,source):
@@ -358,8 +366,8 @@ def getAuthors(htmlArticle):
     authorsOutput = {'count': None, 'authorList': []}
     authorListHTML = htmlArticle.dl.dt.find_all('a')
 
-    print("AuthorlistHTML")
-    print(authorListHTML)
+    #print("AuthorlistHTML")
+    #print(authorListHTML)
 
     index = 0
     for authorEl in authorListHTML:
@@ -370,15 +378,15 @@ def getAuthors(htmlArticle):
 
             finding = authorEl.next_element.next_element.find('a')
 
-            print("finding")
-            print(authorEl)
-            if finding != None and finding != -1:
-                print("das ist finding")
-                print(finding)
-                if "contents" in finding:
-                    print("Hier ist Contents")
-                    print(finding.contents)
-            print("finding ENDE")
+            #print("finding")
+            #print(authorEl)
+            #if finding != None and finding != -1:
+                #print("das ist finding")
+                #print(finding)
+                #if "contents" in finding:
+                    #print("Hier ist Contents")
+                    #print(finding.contents)
+            #print("finding ENDE")
 
             #Autoren sind nummeriert
             if finding != None and finding != -1 and authorEl.next_sibling and "contents" in finding and str(finding.contents[0]) != '*':
@@ -386,8 +394,8 @@ def getAuthors(htmlArticle):
                 university = htmlArticle.dl.find('dd', id="a" + universityIndex)
                 universityCountry = str(university.contents[-1]).split(',')[-1].strip()
 
-                print("XXCountry")
-                print(universityCountry)
+                #print(" ")
+                #print(universityCountry)
 
                 if university.find('a', title=True):
                     universityName = str(university.find('a', href=True)['title'])
@@ -400,7 +408,7 @@ def getAuthors(htmlArticle):
                 #print("university")
                 #print(university.contents)
                 if university.find('a', title=True) != None and university.find('a', title=True) != -1:
-                    print("HIER HIER HIER")
+                    #print("HIER HIER HIER")
                     if university.find('a', href=True).has_attr("title"):
                         universityName = str(university.find('a', href=True)['title'])
                     else:
@@ -430,8 +438,8 @@ def getSelectionText(htmlArticle):
                 dataImages=getImages(section.findNext())
                 dataTables = getTables(section.findNext())
                 h4array.append({"title": title, "text": text, 'depth': 1, 'subsection':subsection,'tables':dataTables,'pictures':dataImages})
-                print('save h4section')
-            print("titel:" + section.text)
+                #print('save h4section')
+            #print("titel:" + section.text)
             subsection = []
             title = section.text
             text = ""
@@ -441,14 +449,14 @@ def getSelectionText(htmlArticle):
 
             #alle untertags bis zum nächsten h4 <div class="text-justify">....</div>
             #<div class="table-responsive"> to get table  <div class="card card-block card-header mb-2"> bilder
-            print(section.findNext())
+            #print(section.findNext())
             #print(section.findAll('p'))
             for element in section.findNext():
-                print("element")
-                print("element1 " + str(element.name))
-                print(element)
+                #print("element")
+                #print("element1 " + str(element.name))
+                #print(element)
                 if element.name == 'p' and not element.find("strong"):
-                    print("p ohne strong")
+                    #print("p ohne strong")
                     #print(element)
                     if subsectionfound:
                         innertext+=element.get_text()
@@ -460,7 +468,7 @@ def getSelectionText(htmlArticle):
                     # none wenns vorkommt -1 wenn nicht
                     if element.contents[0].find("strong")!=-1 :
                         if "Table" not in element.find("strong").text and "Figure" not in element.find("strong").text:
-                            print("unterüberschrift found")
+                            #print("unterüberschrift found")
                             subsectionfound = True
                             if innertitle != "" and innertext != "":
                                 subsection.append({"title": innertitle, "text": innertext, 'depth':2,'subsection': []})
@@ -496,16 +504,16 @@ def getTables(section):
     sectionTableData = {"count": 0, "tablesList": []}
     tableListHTML = section.find_all("div", class_="table-responsive")
 
-    for element in section.find_next():
-        print("element in for")
-        print(element.name)
+    #for element in section.find_next():
+        #print("element in for")
+        #print(element.name)
 
-        if "class" in element:
-            print("Klasse vorhanden")
-            print(element)
+        #if "class" in element:
+            #print("Klasse vorhanden")
+            #print(element)
 
-        print(element)
-        print("Element ende")
+        #print(element)
+        #print("Element ende")
 
 
     for table in tableListHTML:
@@ -530,7 +538,7 @@ def getTables(section):
     return sectionTableData
 
 def getImages(section):
-    print("picturesection")
+    #print("picturesection")
     sectionPictureData = {"count": 0, "picturesList": []}
     regex = re.compile("<[\/]*[a-z]+>", re.IGNORECASE)
     pictureListHTML = section.find_all("div", class_="card card-block card-header mb-2")
@@ -547,8 +555,8 @@ def getImages(section):
             while re.search(regex, description) != None:
                 description = regex.sub("", description)
 
-            print("Beschreibung")
-            print(str(description))
+            #print("Beschreibung")
+            #print(str(description))
 
 
         pictureData = {"index": sectionPictureData['count'], "pictureDescription": description}
@@ -556,13 +564,13 @@ def getImages(section):
     return sectionPictureData
 
 def getFormula(section):
-    print("formula Section")
+    #print("formula Section")
     sectionFormulaData = {"count": 0, "formulaList": []}
 
     formulaListHTML = section.find_all("img")#, class_="equation")
 
-    print("Formelliste")
-    print(formulaListHTML)
+    #print("Formelliste")
+    #print(formulaListHTML)
 
 
     for formula in formulaListHTML:

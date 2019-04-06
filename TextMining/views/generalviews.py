@@ -30,6 +30,8 @@ import statistics
 '''init ntlk run:
 import nltk
 nltk.download('stopwords')
+nltk.download('punkt')
+
 '''
 KORPUS1=None
 KORPUS2=None
@@ -144,6 +146,9 @@ def getSelectedPaper(request):
         paperCorpus2 = filterDB(corpus2)
         return JsonResponse({'sucess':True,'corpus1':paperCorpus1,'corpus2':paperCorpus2})
 
+    if (request.method == "GET"):
+        return redirect('corpusSelection')
+
 #http://docs.mongoengine.org/guide/querying.html
 #https://stackoverflow.com/questions/8189702/mongodb-using-an-or-clause-in-mongoengine
 def filterDB(querydata):
@@ -253,6 +258,8 @@ def startAnalyse(request):
         context={'metricList':metricList,'corpusTextVariants':corpusTextVariants}
         return render(request, 'results/results.html', context)
 
+    if (request.method == "GET"):
+        return redirect('corpusSelection')
 
 # Testen obs klappt
 def startDB(request):
