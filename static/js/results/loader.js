@@ -339,6 +339,8 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
         tableHeader.append("th").text("Bereich");
         tableHeader.append("th").text("Graph");
 
+        console.log(data[metricName]);
+
         let csvBaseDataRawValues = [];
 
         //header and Total
@@ -354,7 +356,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
 
             createStatElement(cell, mod, med, avg, std, cnt);
 
-            csvBaseDataRawValues.push({"values": data[metricName][corpus].rawValues.totals[areaSelected], "section": areaSelected, "sectionNum": "totals"});
+            csvBaseDataRawValues.push({"corpus" : corpus, "values" : {"values": data[metricName][corpus].rawValues.totals[areaSelected], "section": areaSelected, "sectionNum": "totals"}});
         }
 
         //Add a statistical overview for each corpus
@@ -380,14 +382,14 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
 
                 createStatElement(cell, mod, med, avg, std, cnt);
 
-                csvBaseDataRawValues.push({"values": data[metricName][corpus].rawValues.sectioned[areaSelected][area], "section": areaSelected, "sectionNum": area});
+                csvBaseDataRawValues.push({"corpus" : corpus  , values : {"values": data[metricName][corpus].rawValues.sectioned[areaSelected][area], "section": areaSelected, "sectionNum": area}});
             }
             ;
         }
         ;
 
         //Create CSV file and download
-        createCSVdownloadfromArrayF(IDMetricEl, csvBaseDataRawValues);
+        //createCSVdownloadfromArrayF(IDMetricEl, csvBaseDataRawValues);
 
         function updateGraph(section, sectionNum) {
 
@@ -724,7 +726,7 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
 
     //Create domain
     let domainY = dataPoints.map(function (d) {
-        return d.values.paperID
+        return d.values.name
     });
     let domainX = [0, dataPoints[dataPoints.length - 1].values.value];
 
@@ -751,9 +753,6 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
         .interpolator(d3.interpolateInferno)
         .domain([0, 2]);
 
-
-    console.log(myColor(2));
-
     //Create the lines
     svg.selectAll("lolli-lines")
         .data(dataPoints)
@@ -764,10 +763,10 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
         })
         .attr("x2", x(0))
         .attr("y1", function (d) {
-            return y(d.values.paperID)
+            return y(d.values.name)
         })
         .attr("y2", function (d) {
-            return y(d.values.paperID)
+            return y(d.values.name)
         })
         .attr("stroke", "#d1d1d1");
 
@@ -806,7 +805,7 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
             return x(d.values.value);
         })
         .attr("cy", function (d) {
-            return y(d.values.paperID);
+            return y(d.values.name);
         })
         .attr("r", "7")
         .style("fill", function (d) {
@@ -857,7 +856,7 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
 
     //Create domain left
     let domainY = dataPoints.map(function (d) {
-        return d.values.paperID
+        return d.values.name;
     });
     let domainXLeft = [0, dataPoints[dataPoints.length - 1].values.value];
 
@@ -933,10 +932,10 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
             })
             .attr("x2", x(0))
             .attr("y1", function (d) {
-                return y(d.values.paperID)
+                return y(d.values.name)
             })
             .attr("y2", function (d) {
-                return y(d.values.paperID)
+                return y(d.values.name)
             })
             .attr("stroke", "#d1d1d1");
 
@@ -969,7 +968,7 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
                 return x(d.values.value);
             })
             .attr("cy", function (d) {
-                return y(d.values.paperID);
+                return y(d.values.name);
             })
             .attr("r", "7")
             .style("fill", function (d) {
@@ -1172,16 +1171,16 @@ function createCSVdownloadfromArray(metricID, dataArray) {
 
         let sectionNumCon;
         //catch undefined error
-        if (sectionNum != undefined) {
-            sectionNumCon = element.sectionNum === "totals" ? "totals" : parseInt(element.sectionNum) + 1;
+        if (element.values.sectionNum != undefined) {
+            sectionNumCon = element.values.sectionNum === "totals" ? "totals" : parseInt(element.values.sectionNum) + 1;
         }
         ;
 
-        csv_text += convertJSONtoCSV(element.values, element.section, element.sectionNumCon);
+        csv_text += convertJSONtoCSV(element.values.values, element.values.section, element.values.sectionNumCon);
 
         //Create header for every key
         if (csvheader === "") {
-            for (key of Object.keys(dataPoints[0].values)) {
+            for (key of Object.keys(dataPoints[0].values.values)) {
                 if (csv_header != "") {
                     csv_header += ", "
                 }
@@ -1212,28 +1211,30 @@ function createCSVdownloadfromArray(metricID, dataArray) {
 
         let csv_text = "";
 
+        console.log(data);
+
         for (let i = 0; i < data.length; i++) {
             let data_row = "";
-            for (key of Object.keys(dataPoints[i].values)) {
+            for (key of Object.keys(data[i].values)) {
                 if (data_row != "") {
                     data_row += ", "
                 }
-                if (Array.isArray(dataPoints[i].values[key])) {
-                    data_row += dataPoints[i].values[key].join("; ");
+                if (Array.isArray(data[i].values[key])) {
+                    data_row += data[i].values[key].join("; ");
                 } else {
-                    data_row += dataPoints[i].values[key];
+                    data_row += data[i].values[key];
                 }
 
 
             }
             //if no textVar selection is available, assume Raw Text
-            let textVar = d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).empty() ? "Raw" : d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).node().options[d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).node().selectedIndex].value
+            let textVar = d3.select("#textVar_" + data[i].corpus + "_" + metricID).empty() ? "Raw" : d3.select("#textVar_" + data[i].corpus + "_" + metricID).node().options[d3.select("#textVar_" + data[i].corpus + "_" + metricID).node().selectedIndex].value
 
             //append data for sectioned metrics
             if (section == undefined && sectionNum == undefined) {
-                csv_text += data_row + ", " + dataPoints[i].corpus + ", " + textVar + "\r\n";
+                csv_text += data_row + ", " + data[i].corpus + ", " + textVar + "\r\n";
             } else {
-                csv_text += data_row + ", " + dataPoints[i].corpus + ", " + textVar + ", " + section + ", " + sectionNum + "\r\n";
+                csv_text += data_row + ", " + data[i].corpus + ", " + textVar + ", " + section + ", " + sectionNum + "\r\n";
             }
             ;
         }
