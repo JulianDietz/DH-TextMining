@@ -250,7 +250,7 @@ def startAnalyse(request):
                         {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten", "graphType": "boxplot", "allowTextVariants": "false"},
                         {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder", "graphType": "boxplot", "allowTextVariants": "false"},
                         {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
-                        {"metric": "tableCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
+                        {"metric": "tableCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
                         {"metric": "pictureCount", "dataDisplayType": "numeric-section", "germanTitle": "Bilderanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
                         {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenbeschriftungslängen", "graphType": "boxplot",
                          "allowTextVariants": "false"},
