@@ -932,6 +932,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     # TODO paperCount ist länge corpus, bei sektionsmetriken ist nicht immer alles len corpus sondern len existente sektionszahl...passt?
     # TODO Statt gesamtes Paper sectioned machen?
     if mostCommonKeywords:
+        '''''
         keywordContents = "" + (" ".join(keywordContents))
         wordTokens = nltk.word_tokenize(keywordContents)
         wordTokenFreqDist = nltk.FreqDist(item.capitalize() for item in wordTokens if item not in nonWords).most_common()
@@ -939,6 +940,12 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             resultsMostCommonKeywords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
         resultDict['mostCommonKeywords'][corpusIdentifier] = {'rawValues': resultsMostCommonKeywords, 'variant': variant,
                                                               'paperCount': len(corpus)}
+        '''''
+        counterMostCommonKeywords = Counter(keywordContents).most_common()
+        for wordFreq in counterMostCommonKeywords:
+            resultsMostCommonKeywords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
+        resultDict['mostCommonKeywords'][corpusIdentifier] = {'rawValues': resultsMostCommonKeywords, 'variant': variant,
+                                                            'paperCount': len(corpus)}
     if mostCommonWords:
         paperContentsString = "" + (" ".join(paperContents))
         wordTokens = nltk.word_tokenize(paperContentsString)
