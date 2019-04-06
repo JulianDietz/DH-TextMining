@@ -74,6 +74,7 @@ def readJsonFilesView(request):
     context = {'numberFiles': numberFiles, 'numberPaper': numPaper}
     return render(request, 'readJsonFiles.html', context)
 
+
 def readJsonFiles(request):
     # loads all Json files....
     readpath = "./static/uploadFiles"
@@ -88,7 +89,7 @@ def readJsonFiles(request):
                 paperJson = json.load(file)
                 paper = savePaper(paperJson)
                 counter += 1
-                #TODO file.close dazu, geht unter mac auch noch?
+                # TODO file.close dazu, geht unter mac auch noch?
                 file.close()
                 os.remove(filepath)
         onlyOne = False
@@ -115,18 +116,19 @@ def processPaper(request):
     print("Papersind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
 
+
 def getSelectedPaper(request):
-    if(request.method=="POST"):
-        #split requestdata
+    if (request.method == "POST"):
+        # split requestdata
         corpus1 = {}
         corpus2 = {}
-        querydata=request.POST
+        querydata = request.POST
         print(querydata)
         for key in querydata:
             if 'CorpusID_1' in key and not 'textVarSelect' in key:
                 number = key.replace('_CorpusID_1', '').replace('optionfield_', '').replace('inputfield_', '')
                 if not corpus1.get(number):
-                    corpus1[number]={}
+                    corpus1[number] = {}
                 if 'optionfield' in key:
                     corpus1[number]['optionfield'] = querydata[key]
                 if 'inputfield' in key:
@@ -142,74 +144,75 @@ def getSelectedPaper(request):
         print(corpus1)
         print(corpus2)
         ####### filterDBs
-        paperCorpus1= filterDB(corpus1)
+        paperCorpus1 = filterDB(corpus1)
         paperCorpus2 = filterDB(corpus2)
-        return JsonResponse({'sucess':True,'corpus1':paperCorpus1,'corpus2':paperCorpus2})
+        return JsonResponse({'sucess': True, 'corpus1': paperCorpus1, 'corpus2': paperCorpus2})
 
     if (request.method == "GET"):
         return redirect('corpusSelection')
 
-#http://docs.mongoengine.org/guide/querying.html
-#https://stackoverflow.com/questions/8189702/mongodb-using-an-or-clause-in-mongoengine
+
+# http://docs.mongoengine.org/guide/querying.html
+# https://stackoverflow.com/questions/8189702/mongodb-using-an-or-clause-in-mongoengine
 def filterDB(querydata):
     if querydata:
-        papers=Paper.objects.all()
+        papers = Paper.objects.all()
         for number in querydata:
-            query=querydata[number]
-            field=query['optionfield']
-            searchdata=query['inputfield']
+            query = querydata[number]
+            field = query['optionfield']
+            searchdata = query['inputfield']
             print('search for ' + field + " equals " + searchdata)
-            #field='metaData__'+field+'__contains'
-            #papers = papers.filter(** {field: searchdata})
+            # field='metaData__'+field+'__contains'
+            # papers = papers.filter(** {field: searchdata})
 
             searchArry = searchdata.split(',')
             searchArry = [x.strip(' ') for x in searchArry]
             searchArry = list(filter(None, searchArry))
             print(searchArry)
             if searchArry:
-                if field=='authors':
-                    query = reduce(lambda q1, q2: q1.__or__(q2),map(lambda query: Q(authors__name__icontains=query), searchArry))
+                if field == 'authors':
+                    query = reduce(lambda q1, q2: q1.__or__(q2), map(lambda query: Q(authors__name__icontains=query), searchArry))
                     papers = papers.filter(query)
-                if field=='category':
+                if field == 'category':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__category__in=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__category__in=searchdata)
-                if field=='organization':
+                    # papers = papers.filter(metaData__category__in=searchdata)
+                if field == 'organization':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__organization__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__organization__icontains=searchdata)
-                if field=='keywords':
+                    # papers = papers.filter(metaData__organization__icontains=searchdata)
+                if field == 'keywords':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__keywords__in=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__keywords__in=searchdata)
+                    # papers = papers.filter(metaData__keywords__in=searchdata)
                 if field == 'journal':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__journal__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__journal__icontains=searchdata)
-                if field=='source':
+                    # papers = papers.filter(metaData__journal__icontains=searchdata)
+                if field == 'source':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__source__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__source__icontains=searchdata)
-                if field=='yearOfArticle':
+                    # papers = papers.filter(metaData__source__icontains=searchdata)
+                if field == 'yearOfArticle':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__yearOfArticle__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
-                if field=='language':
+                    # papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
+                if field == 'language':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__language__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__language__icontains=searchdata)
-                if field=='title':
+                    # papers = papers.filter(metaData__language__icontains=searchdata)
+                if field == 'title':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__title__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__title__icontains=searchdata)
+                    # papers = papers.filter(metaData__title__icontains=searchdata)
         ##nur titel und id....
         return papers.to_json()
     else:
@@ -234,63 +237,73 @@ def startAnalyse(request):
             KORPUS2 = Paper.objects.filter(id__in=korpus2liste)
         else:
             KORPUS2 = None
-            varianteKorpus2 =None
-
+            varianteKorpus2 = None
 
         metricList = {
-            "metrics": [{"metric": "authorCount", "dataDisplayType": "text-total", "germanTitle": "Autorenanzahl", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl", "graphType": "boxplot", "allowTextVariants" : "true"},
-                        {"metric": "referenceCount", "dataDisplayType": "numeric-total","germanTitle": "Referenzenanzahl", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section","germanTitle": "Zeichenanzahl", "graphType": "boxplot", "allowTextVariants" : "true"},
-                        {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen", "graphType": "boxplot", "allowTextVariants" : "true"},
-                        {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl", "graphType": "boxplot", "allowTextVariants" : "true"},
-                        {"metric": "citationCount", "dataDisplayType": "numeric-section", "germanTitle": "Anzahl der Zitate", "graphType": "boxplot", "allowTextVariants" : "true"},
-                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "tableCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "pictureCount", "dataDisplayType": "numeric-section", "germanTitle": "Bilderanzahl", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenbeschriftungslängen", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Bildbeschriftungslängen", "graphType": "boxplot", "allowTextVariants" : "false"},
-                        {"metric": "keywordFrequency", "dataDisplayType": "text-total", "germanTitle": "Keywordauftreten", "graphType": "lollipop", "allowTextVariants" : "false"},
-                        {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-total","germanTitle": "Häufigste Wörter", "graphType": "lollipop", "allowTextVariants" : "false"}]}
-        corpusTextVariants ={"Korpus1":varianteKorpus1,"Korpus2":varianteKorpus2}
-        context={'metricList':metricList,'corpusTextVariants':corpusTextVariants}
+            "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "referenceCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
+                        {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "citationCount", "dataDisplayType": "numeric-section", "germanTitle": "Anzahl der Zitate", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten", "graphType": "boxplot", "allowTextVariants": "false"},
+                        {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder", "graphType": "boxplot", "allowTextVariants": "false"},
+                        {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
+                        {"metric": "tableCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
+                        {"metric": "pictureCount", "dataDisplayType": "numeric-section", "germanTitle": "Bilderanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
+                        {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenbeschriftungslängen", "graphType": "boxplot",
+                         "allowTextVariants": "false"},
+                        {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Bildbeschriftungslängen", "graphType": "boxplot",
+                         "allowTextVariants": "false"},
+                        {"metric": "mostCommonKeywords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Keywords", "graphType": "wordcloud", "allowTextVariants": "false"},
+                        {"metric": "mostCommonWords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Wörter", "graphType": "lollipop", "allowTextVariants": "true"},
+                        {"metric": "mostPresentWords", "dataDisplayType": "text-total", "germanTitle": "Häufigst anwesende Wörter", "graphType": "lollipop", "allowTextVariants": "true"},
+                        {"metric": "averageWordLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Wortlänge", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "averageSentenceLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Satzlänge", "graphType": "boxplot", "allowTextVariants": "true"},
+                        {"metric": "typeTokenRatio", "dataDisplayType": "numeric-total", "germanTitle": "Type-Toke-Ratio", "graphType": "boxplot", "allowTextVariants": "true"}]}
+
+        corpusTextVariants = {"Korpus1": varianteKorpus1, "Korpus2": varianteKorpus2}
+        context = {'metricList': metricList, 'corpusTextVariants': corpusTextVariants}
         return render(request, 'results/results.html', context)
 
     if (request.method == "GET"):
         return redirect('corpusSelection')
 
+
 # Testen obs klappt
 def startDB(request):
     system('mongod')
 
-def downloadResults(request,Corpus):
+
+def downloadResults(request, Corpus):
     if request.method == 'GET':
         global KORPUS1
         global KORPUS2
         korpusname = Corpus
         if korpusname == 'Korpus1':
-            response=KORPUS1.to_json()
+            response = KORPUS1.to_json()
         elif korpusname == 'Korpus2':
             response = KORPUS2.to_json()
         else:
-            response={'fehler':'Fehler aufgetreten'}
-        response = HttpResponse(response,content_type='application/json')
-        response['Content-Disposition'] = 'attachment; filename="'+korpusname+'.json"'
+            response = {'fehler': 'Fehler aufgetreten'}
+        response = HttpResponse(response, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="' + korpusname + '.json"'
         return response
 
+
 def calculateMetrik(request):
-    if request.method=="GET":
+    if request.method == "GET":
         print(request.GET)
-        fieldname=request.GET.get('fieldname')
-        variante1=request.GET.get('Korpus1_variante')
+        fieldname = request.GET.get('fieldname')
+        variante1 = request.GET.get('Korpus1_variante')
         variante2 = request.GET.get('Korpus2_variante')
-        print('fieldname:' +fieldname)
+        print('fieldname:' + fieldname)
         if fieldname:
-            bool=True
-            response=analyseCorpora(variante1,variante2,KORPUS1,KORPUS2, ** {fieldname: bool})
+            bool = True
+            response = analyseCorpora(variante1, variante2, KORPUS1, KORPUS2, **{fieldname: bool})
         return JsonResponse(response, safe=False)
+
 
 # TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?
 def getTotalAmountOfDistinctAuthors(corpus):
@@ -315,11 +328,11 @@ def getTotalAmountOfDistinctKeywords(corpus):
 
 def testMethode(request):
     print(analyseCorpora('Raw', 'Raw', Paper.objects.all(), Paper.objects.all(), charCountWhiteSpace=False, charCountNoWhiteSpace=False,
-                        wordCount=False, punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
-                        universityCount=False, countryCount=False, keywordCount=False, tableCount=False,
-                        pictureCount=False, tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
-                        averageWordLength=False, averageSentenceLength=False,mostCommonWords=False,
-                        mostCommonKeywords=False,mostPresentWords=False, typeTokenRatio=True))
+                         wordCount=False, punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
+                         universityCount=False, countryCount=False, keywordCount=False, tableCount=False,
+                         pictureCount=False, tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
+                         averageWordLength=False, averageSentenceLength=False, mostCommonWords=False,
+                         mostCommonKeywords=False, mostPresentWords=False, typeTokenRatio=True))
     return render(request, 'index.html')
 
 
@@ -338,7 +351,7 @@ def getStatisticalValues(inputarray):
         inputarray = [entry['value'] for entry in inputarray]
         sum = float(np.sum(inputarray))
         average = float(np.mean(inputarray))
-        mode = stats.mode(inputarray,axis=None)
+        mode = stats.mode(inputarray, axis=None)
         modes = []
         for item in mode[0]:
             modes.append(float(item))
@@ -351,21 +364,23 @@ def getStatisticalValues(inputarray):
         max = float(np.amax(inputarray))
         count = len(inputarray)
         std = math.sqrt(variance)
-    return {'sum': sum,'average': average, 'median': median, 'mode': modes,
+    return {'sum': sum, 'average': average, 'median': median, 'mode': modes,
             'variance': variance, 'lowerQuartile': lowerQuartile,
-            'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max, 'count':count, 'std': std}
+            'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max, 'count': count, 'std': std}
 
 
-#TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability, TTR
+# TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability, TTR
 def createNewValueAndPaperDict(value, paper):
     return {'value': value, 'name': paper.titleRaw.text, 'authors': [author.name for author in paper.authors],
-            'year': paper.metaData.yearOfArticle, 'paperID':str(paper.id)}
+            'year': paper.metaData.yearOfArticle, 'paperID': str(paper.id)}
+
 
 def createNewValueAndWordDict(value, word):
-    return  {'value': value, 'name': word}
+    return {'value': value, 'name': word}
+
 
 def createNewMetrikDict():
-    totals = {'paperTitles': [] , 'paperText': [] ,'abstractTitles': [], 'abstractText': [],
+    totals = {'paperTitles': [], 'paperText': [], 'abstractTitles': [], 'abstractText': [],
               'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
     sectioned = {'abstractTitles': [], 'abstractText': [],
                  'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
@@ -391,10 +406,10 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=Fals
                         ('averageWordLength',averageWordLength),('averageSentenceLength',averageSentenceLength)}
     sectionedParts = {'abstractTitles', 'abstractText', 'sectionTitles', 'sectionText', 'subsectionTitles', 'subsectionText'}
 
-    #Tables und Pictures werden nur für Sektionen erfasst, und dort nur im Text => abgespeckte Variante der sectionedMetriks
-    partiallySectionedMetriks = {('tableCount',tableCount),('pictureCount',pictureCount),
-                                 ('tableDescriptionLengthCount',tableDescriptionLengthCount),
-                                 ('pictureDescriptionLengthCount',pictureDescriptionLengthCount)}
+    # Tables und Pictures werden nur für Sektionen erfasst, und dort nur im Text => abgespeckte Variante der sectionedMetriks
+    partiallySectionedMetriks = {('tableCount', tableCount), ('pictureCount', pictureCount),
+                                 ('tableDescriptionLengthCount', tableDescriptionLengthCount),
+                                 ('pictureDescriptionLengthCount', pictureDescriptionLengthCount)}
 
     valueParts = {'rawValues', 'statisticalValues'}
 
@@ -443,30 +458,30 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=Fals
     if corpus1:
         corpusIdentifier = "Corpus1"
         results = getMetriks(corpus1, variant1, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
-                    punctCount, citationCount, authorCount, referenceCount,
-                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
-                    tableDescriptionLengthCount, pictureDescriptionLengthCount,
-                    averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
-                    mostPresentWords, typeTokenRatio)
+                             punctCount, citationCount, authorCount, referenceCount,
+                             universityCount, countryCount, keywordCount, tableCount, pictureCount,
+                             tableDescriptionLengthCount, pictureDescriptionLengthCount,
+                             averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
+                             mostPresentWords, typeTokenRatio)
 
     if corpus2:
         corpusIdentifier = "Corpus2"
-        results = getMetriks(corpus2, variant2,corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
-                    punctCount, citationCount, authorCount, referenceCount,
-                    universityCount,countryCount, keywordCount, tableCount, pictureCount,
-                    tableDescriptionLengthCount, pictureDescriptionLengthCount,
-                    averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
-                    mostPresentWords, typeTokenRatio)
-        #Gleicht Länge der Ausgabe bei 2 Corpora aneinander an
+        results = getMetriks(corpus2, variant2, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
+                             punctCount, citationCount, authorCount, referenceCount,
+                             universityCount, countryCount, keywordCount, tableCount, pictureCount,
+                             tableDescriptionLengthCount, pictureDescriptionLengthCount,
+                             averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
+                             mostPresentWords, typeTokenRatio)
+        # Gleicht Länge der Ausgabe bei 2 Corpora aneinander an
         for metrik in sectionedMetriks:
             if metrik[1]:
                 for part in sectionedParts:
                     for valuePart in valueParts:
                         while len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]) < \
-                        len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]):
+                                len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]):
                             results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part].append([])
                         while len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]) < \
-                        len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]):
+                                len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]):
                             results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part].append([])
         ##Gleicht Länge der Ausgabe bei 2 Corpora aneinander an
         for metrik in partiallySectionedMetriks:
@@ -483,8 +498,7 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=Fals
     return json.dumps(results)
 
 
-
-#TODO raw values wie autoren mit rawValues : [{'wort': x, 'Häufigkeit':y},{...}] siehe mail
+# TODO raw values wie autoren mit rawValues : [{'wort': x, 'Häufigkeit':y},{...}] siehe mail
 def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                punctCount, citationCount, authorCount, referenceCount,
                universityCount, countryCount, keywordCount, tableCount, pictureCount,
@@ -505,31 +519,30 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     paperContents = []
     keywordContents = []
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',
-                   '“', '”', '"', '(', ')', "'", '""', "''", '<', '>','[',']']
+                '“', '”', '"', '(', ')', "'", '""', "''", '<', '>', '[', ']']
 
     resultsMostCommonWords = []
     resultsMostCommonKeywords = []
     resultsMostPresentWords = []
     resultsTypeTokenRatio = []
 
-
-    #liste für jede Sektion mit Werten Anzahl Tables/Pictures
+    # liste für jede Sektion mit Werten Anzahl Tables/Pictures
     resultsTableCount = createNewTableOrPicturesMetrikDict()
     resultsPictureCount = createNewTableOrPicturesMetrikDict()
-    #liste für jede Sektion mit Liste an Werten der Beschreibungslänge
+    # liste für jede Sektion mit Liste an Werten der Beschreibungslänge
     resultsTableDescLengthCount = createNewTableOrPicturesMetrikDict()
     resultsPictureDescLengthCount = createNewTableOrPicturesMetrikDict()
 
-    #normale (Count)-Metriken, deren durchschnittlicher Wert in allen Sektionen
-    #aus den Werten der einzelnen Sektionen berechnet werden kann
+    # normale (Count)-Metriken, deren durchschnittlicher Wert in allen Sektionen
+    # aus den Werten der einzelnen Sektionen berechnet werden kann
     FieldMetriks = [{'condition': charCountWhiteSpace, 'modelField': "charCountWhiteSpace", 'values': createNewMetrikDict()},
                     {'condition': charCountNoWhiteSpace, 'modelField': "charCountNoWhiteSpace", 'values': createNewMetrikDict()},
                     {'condition': wordCount, 'modelField': "wordCount", 'values': createNewMetrikDict()},
                     {'condition': punctCount, 'modelField': "punctCount", 'values': createNewMetrikDict()},
                     {'condition': citationCount, 'modelField': "citationCount", 'values': createNewMetrikDict()}]
 
-    #Durchschnittsmetriken, deren durchschnittlicher Wert in allen Sektionen
-    #nicht aus den Werten der einzelnen Sektionen berechnet werden kann und deshalb aus der db kommt
+    # Durchschnittsmetriken, deren durchschnittlicher Wert in allen Sektionen
+    # nicht aus den Werten der einzelnen Sektionen berechnet werden kann und deshalb aus der db kommt
     FieldMetriksWithTotalsInDB = [
         {'condition': averageWordLength, 'modelField': "averageWordLength",
          'values': createNewMetrikDict(), 'totalsDBField': 'totalsAverageWordLength'},
@@ -583,29 +596,29 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                         if country not in countries:
                             countries.append(country)
 
-            resultsAuthorCount.append(createNewValueAndPaperDict(len(authors),paper))
-            resultsUniversityCount.append(createNewValueAndPaperDict(len(universities),paper))
-            resultsCountryCount.append(createNewValueAndPaperDict(len(countries),paper))
+            resultsAuthorCount.append(createNewValueAndPaperDict(len(authors), paper))
+            resultsUniversityCount.append(createNewValueAndPaperDict(len(universities), paper))
+            resultsCountryCount.append(createNewValueAndPaperDict(len(countries), paper))
 
         keywords = paper.metaData.keywords
         if keywordCount:
-            resultsKeywordCount.append(createNewValueAndPaperDict(len(keywords),paper))
+            resultsKeywordCount.append(createNewValueAndPaperDict(len(keywords), paper))
         if mostCommonKeywords:
             for keyword in keywords:
                 keywordContents.append(keyword)
 
         if referenceCount:
-            resultsReferenceCount.append(createNewValueAndPaperDict(len(paper.references),paper))
+            resultsReferenceCount.append(createNewValueAndPaperDict(len(paper.references), paper))
 
         paperTitle = getattr(paper, "title" + variant)
         if paperTitle:
             paperTitleMetrik = getattr(paperTitle, 'metrik')
             for fieldMetrik in UsedFieldMetriks:
                 fieldMetrik['values']['totals']['paperTitles'].append(createNewValueAndPaperDict(
-                    getattr(paperTitleMetrik, fieldMetrik['modelField']),paper))
+                    getattr(paperTitleMetrik, fieldMetrik['modelField']), paper))
             for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
                 fieldMetrik['values']['totals']['paperTitles'].append(createNewValueAndPaperDict(
-                    getattr(paperTitleMetrik, fieldMetrik['modelField']),paper))
+                    getattr(paperTitleMetrik, fieldMetrik['modelField']), paper))
             if textualMetriks:
                 paperContent = paperContent + " " + paperTitle.text
 
@@ -634,12 +647,12 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 abstractTitleMetrik = getattr(abstractTitle, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
                     fieldMetrik['values']['sectioned']['abstractTitles'][abstractCount].append(createNewValueAndPaperDict(
-                        getattr(abstractTitleMetrik, fieldMetrik['modelField']),paper))
+                        getattr(abstractTitleMetrik, fieldMetrik['modelField']), paper))
                     totalHelperAbstractTitles[fieldMetrik['modelField']].append(
                         getattr(abstractTitleMetrik, fieldMetrik['modelField']))
                 for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
                     fieldMetrik['values']['sectioned']['abstractTitles'][abstractCount].append(createNewValueAndPaperDict(
-                        getattr(abstractTitleMetrik, fieldMetrik['modelField']),paper))
+                        getattr(abstractTitleMetrik, fieldMetrik['modelField']), paper))
                 if textualMetriks:
                     paperContent = paperContent + " " + abstractTitle.text
 
@@ -648,12 +661,12 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 abstractTextMetrik = getattr(abstractText, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
                     fieldMetrik['values']['sectioned']['abstractText'][abstractCount].append(createNewValueAndPaperDict(
-                        getattr(abstractTextMetrik, fieldMetrik['modelField']),paper))
+                        getattr(abstractTextMetrik, fieldMetrik['modelField']), paper))
                     totalHelperAbstractText[fieldMetrik['modelField']].append(
                         getattr(abstractTextMetrik, fieldMetrik['modelField']))
                 for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
                     fieldMetrik['values']['sectioned']['abstractText'][abstractCount].append(createNewValueAndPaperDict(
-                        getattr(abstractTextMetrik, fieldMetrik['modelField']),paper))
+                        getattr(abstractTextMetrik, fieldMetrik['modelField']), paper))
                 if textualMetriks:
                     paperContent = paperContent + " " + abstractText.text
 
@@ -677,12 +690,12 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 sectionTitleMetrik = getattr(sectionTitle, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
                     fieldMetrik['values']['sectioned']['sectionTitles'][sectionCount].append(createNewValueAndPaperDict(
-                        getattr(sectionTitleMetrik, fieldMetrik['modelField']),paper))
+                        getattr(sectionTitleMetrik, fieldMetrik['modelField']), paper))
                     totalHelperSectionTitles[fieldMetrik['modelField']].append(
                         getattr(sectionTitleMetrik, fieldMetrik['modelField']))
                 for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
                     fieldMetrik['values']['sectioned']['sectionTitles'][sectionCount].append(createNewValueAndPaperDict(
-                        getattr(sectionTitleMetrik, fieldMetrik['modelField']),paper))
+                        getattr(sectionTitleMetrik, fieldMetrik['modelField']), paper))
                 if textualMetriks:
                     paperContent = paperContent + " " + sectionTitle.text
 
@@ -691,12 +704,12 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 sectionTextMetrik = getattr(sectionText, 'metrik')
                 for fieldMetrik in UsedFieldMetriks:
                     fieldMetrik['values']['sectioned']['sectionText'][sectionCount].append(createNewValueAndPaperDict(
-                        getattr(sectionTextMetrik, fieldMetrik['modelField']),paper))
+                        getattr(sectionTextMetrik, fieldMetrik['modelField']), paper))
                     totalHelperSectionText[fieldMetrik['modelField']].append(
                         getattr(sectionTextMetrik, fieldMetrik['modelField']))
                 for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
                     fieldMetrik['values']['sectioned']['sectionText'][sectionCount].append(createNewValueAndPaperDict(
-                        getattr(sectionTextMetrik, fieldMetrik['modelField']),paper))
+                        getattr(sectionTextMetrik, fieldMetrik['modelField']), paper))
                 if textualMetriks:
                     paperContent = paperContent + " " + sectionText.text
 
@@ -704,7 +717,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             tables = section.tables
             if tableCount:
                 resultsTableCount['sectioned']['sectionText'][sectionCount].append(createNewValueAndPaperDict(
-                    len(tables),paper))
+                    len(tables), paper))
                 totalHelperTableCount.append(len(tables))
             if tableDescriptionLengthCount:
                 # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
@@ -714,12 +727,12 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                     totalHelperTableDescCount.append(len(table.description))
                 if countTableDescription != []:
                     resultsTableDescLengthCount['sectioned']['sectionText'][sectionCount].append(createNewValueAndPaperDict(
-                        statistics.mean(countTableDescription),paper))
+                        statistics.mean(countTableDescription), paper))
 
             pictures = section.pictures
             if pictureCount:
                 resultsPictureCount['sectioned']['sectionText'][sectionCount].append(createNewValueAndPaperDict(len(pictures),
-                                                                                   paper))
+                                                                                                                paper))
                 totalHelperPictureCount.append(len(pictures))
             if pictureDescriptionLengthCount:
                 # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
@@ -729,7 +742,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                     totalHelperPictureDescCount.append(len(picture.description))
                 if countPictureDescription != []:
                     resultsPictureDescLengthCount['sectioned']['sectionText'][sectionCount].append(
-                        createNewValueAndPaperDict(statistics.mean(countPictureDescription),paper))
+                        createNewValueAndPaperDict(statistics.mean(countPictureDescription), paper))
 
 
             for subsectionCount, subsection in enumerate(section.subsection):
@@ -747,12 +760,12 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                     subsectionTitleMetrik = getattr(subsectionTitle, 'metrik')
                     for fieldMetrik in UsedFieldMetriks:
                         fieldMetrik['values']['sectioned']['subsectionTitles'][subsectionCount].append(createNewValueAndPaperDict(
-                            getattr(subsectionTitleMetrik, fieldMetrik['modelField']),paper))
+                            getattr(subsectionTitleMetrik, fieldMetrik['modelField']), paper))
                         totalHelperSubsectionTitles[fieldMetrik['modelField']].append(
                             getattr(subsectionTitleMetrik, fieldMetrik['modelField']))
                     for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
                         fieldMetrik['values']['sectioned']['subsectionTitles'][subsectionCount].append(createNewValueAndPaperDict(
-                            getattr(subsectionTitleMetrik, fieldMetrik['modelField']),paper))
+                            getattr(subsectionTitleMetrik, fieldMetrik['modelField']), paper))
                     if textualMetriks:
                         paperContent = paperContent + " " + subsectionTitle.text
 
@@ -761,51 +774,50 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                     subsectionTextMetrik = getattr(subsectionText, 'metrik')
                     for fieldMetrik in UsedFieldMetriks:
                         fieldMetrik['values']['sectioned']['subsectionText'][subsectionCount].append(createNewValueAndPaperDict(
-                            getattr(subsectionTextMetrik, fieldMetrik['modelField']),paper))
+                            getattr(subsectionTextMetrik, fieldMetrik['modelField']), paper))
                         totalHelperSubsectionText[fieldMetrik['modelField']].append(
                             getattr(subsectionTextMetrik, fieldMetrik['modelField']))
                     for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
                         fieldMetrik['values']['sectioned']['subsectionText'][subsectionCount].append(createNewValueAndPaperDict(
-                            getattr(subsectionTextMetrik, fieldMetrik['modelField']),paper))
+                            getattr(subsectionTextMetrik, fieldMetrik['modelField']), paper))
                     if textualMetriks:
                         paperContent = paperContent + " " + subsectionText.text
 
-
-        #Totals-Werte aus den Helpern berechnen
+        # Totals-Werte aus den Helpern berechnen
         for fieldMetrik in UsedFieldMetriks:
             if totalHelperAbstractTitles[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['abstractTitles'].append(createNewValueAndPaperDict(
-                    statistics.mean(totalHelperAbstractTitles[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperAbstractTitles[fieldMetrik['modelField']]), paper))
             if totalHelperAbstractText[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['abstractText'].append(createNewValueAndPaperDict(
-                    statistics.mean(totalHelperAbstractText[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperAbstractText[fieldMetrik['modelField']]), paper))
 
             if totalHelperSectionTitles[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['sectionTitles'].append(createNewValueAndPaperDict(
-                    statistics.mean(totalHelperSectionTitles[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSectionTitles[fieldMetrik['modelField']]), paper))
             if totalHelperSectionText[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['sectionText'].append(createNewValueAndPaperDict(
-                    statistics.mean(totalHelperSectionText[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSectionText[fieldMetrik['modelField']]), paper))
 
             if totalHelperSubsectionTitles[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['subsectionTitles'].append(createNewValueAndPaperDict(
-                    statistics.mean(totalHelperSubsectionTitles[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSubsectionTitles[fieldMetrik['modelField']]), paper))
             if totalHelperSubsectionText[fieldMetrik['modelField']] != []:
                 fieldMetrik['values']['totals']['subsectionText'].append(createNewValueAndPaperDict(
-                    statistics.mean(totalHelperSubsectionText[fieldMetrik['modelField']]),paper))
+                    statistics.mean(totalHelperSubsectionText[fieldMetrik['modelField']]), paper))
 
             totalContent = [] + totalHelperAbstractTitles[fieldMetrik['modelField']] + \
                            totalHelperAbstractText[fieldMetrik['modelField']] + \
                            totalHelperSectionTitles[fieldMetrik['modelField']] + \
-                           totalHelperSectionText[fieldMetrik['modelField']] +\
+                           totalHelperSectionText[fieldMetrik['modelField']] + \
                            totalHelperSubsectionTitles[fieldMetrik['modelField']] + \
                            totalHelperSubsectionText[fieldMetrik['modelField']]
-            #addiert metriken für alle Bereiche des Papers um für gesamtes Paper zu berechnen
+            # addiert metriken für alle Bereiche des Papers um für gesamtes Paper zu berechnen
             if totalContent != []:
                 fieldMetrik['values']['totals']['paperText'].append(createNewValueAndPaperDict(
-                    sum(totalContent),paper))
+                    sum(totalContent), paper))
 
-        #Totals-Werte aus der Datenbank für average word und average sentence length
+        # Totals-Werte aus der Datenbank für average word und average sentence length
         for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
             totalValuesForAveragedMetriks = paper.totalValuesForAveragedMetriks
             totalValues = getattr(totalValuesForAveragedMetriks, fieldMetrik['totalsDBField'] + variant)
@@ -824,26 +836,26 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             fieldMetrik['values']['totals']['paperText'].append(createNewValueAndPaperDict(
                 totalValues.totalPaper, paper))
 
-        #Totals-Werte für Tables und Pictures, jeweils nur sectionText ausgefüllt, da diese nur dafür eingelesen werden
+        # Totals-Werte für Tables und Pictures, jeweils nur sectionText ausgefüllt, da diese nur dafür eingelesen werden
         if totalHelperTableCount != []:
             resultsTableCount['totals']['sectionText'].append(createNewValueAndPaperDict(
-                statistics.mean(totalHelperTableCount),paper))
+                statistics.mean(totalHelperTableCount), paper))
 
         if totalHelperPictureCount != []:
             resultsPictureCount['totals']['sectionText'].append(createNewValueAndPaperDict(
-                statistics.mean(totalHelperPictureCount),paper))
-        #Totals-Werte für durchschnittliche Beschreibungslänge
+                statistics.mean(totalHelperPictureCount), paper))
+        # Totals-Werte für durchschnittliche Beschreibungslänge
         if totalHelperTableDescCount != []:
             resultsTableDescLengthCount['totals']['sectionText'].append(createNewValueAndPaperDict(
                 statistics.mean(totalHelperTableDescCount), paper))
 
         if totalHelperPictureDescCount != []:
             resultsPictureDescLengthCount['totals']['sectionText'].append(createNewValueAndPaperDict(
-                statistics.mean(totalHelperPictureDescCount),paper))
-        #Text speichern falls Textmetriken berechnet werden müssen
+                statistics.mean(totalHelperPictureDescCount), paper))
+        # Text speichern falls Textmetriken berechnet werden müssen
         if textualMetriks:
             paperContents.append(paperContent)
-        #typeTokenRatio für das Paper berechnen
+        # typeTokenRatio für das Paper berechnen
         # TODO Statt gesamtes Paper auch sectioned machen?
         if typeTokenRatio:
             wordTokens = nltk.word_tokenize(paperContent)
@@ -854,90 +866,88 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 TTR = amountOfTypes / amountOfTokens
                 resultsTypeTokenRatio.append(createNewValueAndPaperDict(TTR, paper))
 
-    #Ausgeben der berechneten Ergebnisse
+    # Ausgeben der berechneten Ergebnisse
     if authorCount:
         resultDict['authorCount'][corpusIdentifier] = {'rawValues': resultsAuthorCount,
-                                    'statisticalValues': getStatisticalValues(resultsAuthorCount),'variant':variant}
+                                                       'statisticalValues': getStatisticalValues(resultsAuthorCount), 'variant': variant}
     if referenceCount:
         resultDict['referenceCount'][corpusIdentifier] = {'rawValues': resultsReferenceCount,
-                                    'statisticalValues': getStatisticalValues(resultsReferenceCount),'variant':variant}
+                                                          'statisticalValues': getStatisticalValues(resultsReferenceCount), 'variant': variant}
     if universityCount:
         resultDict['universityCount'][corpusIdentifier] = {'rawValues': resultsUniversityCount,
-                                    'statisticalValues': getStatisticalValues(resultsUniversityCount),'variant':variant}
+                                                           'statisticalValues': getStatisticalValues(resultsUniversityCount), 'variant': variant}
     if countryCount:
         resultDict['countryCount'][corpusIdentifier] = {'rawValues': resultsCountryCount,
-                                    'statisticalValues': getStatisticalValues(resultsCountryCount),'variant':variant}
+                                                        'statisticalValues': getStatisticalValues(resultsCountryCount), 'variant': variant}
     if keywordCount:
         resultDict['keywordCount'][corpusIdentifier] = {'rawValues': resultsKeywordCount,
-                                    'statisticalValues': getStatisticalValues(resultsKeywordCount),'variant':variant}
+                                                        'statisticalValues': getStatisticalValues(resultsKeywordCount), 'variant': variant}
 
     if tableCount:
         resultDict['tableCount'][corpusIdentifier] = {'rawValues': resultsTableCount,
-                                'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsTableCount),
-                                'variant':variant}
+                                                      'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsTableCount),
+                                                      'variant': variant}
     if tableDescriptionLengthCount:
         resultDict['tableDescriptionLengthCount'][corpusIdentifier] = {'rawValues': resultsTableDescLengthCount,
-                    'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsTableDescLengthCount),
-                    'variant':variant}
+                                                                       'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsTableDescLengthCount),
+                                                                       'variant': variant}
     if pictureCount:
         resultDict['pictureCount'][corpusIdentifier] = {'rawValues': resultsPictureCount,
-            'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsPictureCount),
-            'variant':variant}
+                                                        'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsPictureCount),
+                                                        'variant': variant}
     if pictureDescriptionLengthCount:
         resultDict['pictureDescriptionLengthCount'][corpusIdentifier] = {'rawValues': resultsPictureDescLengthCount,
-                    'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsPictureDescLengthCount),
-                    'variant':variant}
+                                                                         'statisticalValues': getStatisticalValuesForTableAndPictureMetriks(resultsPictureDescLengthCount),
+                                                                         'variant': variant}
     if typeTokenRatio:
         resultDict['typeTokenRatio'][corpusIdentifier] = {'rawValues': resultsTypeTokenRatio,
-                                    'statisticalValues': getStatisticalValues(resultsTypeTokenRatio),'variant':variant}
+                                                          'statisticalValues': getStatisticalValues(resultsTypeTokenRatio), 'variant': variant}
     for fieldMetrik in UsedFieldMetriks:
         if fieldMetrik['modelField'] == 'charCountWhiteSpace' and charCountWhiteSpace:
             resultDict['charCountWhiteSpace'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
-                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
+                                                                   'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
         if fieldMetrik['modelField'] == 'charCountNoWhiteSpace' and charCountNoWhiteSpace:
             resultDict['charCountNoWhiteSpace'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
-                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
+                                                                     'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
         if fieldMetrik['modelField'] == 'wordCount' and wordCount:
             resultDict['wordCount'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
-                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
+                                                         'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
         if fieldMetrik['modelField'] == 'punctCount' and punctCount:
             resultDict['punctCount'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
-                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
+                                                          'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
         if fieldMetrik['modelField'] == 'citationCount' and citationCount:
             resultDict['citationCount'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
-                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
+                                                             'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
     for fieldMetrik in UsedFieldMetriksWithTotalsInDB:
         if fieldMetrik['modelField'] == 'averageWordLength' and averageWordLength:
             resultDict['averageWordLength'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
-                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
+                                                                 'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
         if fieldMetrik['modelField'] == 'averageSentenceLength' and averageSentenceLength:
             resultDict['averageSentenceLength'][corpusIdentifier] = {'rawValues': fieldMetrik['values'],
-                    'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']),'variant':variant}
+                                                                     'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
 
-
-
-    #Berechnen und Ausgeben der Ergebnisse für Textmetriken über den gesamten Korpus
-    #TODO Keywords als ganzes betrachten, oder sowas wie "Area of Interest" in drei aufspalten wie aktuell?
-    #TODO wenn so wie jetzt dann Stoppwortfiltern, wenn zusammen dann statt nltk tokenizer liste und Counter verwenden
-    #TODO paperCount ist länge corpus, bei sektionsmetriken ist nicht immer alles len corpus sondern len existente sektionszahl...passt?
-    #TODO Statt gesamtes Paper sectioned machen?
+    # Berechnen und Ausgeben der Ergebnisse für Textmetriken über den gesamten Korpus
+    # TODO Keywords als ganzes betrachten, oder sowas wie "Area of Interest" in drei aufspalten wie aktuell?
+    # TODO wenn so wie jetzt dann Stoppwortfiltern, wenn zusammen dann statt nltk tokenizer liste und Counter verwenden
+    # TODO paperCount ist länge corpus, bei sektionsmetriken ist nicht immer alles len corpus sondern len existente sektionszahl...passt?
+    # TODO Statt gesamtes Paper sectioned machen?
     if mostCommonKeywords:
         keywordContents = "" + (" ".join(keywordContents))
         wordTokens = nltk.word_tokenize(keywordContents)
         wordTokenFreqDist = nltk.FreqDist(item.capitalize() for item in wordTokens if item not in nonWords).most_common()
         for wordFreq in wordTokenFreqDist:
-            resultsMostCommonKeywords.append(createNewValueAndWordDict(wordFreq[1],wordFreq[0]))
-        resultDict['mostCommonKeywords'][corpusIdentifier] = {'rawValues': resultsMostCommonKeywords,'variant':variant,
-                                                              'paperCount':len(corpus)}
+            resultsMostCommonKeywords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
+        resultDict['mostCommonKeywords'][corpusIdentifier] = {'rawValues': resultsMostCommonKeywords, 'variant': variant,
+                                                              'paperCount': len(corpus)}
     if mostCommonWords:
         paperContentsString = "" + (" ".join(paperContents))
         wordTokens = nltk.word_tokenize(paperContentsString)
         wordTokenFreqDist = nltk.FreqDist(item.capitalize() for item in wordTokens if item not in nonWords).most_common()
         for wordFreq in wordTokenFreqDist:
-            resultsMostCommonWords.append(createNewValueAndWordDict(wordFreq[1],wordFreq[0]))
-        resultDict['mostCommonWords'][corpusIdentifier] = {'rawValues': resultsMostCommonWords,'variant':variant,
+            resultsMostCommonWords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
+        resultDict['mostCommonWords'][corpusIdentifier] = {'rawValues': resultsMostCommonWords, 'variant': variant,
                                                            'paperCount': len(corpus)}
-    #TODO absolute oder prozentuale Häufigkeit?
+    # TODO absolute oder prozentuale Häufigkeit?
     if mostPresentWords:
         paperContentsArray = [nltk.word_tokenize(item) for item in paperContents]
         combinedUniqueWordLists = []
@@ -946,8 +956,8 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             combinedUniqueWordLists = combinedUniqueWordLists + uniqueWordList
         counterMostPresentWords = Counter(combinedUniqueWordLists).most_common()
         for wordFreq in counterMostPresentWords:
-            resultsMostPresentWords.append(createNewValueAndWordDict(wordFreq[1],wordFreq[0]))
-        resultDict['mostPresentWords'][corpusIdentifier] = {'rawValues': resultsMostPresentWords,'variant':variant,
+            resultsMostPresentWords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
+        resultDict['mostPresentWords'][corpusIdentifier] = {'rawValues': resultsMostPresentWords, 'variant': variant,
                                                             'paperCount': len(corpus)}
     return resultDict
 
@@ -958,9 +968,9 @@ def getStatisticalValuesForTableAndPictureMetriks(input):
     for list in input['sectioned']['sectionText']:
         resultsArraySectionText.append(getStatisticalValues(list))
 
-    totals = {'sectionText': getStatisticalValues(input['totals']['sectionText']),}
+    totals = {'sectionText': getStatisticalValues(input['totals']['sectionText']), }
     sectioned = {'sectionText': resultsArraySectionText}
-    results =  {'totals': totals, 'sectioned': sectioned}
+    results = {'totals': totals, 'sectioned': sectioned}
     return results
 
 
@@ -986,16 +996,16 @@ def getStatisticalValuesForFieldMetriks(input):
         resultsArraySubsectionText.append(getStatisticalValues(list))
 
     totals = {'paperTitles': getStatisticalValues(input['totals']['paperTitles']),
-            'paperText': getStatisticalValues(input['totals']['paperText']),
-            'abstractTitles': getStatisticalValues(input['totals']['abstractTitles']),
-            'abstractText': getStatisticalValues(input['totals']['abstractText']),
-            'sectionTitles': getStatisticalValues(input['totals']['sectionTitles']),
-            'sectionText': getStatisticalValues(input['totals']['sectionText']),
-            'subsectionTitles': getStatisticalValues(input['totals']['subsectionTitles']),
-            'subsectionText': getStatisticalValues(input['totals']['subsectionText'])}
-    sectioned = {'abstractTitles': resultsArrayAbstractTitles,'abstractText': resultsArrayAbstractText,
-            'sectionTitles': resultsArraySectionTitles, 'sectionText': resultsArraySectionText,
-            'subsectionTitles': resultsArraySubsectionTitles, 'subsectionText': resultsArraySubsectionText}
-    results =  {'totals': totals, 'sectioned': sectioned}
+              'paperText': getStatisticalValues(input['totals']['paperText']),
+              'abstractTitles': getStatisticalValues(input['totals']['abstractTitles']),
+              'abstractText': getStatisticalValues(input['totals']['abstractText']),
+              'sectionTitles': getStatisticalValues(input['totals']['sectionTitles']),
+              'sectionText': getStatisticalValues(input['totals']['sectionText']),
+              'subsectionTitles': getStatisticalValues(input['totals']['subsectionTitles']),
+              'subsectionText': getStatisticalValues(input['totals']['subsectionText'])}
+    sectioned = {'abstractTitles': resultsArrayAbstractTitles, 'abstractText': resultsArrayAbstractText,
+                 'sectionTitles': resultsArraySectionTitles, 'sectionText': resultsArraySectionText,
+                 'subsectionTitles': resultsArraySubsectionTitles, 'subsectionText': resultsArraySubsectionText}
+    results = {'totals': totals, 'sectioned': sectioned}
     return results
 

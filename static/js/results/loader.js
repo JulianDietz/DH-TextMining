@@ -72,6 +72,8 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphTy
     let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true).attr("id", "metricSectionSelectorContainer_" + IDMetricEl);
     metricSectionSelectorContainer.append("p").text("Diese Metrik bezieht sich auf das gesamte Dokument").style("display", "inline-block");
 
+    console.log(allowTextVariants);
+
     if (allowTextVariants) {
         //recalculate Metric
         recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
@@ -167,10 +169,11 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphTy
     let metricContainer = d3.select(htmlEl[0]);
 
     let metricDescription = metricContainer.append("div").classed("metricDescription", true).classed("row", true).attr("id", "metricDescription_" + IDMetricEl);
-    ;
 
     //Add a statistical overview for each corpus
+
     for (corpus in data[metricName]) {
+
         let metricDescriptionCol = metricDescription.append("div").classed("col", true).attr("style", "display: inline-block;");
         metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus);
         let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
