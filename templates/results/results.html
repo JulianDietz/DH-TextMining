@@ -6,7 +6,10 @@
 
     <script src="{% static "js/results/loader.js" %}"></script>
     <script src="https://d3js.org/d3.v4.js"></script>
-    <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+    <script src="{% static "js/d3-layout-cloud.js" %}"></script>
+
+    <!-- WordCloud -->
+
 
     <a class="btn" href="{% url 'downloadKorpus' "Korpus1" %}">Download Korpus1</a>
 
@@ -20,9 +23,16 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h4 class="panel-title">
+                                    {% if metric.dataDisplayType == "numeric-total" %}
+                                        <i class="fas fa-receipt"></i>
+                                    {% elif metric.dataDisplayType == "numeric-section" %}
+                                        <i class="fas fa-list-ul"></i>
+                                    {% elif metric.dataDisplayType == "text-total" %}
+                                        <i class="fas fa-font"></i>
+                                    {% endif %}
                                     {{ metric.germanTitle }}
                                     <button id="collapse_button_{{ metric.metric }}" data-collapse="#collapse{{ forloop.counter }}" data-ready="false"
-                                            data-statisticdisplaytype="{{ metric.dataDisplayType }}"
+                                            data-statisticdisplaytype="{{ metric.dataDisplayType }}" data-graphtype="{{ metric.graphType }}" data-allowTextVariants="{{ metric.allowTextVariants }} "
                                             class="toggle_button toggle_button_closed"></button>
                                     <div class="loaded_indicator">
                                         <img class="indicator" src="{% static 'img/results/not-available.png' %}" class="graphic"/>
@@ -42,9 +52,9 @@
 
     </div>
     <script>
-        var varianteKorpus1='{{corpusTextVariants.Korpus1}}';
-        var varianteKorpus2='{{corpusTextVariants.Korpus2}}';
-        var calculateURL='{% url 'calculateMetrik' %}';
+        var varianteKorpus1 = '{{corpusTextVariants.Korpus1}}';
+        var varianteKorpus2 = '{{corpusTextVariants.Korpus2}}';
+        var calculateURL = '{% url 'calculateMetrik' %}';
 
     </script>
 

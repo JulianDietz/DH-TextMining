@@ -79,21 +79,35 @@
     font-size: .5em;
 }
 
-.metric-data {
+.metric-statdata {
     display: inline;
     font-size: 0.5em;
+
     white-space: nowrap;
 }
 
-.metric-data:before {
-    content: attr(data-before);
+.metric-statdata::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 2em;
+    border-style: solid;
+    background-color: white;
+    padding: 5px;
+    transform: scale(0);
+    transition: transform 200ms;
+}
+
+.metric-statdata:hover::before {
+    transform: scale(1);
+}
+
+.metric-prefix {
     letter-spacing: 1.5px;
     text-transform: uppercase;
     font-weight: bold;
-
 }
 
-.metric-data:not(:first-child) {
+.metric-statdata:not(:first-child) {
     margin-left: 1.5em;
 }
 
