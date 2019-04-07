@@ -1176,29 +1176,31 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
     }
     ;
 
+    const delimiter = "\t";
+
     let csv_text = convertJSONtoCSV(dataPoints, section, sectionNumCon);
 
     //Create header for every key
     let csv_header = "";
     for (key of Object.keys(dataPoints[0].values)) {
         if (csv_header != "") {
-            csv_header += ", "
+            csv_header += delimiter;
         }
         csv_header += key
     }
 
     //append additional information depending on section or total
     if (section == undefined && sectionNum == undefined) {
-        csv_header += ", corpus" + ", variant" + "\r\n";
+        csv_header += delimiter + "corpus" + delimiter + "variant" + "\r\n";
     } else {
-        csv_header += ", corpus" + ", variant" + ", area" + ", areaNum" + "\r\n";
+        csv_header += delimiter + "corpus" + delimiter + "variant" + delimiter + "area" + delimiter + "areaNum" + "\r\n";
     }
 
     csv_text = csv_header + csv_text;
 
-    let csv_data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv_text);
+    let csv_data = "data:text/tab-separated-values;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
-    downloadButton.attr("download", metric_name + "_csvdata")
+    downloadButton.attr("download", metric_name + "_tsvdata")
 
     function convertJSONtoCSV(data, section, sectionNum) {
         let csv_text = "";
@@ -1206,10 +1208,10 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
             let data_row = "";
             for (key of Object.keys(data[i].values)) {
                 if (data_row != "") {
-                    data_row += ", "
+                    data_row += delimiter;
                 }
                 if (Array.isArray(data[i].values[key])) {
-                    data_row += data[i].values[key].join("; ");
+                    data_row += data[i].values[key].join(", ");
                 } else {
                     data_row += data[i].values[key];
                 }
@@ -1219,9 +1221,9 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
 
             //append data for sectioned metrics
             if (section == undefined && sectionNum == undefined) {
-                csv_text += data_row + ", " + data[i].corpus + ", " + textVar + "\r\n";
+                csv_text += data_row + delimiter + data[i].corpus + delimiter + textVar + "\r\n";
             } else {
-                csv_text += data_row + ", " + data[i].corpus + ", " + textVar + ", " + section + ", " + sectionNum + "\r\n";
+                csv_text += data_row + delimiter + data[i].corpus + delimiter + textVar + delimiter + section + delimiter + sectionNum + "\r\n";
             }
             ;
         }
@@ -1238,6 +1240,8 @@ function createCSVdownloadfromArray(metricID, dataArray) {
     let csv_text = "";
     let csv_header = "";
 
+    const delimiter = "\t";
+
     for (element of dataArray) {
         //catch undefined error
         if (element.sectionNum != undefined) {
@@ -1251,7 +1255,7 @@ function createCSVdownloadfromArray(metricID, dataArray) {
         if (csv_header === "") {
             for (key of Object.keys(element.values[0])) {
                 if (csv_header != "") {
-                    csv_header += ", "
+                    csv_header += delimiter
                 }
                 csv_header += key
             }
@@ -1259,9 +1263,9 @@ function createCSVdownloadfromArray(metricID, dataArray) {
 
             //append additional information depending on section or total
             if (element.section == undefined && element.sectionNum == undefined) {
-                csv_header += ", corpus" + ", variant" + "\r\n";
+                csv_header += delimiter + "corpus" + delimiter +"variant" + "\r\n";
             } else {
-                csv_header += ", corpus" + ", variant" + ", area" + ", areaNum" + "\r\n";
+                csv_header += delimiter + "corpus" + delimiter + "variant" + delimiter + "area" + delimiter + "areaNum" + "\r\n";
             }
             ;
         }
@@ -1272,9 +1276,9 @@ function createCSVdownloadfromArray(metricID, dataArray) {
     csv_text = csv_header + csv_text;
 
 
-    let csv_data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv_text);
+    let csv_data = "data:text/tab-separated-values;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
-    downloadButton.attr("download", metric_name + "_csvdata");
+    downloadButton.attr("download", metric_name + "_tsvdata");
 
     function convertJSONtoCSV(data, section, sectionNum, corpusNum) {
         let csv_text = "";
@@ -1283,10 +1287,10 @@ function createCSVdownloadfromArray(metricID, dataArray) {
             let data_row = "";
             for (key of Object.keys(data[i])) {
                 if (data_row != "") {
-                    data_row += ", "
+                    data_row += delimiter;
                 }
                 if (Array.isArray(data[i][key])) {
-                    data_row += data[i][key].join("; ");
+                    data_row += data[i][key].join(", ");
                 } else {
                     data_row += data[i][key];
                 }
@@ -1298,9 +1302,9 @@ function createCSVdownloadfromArray(metricID, dataArray) {
 
             //append data for sectioned metrics
             if (section == undefined && sectionNum == undefined) {
-                csv_text += data_row + ", " + corpusNum + ", " + textVar + "\r\n";
+                csv_text += data_row + delimiter + corpusNum + delimiter + textVar + "\r\n";
             } else {
-                csv_text += data_row + ", " + corpusNum + ", " + textVar + ", " + section + ", " + sectionNum + "\r\n";
+                csv_text += data_row + delimiter + corpusNum + delimiter + textVar + delimiter + section + delimiter + sectionNum + "\r\n";
             }
             ;
         }
