@@ -4,67 +4,67 @@ $(document).ready(function () {
 
     $(".toggle_button").click(function () {
 
-        const textVariants = [{"key": "orig", "value": "Raw", "display": "Original"},
-            {"key": "stpw", "value": "NltkStw", "display": "Stopwortgefiltert"},
-            {"key": "stmd", "value": "NltkStem", "display": "Gestemmt"}];
+            const textVariants = [{"key": "orig", "value": "Raw", "display": "Original"},
+                {"key": "stpw", "value": "NltkStw", "display": "Stopwortgefiltert"},
+                {"key": "stmd", "value": "NltkStem", "display": "Gestemmt"}];
 
-        let $this = $(this);
+            let $this = $(this);
 
-        let collapseEl = $($this.attr("data-collapse"));
+            let collapseEl = $($this.attr("data-collapse"));
 
-        let statisticDisplayType = $this.attr("data-statisticdisplaytype");
-        let graphType = $this.attr("data-graphtype");
-        let allowTextVariants = ($this.attr("data-allowTextVariants").toString().trim() === "true");
-        let foundation = $this.attr("data-foundation");
+            let statisticDisplayType = $this.attr("data-statisticdisplaytype");
+            let graphType = $this.attr("data-graphtype");
+            let allowTextVariants = ($this.attr("data-allowTextVariants").toString().trim() === "true");
+            let foundation = $this.attr("data-foundation");
 
-        if ($this.attr("data-ready") == "false") {
-            $.ajax({
-                url: calculateURL,
-                type: 'GET',
-                data: {fieldname: $this.attr("id").split('_')[2], Korpus1_variante: varianteKorpus1, Korpus2_variante: varianteKorpus2},
-                beforeSend: function () {
-                    $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
-                },
-                success: function (response) {
+            if ($this.attr("data-ready") == "false") {
+                $.ajax({
+                    url: calculateURL,
+                    type: 'GET',
+                    data: {fieldname: $this.attr("id").split('_')[2], Korpus1_variante: varianteKorpus1, Korpus2_variante: varianteKorpus2},
+                    beforeSend: function () {
+                        $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
+                    },
+                    success: function (response) {
 
-                    onSuccess(JSON.parse(response));
-                }
-            });
+                        onSuccess(JSON.parse(response));
+                    }
+                });
 
-            function onSuccess(data) {
-                if(isFirst) {
-                    addDownload(data, ($this.attr("id")));
-                };
-                isFirst = false;
+                function onSuccess(data) {
+                    if (isFirst) {
+                        addDownload(data, ($this.attr("id")));
+                    }
+                    ;
+                    isFirst = false;
 
-                switch (statisticDisplayType) {
-                    case "numeric-total":
-                        returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation);
-                        break;
-                    case "numeric-section":
-                        returnGraphNumericSection($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants);
-                        break;
-                    case "text-total":
-                        returnGraphTextTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation)
-                        break;
-                    case "text-section":
-                        break;
-                }
-                $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
-                collapseEl.collapse('toggle');
-                $this.attr("data-ready", "true");
-                $this.next().children(".indicator").attr("src", "/static/img/results/verified.png");
+                    switch (statisticDisplayType) {
+                        case "numeric-total":
+                            returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation);
+                            break;
+                        case "numeric-section":
+                            returnGraphNumericSection($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants);
+                            break;
+                        case "text-total":
+                            returnGraphTextTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation)
+                            break;
+                        case "text-section":
+                            break;
+                    }
+                    $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
+                    collapseEl.collapse('toggle');
+                    $this.attr("data-ready", "true");
+                    $this.next().children(".indicator").attr("src", "/static/img/results/verified.png");
 
-                function addDownload(data, metricID) {
-                    for (key of Object.keys(data[metricID.split("_")[2]])) {
-                        let corpusNum = key.substring(6, 7);
-                        d3.select("#download_section").append("a").classed("btn-dh-white", true).attr("href", "/textMining/downloadCorpus/Korpus" + corpusNum).text("Korpus " + corpusNum + " herunterladen");
+                    function addDownload(data, metricID) {
+                        for (key of Object.keys(data[metricID.split("_")[2]])) {
+                            let corpusNum = key.substring(6, 7);
+                            d3.select("#download_section").append("a").classed("btn-dh-white", true).attr("href", "/textMining/downloadCorpus/Korpus" + corpusNum).text("Korpus " + corpusNum + " herunterladen");
+                        }
                     }
                 }
             }
-        }
-        else
-            {
+            else {
                 $(collapseEl).collapse('toggle');
                 $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
             }
@@ -100,7 +100,6 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphTy
         //recalculate Metric
         recalcButton = metricSectionSelectorContainer.append("button").classed("btn-dh-white btn-rclc", true).text("Metrik neu berechnen")
 
-
         if (Object.keys(data[metricName]).length > 1) {
             //text Variante Korpus2
             let textVarSelect2 = metricSectionSelectorContainer
@@ -124,9 +123,6 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphTy
                 })
                 .text(function (d) {
                     return d.display;
-                })
-                .on("change", function () {
-                    $("#" + IDMetricEl).next().children(".indicator").attr("src", "/static/img/results/not-available.png");
                 });
 
 
@@ -149,8 +145,9 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphTy
             .text("Korpus 1:")
             .append("select")
             .classed("textVarSelect", true)
-            .attr("id", "textVar_Corpus1_" + IDMetricEl);
-
+            .attr("id", "textVar_Corpus1_" + IDMetricEl).on("change", function () {
+                $("#" + IDMetricEl).next().children(".indicator").attr("src", "/static/img/results/not-available.png");
+            });
         textVarSelect1
             .selectAll("option")
             .data(textVariants)
@@ -200,7 +197,7 @@ function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphTy
         metricDescriptionCol.append("div").classed("metricDescriptionColHeader", true).text(corpus);
         let metricDescriptionTags = metricDescriptionCol.append("div").classed("metricDescriptionColTags", true);
 
-        let mod = data[metricName][corpus].statisticalValues.mode.join(", ")
+        let mod = data[metricName][corpus].statisticalValues.mode[0].toFixed()
         let med = data[metricName][corpus].statisticalValues.median.toFixed(2)
         let avg = data[metricName][corpus].statisticalValues.average.toFixed(2)
         let std = data[metricName][corpus].statisticalValues.std.toFixed(2)
@@ -354,7 +351,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
         //data table
         tableEl = tableEl.append("tbody");
         let tableTotalRow = tableEl.append("tr");
-        tableTotalRow.append("th").text("Gesamt (AVG)");
+        tableTotalRow.append("th").text("Gesamt");
         tableTotalRow.append("th").append("i").classed("fas fa-chart-bar graph-icon_" + metricName, true).style("color", "lightgrey").style("cursor", "pointer").on("click", function () {
             let all = d3.selectAll(".graph-icon_" + metricName).style("color", "lightgrey");
             d3.select(this).style("color", "black");
@@ -921,18 +918,15 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
         return a.values.value - b.values.value;
     });
 
-    //Create domain X
+    //Tauschen da links rechts
     let domainXRight = [dataPoints[dataPoints.length - 1].values.value, 0];
-
     let domainXLeft = [0, dataPoints[dataPoints.length - 1].values.value];
-
 
     let dataCorpusLeft = dataPoints.filter(el => el.corpus == "Corpus1");
     let dataCorpusRight = dataPoints.filter(el => el.corpus == "Corpus2");
 
-    dataCorpusLeft = dataCorpusLeft.slice(dataCorpusLeft.length < 22 ? 0 : dataCorpusLeft.length - 21, dataCorpusLeft.length - 1);
-    dataCorpusRight = dataCorpusRight.slice(dataCorpusRight.length < 22 ? 0 : dataCorpusRight.length - 21, dataCorpusRight.length - 1);
-
+    dataCorpusLeft = dataCorpusLeft.slice(dataCorpusLeft.length < 22 ? 0 : dataCorpusLeft.length - 22, dataCorpusLeft.length);
+    dataCorpusRight = dataCorpusRight.slice(dataCorpusRight.length < 22 ? 0 : dataCorpusRight.length - 22, dataCorpusRight.length);
 
     //Create domain Y now with filter
     let domainYRight = dataCorpusRight.map(function (d) {
@@ -1202,7 +1196,7 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
 
     csv_text = csv_header + csv_text;
 
-    let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
+    let csv_data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
     downloadButton.attr("download", metric_name + "_csvdata")
 
@@ -1278,7 +1272,7 @@ function createCSVdownloadfromArray(metricID, dataArray) {
     csv_text = csv_header + csv_text;
 
 
-    let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
+    let csv_data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv_text);
     downloadButton.attr("href", csv_data);
     downloadButton.attr("download", metric_name + "_csvdata");
 
