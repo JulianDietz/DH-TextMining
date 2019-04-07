@@ -32,7 +32,8 @@
                                     {% endif %}
                                     {{ metric.germanTitle }}
                                     <button id="collapse_button_{{ metric.metric }}" data-collapse="#collapse{{ forloop.counter }}" data-ready="false"
-                                            data-statisticdisplaytype="{{ metric.dataDisplayType }}" data-graphtype="{{ metric.graphType }}" data-allowTextVariants="{{ metric.allowTextVariants }} "
+                                            data-statisticdisplaytype="{{ metric.dataDisplayType }}" data-graphtype="{{ metric.graphType }}" data-allowTextVariants="{{ metric.allowTextVariants }}"
+                                            data-foundation="{{ metric.foundation }}"
                                             class="toggle_button toggle_button_closed"></button>
                                     <div class="loaded_indicator">
                                         <img class="indicator" src="{% static 'img/results/not-available.png' %}" class="graphic"/>

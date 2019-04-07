@@ -240,28 +240,26 @@ def startAnalyse(request):
             varianteKorpus2 = None
 
         metricList = {
-            "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "referenceCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
-                        {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "citationCount", "dataDisplayType": "numeric-section", "germanTitle": "Anzahl der Zitate", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten", "graphType": "boxplot", "allowTextVariants": "false"},
-                        {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder", "graphType": "boxplot", "allowTextVariants": "false"},
-                        {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
-                        {"metric": "tableCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
-                        {"metric": "pictureCount", "dataDisplayType": "numeric-section", "germanTitle": "Bilderanzahl", "graphType": "boxplot", "allowTextVariants": "false"},
-                        {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenbeschriftungslängen", "graphType": "boxplot",
-                         "allowTextVariants": "false"},
-                        {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Bildbeschriftungslängen", "graphType": "boxplot",
-                         "allowTextVariants": "false"},
-                        {"metric": "mostCommonKeywords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Keywords", "graphType": "wordcloud", "allowTextVariants": "false"},
-                        {"metric": "mostCommonWords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Wörter", "graphType": "lollipop", "allowTextVariants": "true"},
-                        {"metric": "mostPresentWords", "dataDisplayType": "text-total", "germanTitle": "Häufigst anwesende Wörter", "graphType": "lollipop", "allowTextVariants": "true"},
-                        {"metric": "averageWordLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Wortlänge", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "averageSentenceLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Satzlänge", "graphType": "boxplot", "allowTextVariants": "true"},
-                        {"metric": "typeTokenRatio", "dataDisplayType": "numeric-total", "germanTitle": "Type-Toke-Ratio", "graphType": "boxplot", "allowTextVariants": "true"}]}
+            "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
+                        {"metric": "referenceCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
+                        {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
+                        {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
+                        {"metric": "citationCount", "dataDisplayType": "numeric-section", "germanTitle": "Anzahl der Zitate", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
+                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "tableCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "pictureCount", "dataDisplayType": "numeric-section", "germanTitle": "Bilderanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Tabellenbeschriftungslängen", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Bildbeschriftungslängen", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
+                        {"metric": "mostCommonKeywords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Keywords", "graphType": "wordcloud", "allowTextVariants": "false", "foundation" : "corpus"},
+                        {"metric": "mostCommonWords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Wörter", "graphType": "lollipop", "allowTextVariants": "true", "foundation" : "corpus"},
+                        {"metric": "mostPresentWords", "dataDisplayType": "text-total", "germanTitle": "Häufigst anwesende Wörter", "graphType": "lollipop", "allowTextVariants": "true", "foundation" : "corpus"},
+                        {"metric": "averageWordLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Wortlänge", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
+                        {"metric": "averageSentenceLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Satzlänge", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
+                        {"metric": "typeTokenRatio", "dataDisplayType": "numeric-total", "germanTitle": "Type-Toke-Ratio", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"}]}
 
         corpusTextVariants = {"Korpus1": varianteKorpus1, "Korpus2": varianteKorpus2}
         context = {'metricList': metricList, 'corpusTextVariants': corpusTextVariants}

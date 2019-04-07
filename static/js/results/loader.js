@@ -11,8 +11,8 @@ $(document).ready(function () {
 
         let statisticDisplayType = $this.attr("data-statisticdisplaytype");
         let graphType = $this.attr("data-graphtype");
-        let allowTextVariants = ($this.attr("data-allowTextVariants").toLowerCase() == "true");
-
+        let allowTextVariants = ($this.attr("data-allowTextVariants").toString().trim() === "true");
+        let foundation = $this.attr("data-foundation");
 
         if ($this.attr("data-ready") == "false") {
             $.ajax({
@@ -31,13 +31,13 @@ $(document).ready(function () {
                 console.log(data);
                 switch (statisticDisplayType) {
                     case "numeric-total":
-                        returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants);
+                        returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation);
                         break;
                     case "numeric-section":
                         returnGraphNumericSection($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants);
                         break;
                     case "text-total":
-                        returnGraphTextTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants)
+                        returnGraphTextTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation)
                         break;
                     case "text-section":
                         break;
@@ -63,16 +63,22 @@ $(document).ready(function () {
 });
 
 
-function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphType, allowTextVariants) {
+function returnGraphNumericTotal(IDMetricEl, htmlEl, data, textVariants, graphType, allowTextVariants, foundation) {
 
     let metricName = IDMetricEl.split("_")[2];
 
     //HIER SIND ALLE INTERAKTIONEN
     //Section selector
     let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true).attr("id", "metricSectionSelectorContainer_" + IDMetricEl);
-    metricSectionSelectorContainer.append("p").text("Diese Metrik bezieht sich auf das gesamte Dokument").style("display", "inline-block");
 
-    console.log(allowTextVariants);
+    let info = "";
+    if (foundation === "document") {
+        info = "Diese Metrik bezieht sich auf das gesamte Dokument";
+    } else if (foundation === "corpus") {
+        info = "Diese Metrik bezieht sich auf den gesamten Corpus";
+    }
+
+    metricSectionSelectorContainer.append("p").text(info).style("display", "inline-block");
 
     if (allowTextVariants) {
         //recalculate Metric
@@ -342,8 +348,6 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
         tableHeader.append("th").text("Bereich");
         tableHeader.append("th").text("Graph");
 
-        console.log(data[metricName]);
-
         let csvBaseDataRawValues = [];
 
         //header and Total
@@ -351,7 +355,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
             tableHeader.append("th").text(corpus);
 
             let cell = tableTotalRow.append("td")
-            let mod = data[metricName][corpus].statisticalValues.totals[areaSelected].mode != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].mode.join(", ") : "-";
+            let mod = data[metricName][corpus].statisticalValues.totals[areaSelected].mode != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].mode[0].toFixed(2) : "-";
             let med = data[metricName][corpus].statisticalValues.totals[areaSelected].median != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].median.toFixed(2) : "-";
             let avg = data[metricName][corpus].statisticalValues.totals[areaSelected].average != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].average.toFixed(2) : "-";
             let std = data[metricName][corpus].statisticalValues.totals[areaSelected].std != undefined ? data[metricName][corpus].statisticalValues.totals[areaSelected].std.toFixed(2) : "-";
@@ -359,7 +363,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
 
             createStatElement(cell, mod, med, avg, std, cnt);
 
-            csvBaseDataRawValues.push({"corpus" : corpus, "values" : {"values": data[metricName][corpus].rawValues.totals[areaSelected], "section": areaSelected, "sectionNum": "totals"}});
+            csvBaseDataRawValues.push({"corpus": corpus, "values": data[metricName][corpus].rawValues.totals[areaSelected], "section": areaSelected, "sectionNum": "totals"});
         }
 
         //Add a statistical overview for each corpus
@@ -376,23 +380,22 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
             for (corpus in data[metricName]) {
 
                 let cell = row.append("td")
-                let mod = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode.join(", ") : "-";
+                let mod = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].mode[0].toFixed(2) : "-";
                 let med = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].median != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].median.toFixed(2) : "-";
                 let avg = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].average != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].average.toFixed(2) : "-";
                 let std = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].std != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].std.toFixed(2) : "-";
                 let cnt = data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].count != undefined ? data[metricName][corpus].statisticalValues.sectioned[areaSelected][area].count.toFixed(0) : "-";
 
-
                 createStatElement(cell, mod, med, avg, std, cnt);
 
-                csvBaseDataRawValues.push({"corpus" : corpus  , values : {"values": data[metricName][corpus].rawValues.sectioned[areaSelected][area], "section": areaSelected, "sectionNum": area}});
+                csvBaseDataRawValues.push({"corpus": corpus, "values": data[metricName][corpus].rawValues.sectioned[areaSelected][area], "section": areaSelected, "sectionNum": area});
             }
             ;
         }
         ;
 
         //Create CSV file and download
-        //createCSVdownloadfromArrayF(IDMetricEl, csvBaseDataRawValues);
+        createCSVdownloadfromArrayF(IDMetricEl, csvBaseDataRawValues);
 
         function updateGraph(section, sectionNum) {
 
@@ -405,21 +408,26 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
             //NEU ENDE
             //draw the boxplot
             drawGraph(IDMetricEl, metricContainer, calcStatisticalData, calcRawData, graphType);
-
-
         }
-
-
     };
 };
 
-function returnGraphTextTotal(IDMetricEl, htmlEl, data, textVariants, graphType, allowTextVariants) {
+function returnGraphTextTotal(IDMetricEl, htmlEl, data, textVariants, graphType, allowTextVariants, foundation) {
     let metricName = IDMetricEl.split("_")[2];
 
     //HIER SIND ALLE INTERAKTIONEN
     //Section selector
     let metricSectionSelectorContainer = d3.select(htmlEl[0]).append("div").classed("metricSectionSelectorContainer", true).attr("id", "metricSectionSelectorContainer_" + IDMetricEl);
-    metricSectionSelectorContainer.append("p").text("Diese Metrik bezieht sich auf das gesamte Dokument").style("display", "inline-block");
+
+    let info = "";
+    if (foundation === "document") {
+        info = "Diese Metrik bezieht sich auf das gesamte Dokument";
+    } else if (foundation === "corpus") {
+        info = "Diese Metrik bezieht sich auf den gesamten Corpus";
+    }
+
+    metricSectionSelectorContainer.append("p").text(info).style("display", "inline-block");
+
 
     if (allowTextVariants) {
         //recalculate Metric
@@ -542,7 +550,7 @@ function returnGraphTextTotal(IDMetricEl, htmlEl, data, textVariants, graphType,
 
 //General functions
 function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
-    var margin = {top: 20, right: 40, bottom: 60, left: 120};
+    var margin = {top: 20, right: 60, bottom: 60, left: 60};
 
     let height = 200 - margin.bottom - margin.top;
     let width = 960 - margin.right - margin.left;
@@ -673,6 +681,7 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
         tooltip
             .html("<span style='color:grey'>Wert: </span>" + d.values.value + "<span style='color:grey'> Titel: </span>" + d.values.name + " (" + d.values.year + ") " + d.values.authors[0]);
     };
+
     let mouseleave = function (d) {
         tooltip
             .transition()
@@ -682,11 +691,36 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
         d3.select(this).style("stroke-width", "1px");
     };
 
+    //Brush
+    svg.call(d3.brush()
+        .extent([[0, 0], [width, height]])
+        .on("start brush", displaySelection))
+
+
+    function displaySelection() {
+        extent = d3.event.selection;
+        jitter.classed("jitter-selected_" + metricID, function (d) {
+            return isBrushed(extent, (x(d.values.value)), (y(d.corpus) + (y.bandwidth() / 2) - jitterWidth / 2 + Math.random() * jitterWidth))
+        });
+
+        tooltip.html("<span style='color:grey'>Markiert: </span>" + d3.selectAll(".jitter-selected_" + metricID).size()).style("opacity", 1);
+
+        function isBrushed(brush_coords, cx, cy) {
+
+            let x0 = brush_coords[0][0],
+                x1 = brush_coords[1][0],
+                y0 = brush_coords[0][1],
+                y1 = brush_coords[1][1];
+            return x0 <= cx && cx <= x1 && y0 <= cy && cy <= y1;
+
+        }
+    }
+
 
     // Add individual points with jitter
     let jitterWidth = 30;
-    svg
-        .selectAll("indPoints")
+    let jitter = svg
+        .selectAll("circle")
         .data(dataPoints)
         .enter()
         .append("circle")
@@ -703,11 +737,26 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
         .attr("stroke", "black")
         .on("mouseover", mouseover)
         .on("mouseleave", mouseleave)
+        .on("mousedown", function (d) {
+            let e = brush.extent(),
+                m = d3.mouse(svg.node()),
+                p = [x.invert(m[0]), y.invert(m[1])];
+
+            if (brush.empty() ||
+                (e[0][0] > d[0] || d[0] > e[1][0]
+                    || e[0][1] > d[1] || d[1] > e[1][1])
+            ) {
+                brush.extent([p, p]);
+            } else {
+                d3.select(this).classed('extent', true);
+            }
+
+        });
 
 }
 
 function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
-    let margin = {top: 20, right: 40, bottom: 60, left: 120};
+    let margin = {top: 20, right: 60, bottom: 60, left: 60};
 
     let height = 300 - margin.bottom - margin.top;
     let width = 960 - margin.right - margin.left
@@ -726,6 +775,8 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
     dataPoints.sort(function (a, b) {
         return a.values.value - b.values.value;
     });
+
+    dataPoints = dataPoints.slice(dataPoints.length < 22 ? 0 : dataPoints.length - 21, dataPoints.length - 1);
 
     //Create domain
     let domainY = dataPoints.map(function (d) {
@@ -753,8 +804,8 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
 
     // Color scale
     let myColor = d3.scaleSequential()
-        .interpolator(d3.interpolateInferno)
-        .domain([0, 2]);
+        .interpolator(d3.interpolateCool)
+        .domain([height, 0]);
 
     //Create the lines
     svg.selectAll("lolli-lines")
@@ -788,7 +839,7 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
             .duration(200)
             .style("opacity", 1);
         tooltip
-            .html("<span style='color:grey'>Wert: </span>" + d.values.value + "<span style='color:grey'> Korpus: </span>" + d.corpus);
+            .html("<span style='color:grey'>Wert: </span>" + d.values.value + "<span style='color:grey'>Wort: </span>" + d.values.name);
     };
 
     let mouseleave = function (d) {
@@ -812,7 +863,7 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
         })
         .attr("r", "7")
         .style("fill", function (d) {
-            return myColor(parseInt(d.corpus.substring(6, 7)))
+            return myColor(y(d.values.name))
         })
         .attr("stroke", "black")
         .on("mouseover", mouseover)
@@ -854,21 +905,34 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
         return a.values.value - b.values.value;
     });
 
-    //Create domain Right
+    //Create domain X
     let domainXRight = [dataPoints[dataPoints.length - 1].values.value, 0];
 
-    //Create domain left
-    let domainY = dataPoints.map(function (d) {
+    let domainXLeft = [0, dataPoints[dataPoints.length - 1].values.value];
+
+
+    let dataCorpusLeft = dataPoints.filter(el => el.corpus == "Corpus1");
+    let dataCorpusRight = dataPoints.filter(el => el.corpus == "Corpus2");
+
+    dataCorpusLeft = dataCorpusLeft.slice(dataCorpusLeft.length < 22 ? 0 : dataCorpusLeft.length - 21, dataCorpusLeft.length - 1);
+    dataCorpusRight = dataCorpusRight.slice(dataCorpusRight.length < 22 ? 0 : dataCorpusRight.length - 21, dataCorpusRight.length - 1);
+
+
+    //Create domain Y now with filter
+    let domainYRight = dataCorpusRight.map(function (d) {
         return d.values.name;
     });
-    let domainXLeft = [0, dataPoints[dataPoints.length - 1].values.value];
+
+    let domainYLeft = dataCorpusLeft.map(function (d) {
+        return d.values.name;
+    });
 
 
     //RIGHT SIDE
     // Show the Y scale
     let yRight = d3.scaleBand()
         .range([height, 0])
-        .domain(domainY)
+        .domain(domainYRight)
         .padding(.6);
     svgRight.append("g")
         .attr("transform", "translate(" + width + "," + 0 + ")")
@@ -886,7 +950,7 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
     // Show the Y scale
     let yLeft = d3.scaleBand()
         .range([height, 0])
-        .domain(domainY)
+        .domain(domainYLeft)
         .padding(.6);
     svgLeft.append("g")
         .call(d3.axisLeft(yLeft));
@@ -902,7 +966,7 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
 
     // Color scale
     let myColor = d3.scaleSequential()
-        .interpolator(d3.interpolateInferno)
+        .interpolator(d3.interpolateCool)
         .domain(domainXLeft);
 
     //tooltip
@@ -913,12 +977,8 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
         .attr("id", metricID + "_tooltip");
 
 
-    let dataCorpus1 = dataPoints.filter(el => el.corpus == "Corpus1");
-    let dataCorpus2 = dataPoints.filter(el => el.corpus == "Corpus2");
-
-
-    addData(svgLeft, xLeft, yLeft, dataCorpus1, tooltip);
-    addData(svgRight, xRight, yRight, dataCorpus2, tooltip);
+    addData(svgLeft, xLeft, yLeft, dataCorpusLeft, tooltip);
+    addData(svgRight, xRight, yRight, dataCorpusRight, tooltip);
 
 
     function addData(svgEl, x, y, dataPointsFil, tooltip) {
@@ -950,7 +1010,7 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
                 .duration(200)
                 .style("opacity", 1);
             tooltip
-                .html("<span style='color:grey'>Wert: </span>" + d.values.value + "<span style='color:grey'> Korpus: </span>" + d.corpus);
+                .html("<span style='color:grey'>Wert: </span>" + d.values.value + "<span style='color:grey'> Wort: </span>" + d.values.name + "<span style='color:grey'> Korpus: </span>" + d.corpus);
         };
 
         let mouseleave = function (d) {
@@ -985,7 +1045,7 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
 }
 
 function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
-    let margin = {top: 20, right: 40, bottom: 60, left: 120};
+    let margin = {top: 20, right: 40, bottom: 60, left: 40};
 
     let height = 400 - margin.bottom - margin.top;
     let width = 960 - margin.right - margin.left
@@ -1002,8 +1062,18 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
 
     //Sort points by Data
     dataPoints.sort(function (a, b) {
-        return a.values.value - b.values.value;
+        return b.values.value - a.values.value;
     });
+
+    let dataCorpusLeft = dataPoints.filter(el => el.corpus == "Corpus1");
+    let dataCorpusRight = dataPoints.filter(el => el.corpus == "Corpus2");
+
+    let sliceEnd = d3.min([dataCorpusLeft.length, dataCorpusRight.length]) < 25 ? d3.min([dataCorpusLeft.length, dataCorpusRight.length]) : 24;
+
+    dataCorpusLeft = dataCorpusLeft.slice(0, sliceEnd);
+    dataCorpusRight = dataCorpusRight.slice(0, sliceEnd);
+
+    dataPoints = dataCorpusLeft.concat(dataCorpusRight);
 
     //tooltip
     let tooltip = container
@@ -1014,13 +1084,11 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
 
     // Color scale
     let myColor = d3.scaleSequential()
-        .interpolator(d3.interpolateInferno)
+        .interpolator(d3.interpolateWarm)
         .domain([0, 2]);
 
     let mouseover = function (d) {
         d3.select(this).style("stroke-width", "2px");
-
-        console.log("mouse")
 
         tooltip
             .transition()
@@ -1040,11 +1108,11 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
         d3.select(this).style("stroke-width", "1px");
     };
 
+    console.log(dataPoints);
+
     let fontScale = d3.scaleLinear()
         .range([10, 30])
-        .domain([dataPoints[0].values.value, dataPoints[dataPoints.length - 1].values.value]);
-
-    console.log(dataPoints);
+        .domain([dataPoints[dataPoints.length - 1].values.value, dataPoints[0].values.value]);
 
     let layout = d3.layout.cloud()
         .size([width, height])
@@ -1132,88 +1200,6 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
 
         let csv_text = "";
 
-        for (let i = 0; i < data.length; i++) {
-            let data_row = "";
-            for (key of Object.keys(dataPoints[i].values)) {
-                if (data_row != "") {
-                    data_row += ", "
-                }
-                if (Array.isArray(dataPoints[i].values[key])) {
-                    data_row += dataPoints[i].values[key].join("; ");
-                } else {
-                    data_row += dataPoints[i].values[key];
-                }
-
-
-            }
-            //if no textVar selection is available, assume Raw Text
-            let textVar = d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).empty() ? "Raw" : d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).node().options[d3.select("#textVar_" + dataPoints[i].corpus + "_" + metricID).node().selectedIndex].value
-
-            //append data for sectioned metrics
-            if (section == undefined && sectionNum == undefined) {
-                csv_text += data_row + ", " + dataPoints[i].corpus + ", " + textVar + "\r\n";
-            } else {
-                csv_text += data_row + ", " + dataPoints[i].corpus + ", " + textVar + ", " + section + ", " + sectionNum + "\r\n";
-            }
-            ;
-        }
-        return csv_text;
-    };
-};
-
-function createCSVdownloadfromArray(metricID, dataArray) {
-
-    let metric_name = metricID.split("_")[2]
-    let downloadButton = d3.select("#download_" + metric_name);
-    downloadButton.style("visibility", "visible");
-
-    let csv_text = "";
-    let csv_header = "";
-
-    for (element of dataArray) {
-
-        let sectionNumCon;
-        //catch undefined error
-        if (element.values.sectionNum != undefined) {
-            sectionNumCon = element.values.sectionNum === "totals" ? "totals" : parseInt(element.values.sectionNum) + 1;
-        }
-        ;
-
-        csv_text += convertJSONtoCSV(element.values.values, element.values.section, element.values.sectionNumCon);
-
-        //Create header for every key
-        if (csvheader === "") {
-            for (key of Object.keys(dataPoints[0].values.values)) {
-                if (csv_header != "") {
-                    csv_header += ", "
-                }
-                csv_header += key
-            }
-            ;
-
-            //append additional information depending on section or total
-            if (section == undefined && sectionNum == undefined) {
-                csv_header += ", corpus" + ", variant" + "\r\n";
-            } else {
-                csv_header += ", corpus" + ", variant" + ", area" + ", areaNum" + "\r\n";
-            }
-            ;
-        }
-        ;
-    }
-    ;
-
-    csv_text = csv_header + csv_text;
-
-
-    let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
-    downloadButton.attr("href", csv_data);
-    downloadButton.attr("download", metric_name + "_csvdata");
-
-    function convertJSONtoCSV(data, section, sectionNum) {
-
-        let csv_text = "";
-
         console.log(data);
 
         for (let i = 0; i < data.length; i++) {
@@ -1245,13 +1231,98 @@ function createCSVdownloadfromArray(metricID, dataArray) {
     };
 };
 
+function createCSVdownloadfromArray(metricID, dataArray) {
+
+    let metric_name = metricID.split("_")[2]
+    let downloadButton = d3.select("#download_" + metric_name);
+    downloadButton.style("visibility", "visible");
+
+    let csv_text = "";
+    let csv_header = "";
+
+    for (element of dataArray) {
+
+        console.log(element)
+
+        let sectionNumCon;
+        //catch undefined error
+        if (element.sectionNum != undefined) {
+            sectionNumCon = element.sectionNum === "totals" ? "totals" : parseInt(element.sectionNum) + 1;
+        }
+        ;
+
+        csv_text += convertJSONtoCSV(element.values, element.section, sectionNumCon, element.corpus);
+
+        //Create header for every key
+        if (csv_header === "") {
+            for (key of Object.keys(element.values[0])) {
+                if (csv_header != "") {
+                    csv_header += ", "
+                }
+                csv_header += key
+            }
+            ;
+
+            //append additional information depending on section or total
+            if (element.section == undefined && element.sectionNum == undefined) {
+                csv_header += ", corpus" + ", variant" + "\r\n";
+            } else {
+                csv_header += ", corpus" + ", variant" + ", area" + ", areaNum" + "\r\n";
+            }
+            ;
+        }
+        ;
+    }
+    ;
+
+    csv_text = csv_header + csv_text;
+
+
+    let csv_data = "data:text/plain;charset=utf-8," + encodeURIComponent(csv_text);
+    downloadButton.attr("href", csv_data);
+    downloadButton.attr("download", metric_name + "_csvdata");
+
+    function convertJSONtoCSV(data, section, sectionNum, corpusNum) {
+        let csv_text = "";
+
+        for (let i = 0; i < data.length; i++) {
+            let data_row = "";
+            for (key of Object.keys(data[i])) {
+                if (data_row != "") {
+                    data_row += ", "
+                }
+                if (Array.isArray(data[i][key])) {
+                    data_row += data[i][key].join("; ");
+                } else {
+                    data_row += data[i][key];
+                }
+
+
+            }
+            //if no textVar selection is available, assume Raw Text
+            let textVar = d3.select("#textVar_" + corpusNum + "_" + metricID).empty() ? "Raw" : d3.select("#textVar_" + corpusNum + "_" + metricID).node().options[d3.select("#textVar_" + corpusNum + "_" + metricID).node().selectedIndex].value
+
+            //append data for sectioned metrics
+            if (section == undefined && sectionNum == undefined) {
+                csv_text += data_row + ", " + corpusNum + ", " + textVar + "\r\n";
+            } else {
+                csv_text += data_row + ", " + corpusNum + ", " + textVar + ", " + section + ", " + sectionNum + "\r\n";
+            }
+            ;
+        }
+        return csv_text;
+    };
+};
+
 function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
     $.ajax({
         url: calculateURL,
         type: 'GET',
         data: {fieldname: metricID.split('_')[2], Korpus1_variante: textVariantKorpus1, Korpus2_variante: textVarianteKorpus2},
         beforeSend: function () {
-            $("#collapse_button_" + metricID).next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
+            console.log("befores");
+            console.log(metricID)
+            $("#" + metricID).next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
         },
         success: function (response) {
             onSuccess(JSON.parse(response));
@@ -1271,8 +1342,9 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
 
         let collapseEl = $($('#' + metricID).attr("data-collapse"));
         let statisticDisplayType = $('#' + metricID).attr("data-statisticdisplaytype");
-        let graphType = $this.attr("data-graphtype");
-        let allowTextVariants = ($this.attr("data-allowTextVariants").toLowerCase() == "true");
+        let graphType = $("#" + metricID).attr("data-graphtype");
+        let allowTextVariants = ($("#" + metricID).attr("data-allowTextVariants").toLowerCase() == "true");
+        let foundation = $("#" + metricID).attr("data-foundation");
 
         $("#" + metricID).next().children(".indicator").attr("src", "/static/img/results/verified.png")
 
@@ -1284,7 +1356,7 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
                 returnGraphNumericSection(metricID, collapseEl, data, textVariants, graphType, allowTextVariants);
                 break;
             case "text-total":
-                returnGraphTextTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants)
+                returnGraphTextTotal(metricID, collapseEl, data, textVariants, graphType, allowTextVariants, foundation)
                 break;
             case "text-section":
                 break;
