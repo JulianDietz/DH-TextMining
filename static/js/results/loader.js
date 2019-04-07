@@ -23,12 +23,13 @@ $(document).ready(function () {
                     $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
                 },
                 success: function (response) {
+
                     onSuccess(JSON.parse(response));
                 }
             });
 
             function onSuccess(data) {
-                console.log(data);
+                addDownload(data, ($this.attr("id")));
                 switch (statisticDisplayType) {
                     case "numeric-total":
                         returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation);
@@ -45,20 +46,30 @@ $(document).ready(function () {
                 $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
                 collapseEl.collapse('toggle');
                 $this.attr("data-ready", "true");
-                $this.next().children(".indicator").attr("src", "/static/img/results/verified.png")
+                $this.next().children(".indicator").attr("src", "/static/img/results/verified.png");
+
+                function addDownload(data, metricID) {
+                    for (key of Object.keys(data[metricID.split("_")[2]])) {
+                        let corpusNum = key.substring(6, 7);
+                        d3.select("#download_section").append("a").classed("btn-dh-white", true).attr("href", "/textMining/downloadCorpus/Korpus" + corpusNum).text("Korpus " + corpusNum + " herunterladen");
+
+                        //<a class="btn-dh-white" href="{% url 'downloadKorpus' "Korpus1" %}">Download Korpus1</a>
+                    }
+                }
             }
-        } else {
-            $(collapseEl).collapse('toggle');
-            $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
         }
-    });
+        else
+            {
+                $(collapseEl).collapse('toggle');
+                $this.toggleClass("toggle_button_closed").toggleClass("toggle_button_open");
+            }
+        }
+    );
 
     $(".collapse").on('show.bs.collapse', function () {
-        console.log("opening");
     });
 
     $(".collapse").on('hide.bs.collapse', function () {
-        console.log("hidden");
     });
 });
 
@@ -982,9 +993,6 @@ function drawDoubleLollipopGraph(metricID, container, statisticsData, dataPoints
 
 
     function addData(svgEl, x, y, dataPointsFil, tooltip) {
-
-        console.log(dataPointsFil)
-
         //Create the lines
         svgEl.selectAll("lolli-lines")
             .data(dataPointsFil)
@@ -1068,10 +1076,10 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
     let dataCorpusLeft = dataPoints.filter(el => el.corpus == "Corpus1");
     let dataCorpusRight = dataPoints.filter(el => el.corpus == "Corpus2");
 
-    let sliceEnd = d3.min([dataCorpusLeft.length, dataCorpusRight.length]) < 25 ? d3.min([dataCorpusLeft.length, dataCorpusRight.length]) : 24;
+    //let sliceEnd = d3.min([dataCorpusLeft.length, dataCorpusRight.length]) < 25 ? d3.min([dataCorpusLeft.length, dataCorpusRight.length]) : 24;
 
-    dataCorpusLeft = dataCorpusLeft.slice(0, sliceEnd);
-    dataCorpusRight = dataCorpusRight.slice(0, sliceEnd);
+    dataCorpusLeft = dataCorpusLeft.slice(0, 24);
+    dataCorpusRight = dataCorpusRight.slice(0, 24);
 
     dataPoints = dataCorpusLeft.concat(dataCorpusRight);
 
@@ -1096,7 +1104,6 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
             .style("opacity", 1);
         tooltip
             .html("<span style='color:grey'>Wert: </span>" + d.value + "<span style='color:grey'> Wort: </span>" + d.text + "<span style='color:grey'> Korpus: </span>" + d.corpus);
-
     };
 
     let mouseleave = function (d) {
@@ -1107,8 +1114,6 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
 
         d3.select(this).style("stroke-width", "1px");
     };
-
-    console.log(dataPoints);
 
     let fontScale = d3.scaleLinear()
         .range([10, 30])
@@ -1197,11 +1202,7 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
     downloadButton.attr("download", metric_name + "_csvdata")
 
     function convertJSONtoCSV(data, section, sectionNum) {
-
         let csv_text = "";
-
-        console.log(data);
-
         for (let i = 0; i < data.length; i++) {
             let data_row = "";
             for (key of Object.keys(data[i].values)) {
@@ -1213,8 +1214,6 @@ function createCSVdownload(metricID, dataPoints, section, sectionNum) {
                 } else {
                     data_row += data[i].values[key];
                 }
-
-
             }
             //if no textVar selection is available, assume Raw Text
             let textVar = d3.select("#textVar_" + data[i].corpus + "_" + metricID).empty() ? "Raw" : d3.select("#textVar_" + data[i].corpus + "_" + metricID).node().options[d3.select("#textVar_" + data[i].corpus + "_" + metricID).node().selectedIndex].value
@@ -1241,10 +1240,6 @@ function createCSVdownloadfromArray(metricID, dataArray) {
     let csv_header = "";
 
     for (element of dataArray) {
-
-        console.log(element)
-
-        let sectionNumCon;
         //catch undefined error
         if (element.sectionNum != undefined) {
             sectionNumCon = element.sectionNum === "totals" ? "totals" : parseInt(element.sectionNum) + 1;
@@ -1320,8 +1315,6 @@ function recalculateMetric(metricID, textVariantKorpus1, textVarianteKorpus2) {
         type: 'GET',
         data: {fieldname: metricID.split('_')[2], Korpus1_variante: textVariantKorpus1, Korpus2_variante: textVarianteKorpus2},
         beforeSend: function () {
-            console.log("befores");
-            console.log(metricID)
             $("#" + metricID).next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
         },
         success: function (response) {

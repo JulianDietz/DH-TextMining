@@ -146,3 +146,10 @@
     padding-bottom: .5em;
     font-size: .5em;
 }
+
+#download_section{
+    width: 80%;
+
+    margin: .5em auto;
+    text-align: center;
+}

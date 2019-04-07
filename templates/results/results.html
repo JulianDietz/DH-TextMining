@@ -8,10 +8,17 @@
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="{% static "js/d3-layout-cloud.js" %}"></script>
 
+    <script>
+
+        const djangoURL_Corpus1 = "{% url 'downloadKorpus' "Korpus1" %}";
+        const djangoURL_Corpus2 = "{% url 'downloadKorpus' "Korpus2" %}";
+
+    </script>
+
     <!-- WordCloud -->
 
-
-    <a class="btn-dh-white" href="{% url 'downloadKorpus' "Korpus1" %}">Download Korpus1</a>
+    <div id="download_section">
+    </div>
 
 
     <div class="container">
