@@ -1,4 +1,7 @@
 $(document).ready(function () {
+
+    let isFirst = true;
+
     $(".toggle_button").click(function () {
 
         const textVariants = [{"key": "orig", "value": "Raw", "display": "Original"},
@@ -29,7 +32,11 @@ $(document).ready(function () {
             });
 
             function onSuccess(data) {
-                addDownload(data, ($this.attr("id")));
+                if(isFirst) {
+                    addDownload(data, ($this.attr("id")));
+                };
+                isFirst = false;
+
                 switch (statisticDisplayType) {
                     case "numeric-total":
                         returnGraphNumericTotal($this.attr("id"), collapseEl, data, textVariants, graphType, allowTextVariants, foundation);
@@ -52,8 +59,6 @@ $(document).ready(function () {
                     for (key of Object.keys(data[metricID.split("_")[2]])) {
                         let corpusNum = key.substring(6, 7);
                         d3.select("#download_section").append("a").classed("btn-dh-white", true).attr("href", "/textMining/downloadCorpus/Korpus" + corpusNum).text("Korpus " + corpusNum + " herunterladen");
-
-                        //<a class="btn-dh-white" href="{% url 'downloadKorpus' "Korpus1" %}">Download Korpus1</a>
                     }
                 }
             }
@@ -349,7 +354,7 @@ function returnGraphNumericSection(IDMetricEl, htmlEl, data, textVariants, graph
         //data table
         tableEl = tableEl.append("tbody");
         let tableTotalRow = tableEl.append("tr");
-        tableTotalRow.append("th").text("Gesamt");
+        tableTotalRow.append("th").text("Gesamt (AVG)");
         tableTotalRow.append("th").append("i").classed("fas fa-chart-bar graph-icon_" + metricName, true).style("color", "lightgrey").style("cursor", "pointer").on("click", function () {
             let all = d3.selectAll(".graph-icon_" + metricName).style("color", "lightgrey");
             d3.select(this).style("color", "black");

@@ -75,18 +75,19 @@
     text-align: center;
 }
 
-.credit_section {
+#credit_section {
     font-size: .5em;
+    text-align: center;
+    margin: 0 auto;
 }
 
 .metric-statdata {
     display: inline;
     font-size: 0.5em;
-
     white-space: nowrap;
 }
 
-.metric-statdata::before {
+/*.metric-statdata::before {
     content: attr(data-tooltip);
     position: absolute;
     top: 2em;
@@ -99,7 +100,7 @@
 
 .metric-statdata:hover::before {
     transform: scale(1);
-}
+}*/
 
 .metric-prefix {
     letter-spacing: 1.5px;
@@ -149,7 +150,6 @@
 
 #download_section{
     width: 80%;
-
     margin: .5em auto;
     text-align: center;
 }
