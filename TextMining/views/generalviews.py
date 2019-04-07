@@ -258,8 +258,6 @@ def startAnalyse(request):
                         {"metric": "typeTokenRatio", "dataDisplayType": "numeric-total",
                          "germanTitle": "Type-Token-Ratio", "graphType": "boxplot",
                          "allowTextVariants": "true", "foundation": "document"},
-
-
                         {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section",
                          "germanTitle": "Zeichenanzahl mit Leerzeichen", "graphType": "boxplot",
                          "allowTextVariants": "true", "foundation": "document"},
@@ -293,9 +291,12 @@ def startAnalyse(request):
                         {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section",
                          "germanTitle": "Durchschnittliche Tabellenbeschriftungslängen", "graphType": "boxplot",
                          "allowTextVariants": "false", "foundation": "document"},
-                        {"metric": "mostCommonKeywords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Keywords", "graphType": "wordcloud", "allowTextVariants": "false",
-                         "foundation": "corpus"},
-                        {"metric": "mostCommonWords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Wörter", "graphType": "lollipop", "allowTextVariants": "true", "foundation": "corpus"},
+                        {"metric": "mostCommonKeywords", "dataDisplayType": "text-total",
+                         "germanTitle": "Häufigste Keywords", "graphType": "wordcloud",
+                         "allowTextVariants": "false", "foundation": "corpus"},
+                        {"metric": "mostCommonWords", "dataDisplayType": "text-total",
+                         "germanTitle": "Häufigste Wörter", "graphType": "lollipop",
+                         "allowTextVariants": "true", "foundation": "corpus"},
                         {"metric": "mostPresentWords", "dataDisplayType": "text-total", "germanTitle": "Häufigst anwesende Wörter", "graphType": "lollipop", "allowTextVariants": "true",
                          "foundation": "corpus"},
                         ]}
@@ -509,7 +510,8 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=Fal
                              tableDescriptionLengthCount, pictureDescriptionLengthCount,
                              averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
                              mostPresentWords, typeTokenRatio)
-        # Gleicht Länge der Ausgabe bei 2 Corpora aneinander an
+    # Gleicht Länge der Ausgabe bei 2 Corpora aneinander an
+    if corpus1 and corpus2:
         for metrik in sectionedMetriks:
             if metrik[1]:
                 for part in sectionedParts:
