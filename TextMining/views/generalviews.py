@@ -33,8 +33,8 @@ nltk.download('stopwords')
 nltk.download('punkt')
 
 '''
-KORPUS1=None
-KORPUS2=None
+KORPUS1 = None
+KORPUS2 = None
 
 
 def helloWorld(request):
@@ -240,26 +240,41 @@ def startAnalyse(request):
             varianteKorpus2 = None
 
         metricList = {
-            "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
-                        {"metric": "referenceCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
-                        {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
-                        {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
-                        {"metric": "citationCount", "dataDisplayType": "numeric-section", "germanTitle": "Anzahl der Zitate", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
-                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "tableCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "pictureCount", "dataDisplayType": "numeric-section", "germanTitle": "Bilderanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Tabellenbeschriftungslängen", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Bildbeschriftungslängen", "graphType": "boxplot", "allowTextVariants": "false", "foundation" : "document"},
-                        {"metric": "mostCommonKeywords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Keywords", "graphType": "wordcloud", "allowTextVariants": "false", "foundation" : "corpus"},
-                        {"metric": "mostCommonWords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Wörter", "graphType": "lollipop", "allowTextVariants": "true", "foundation" : "corpus"},
-                        {"metric": "mostPresentWords", "dataDisplayType": "text-total", "germanTitle": "Häufigst anwesende Wörter", "graphType": "lollipop", "allowTextVariants": "true", "foundation" : "corpus"},
-                        {"metric": "averageWordLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Wortlänge", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
-                        {"metric": "averageSentenceLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Satzlänge", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"},
-                        {"metric": "typeTokenRatio", "dataDisplayType": "numeric-total", "germanTitle": "Type-Toke-Ratio", "graphType": "boxplot", "allowTextVariants": "true", "foundation" : "document"}]}
+            "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation": "document"},
+                        {"metric": "typeTokenRatio", "dataDisplayType": "numeric-total", "germanTitle": "Type-Toke-Ratio", "graphType": "boxplot", "allowTextVariants": "true",
+                         "foundation": "document"},
+                        {"metric": "referenceCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl", "graphType": "boxplot", "allowTextVariants": "false",
+                         "foundation": "document"},
+                        {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten", "graphType": "boxplot", "allowTextVariants": "false",
+                         "foundation": "document"},
+                        {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder", "graphType": "boxplot", "allowTextVariants": "false",
+                         "foundation": "document"},
+                        {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation": "document"},
+                        {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl ohne Leerzeichen", "graphType": "boxplot", "allowTextVariants": "true",
+                         "foundation": "document"},
+                        {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen", "graphType": "boxplot", "allowTextVariants": "true",
+                         "foundation": "document"},
+                        {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl", "graphType": "boxplot", "allowTextVariants": "true", "foundation": "document"},
+                        {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl", "graphType": "boxplot", "allowTextVariants": "true",
+                         "foundation": "document"},
+                        {"metric": "citationCount", "dataDisplayType": "numeric-section", "germanTitle": "Anzahl der Zitate", "graphType": "boxplot", "allowTextVariants": "true",
+                         "foundation": "document"},
+                        {"metric": "tableCount", "dataDisplayType": "numeric-section", "germanTitle": "Tabellenanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation": "document"},
+                        {"metric": "pictureCount", "dataDisplayType": "numeric-section", "germanTitle": "Bilderanzahl", "graphType": "boxplot", "allowTextVariants": "false", "foundation": "document"},
+                        {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Tabellenbeschriftungslängen", "graphType": "boxplot",
+                         "allowTextVariants": "false", "foundation": "document"},
+                        {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Bildbeschriftungslängen", "graphType": "boxplot",
+                         "allowTextVariants": "false", "foundation": "document"},
+                        {"metric": "averageWordLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Wortlänge", "graphType": "boxplot", "allowTextVariants": "true",
+                         "foundation": "document"},
+                        {"metric": "averageSentenceLength", "dataDisplayType": "numeric-section", "germanTitle": "Durchschnittliche Satzlänge", "graphType": "boxplot", "allowTextVariants": "true",
+                         "foundation": "document"},
+                        {"metric": "mostCommonKeywords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Keywords", "graphType": "wordcloud", "allowTextVariants": "false",
+                         "foundation": "corpus"},
+                        {"metric": "mostCommonWords", "dataDisplayType": "text-total", "germanTitle": "Häufigste Wörter", "graphType": "lollipop", "allowTextVariants": "true", "foundation": "corpus"},
+                        {"metric": "mostPresentWords", "dataDisplayType": "text-total", "germanTitle": "Häufigst anwesende Wörter", "graphType": "lollipop", "allowTextVariants": "true",
+                         "foundation": "corpus"},
+                        ]}
 
         corpusTextVariants = {"Korpus1": varianteKorpus1, "Korpus2": varianteKorpus2}
         context = {'metricList': metricList, 'corpusTextVariants': corpusTextVariants}
@@ -384,6 +399,7 @@ def createNewMetrikDict():
                  'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
     return {'totals': totals, 'sectioned': sectioned}
 
+
 # Tables und Pictures sind nur für jede Sektion gespeichert, und daher eine "abgespeckte" Variante der FieldMetriks ohne
 # Abstracts und Subsections sowie ohne Titel
 def createNewTableOrPicturesMetrikDict():
@@ -392,16 +408,15 @@ def createNewTableOrPicturesMetrikDict():
     return {'totals': totals, 'sectioned': sectioned}
 
 
-def analyseCorpora(variant1, variant2, corpus1, corpus2,charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
-                punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
-                universityCount=False,countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
-                tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
-                averageWordLength=False, averageSentenceLength=False, mostCommonWords=False, mostCommonKeywords=False,
-                mostPresentWords=False, typeTokenRatio=False):
-
-    sectionedMetriks = {('charCountWhiteSpace',charCountWhiteSpace), ('charCountNoWhiteSpace',charCountNoWhiteSpace),
-                        ('wordCount',wordCount),('punctCount',punctCount),('citationCount',citationCount),
-                        ('averageWordLength',averageWordLength),('averageSentenceLength',averageSentenceLength)}
+def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
+                   punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
+                   universityCount=False, countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
+                   tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
+                   averageWordLength=False, averageSentenceLength=False, mostCommonWords=False, mostCommonKeywords=False,
+                   mostPresentWords=False, typeTokenRatio=False):
+    sectionedMetriks = {('charCountWhiteSpace', charCountWhiteSpace), ('charCountNoWhiteSpace', charCountNoWhiteSpace),
+                        ('wordCount', wordCount), ('punctCount', punctCount), ('citationCount', citationCount),
+                        ('averageWordLength', averageWordLength), ('averageSentenceLength', averageSentenceLength)}
     sectionedParts = {'abstractTitles', 'abstractText', 'sectionTitles', 'sectionText', 'subsectionTitles', 'subsectionText'}
 
     # Tables und Pictures werden nur für Sektionen erfasst, und dort nur im Text => abgespeckte Variante der sectionedMetriks
@@ -503,7 +518,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                tableDescriptionLengthCount, pictureDescriptionLengthCount,
                averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
                mostPresentWords, typeTokenRatio):
-
     abstractHelper = []
     sectionHelper = []
     subsectionHelper = []
@@ -517,7 +531,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     paperContents = []
     keywordContents = []
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',
-                '“', '”', '"', '(', ')', "'", '""', "''", '<', '>', '[', ']',' ']
+                '“', '”', '"', '(', ')', "'", '""', "''", '<', '>', '[', ']', ' ']
 
     resultsMostCommonWords = []
     resultsMostCommonKeywords = []
@@ -546,8 +560,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
          'values': createNewMetrikDict(), 'totalsDBField': 'totalsAverageWordLength'},
         {'condition': averageSentenceLength, 'modelField': "averageSentenceLength",
          'values': createNewMetrikDict(), 'totalsDBField': 'totalsAverageSentenceLength'}]
-
-
 
     UsedFieldMetriks = []
     for possibleFieldMetrik in FieldMetriks:
@@ -620,8 +632,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             if textualMetriks:
                 paperContent = paperContent + " " + paperTitle.text
 
-
-
         for fieldMetrik in UsedFieldMetriks:
             totalHelperAbstractTitles[fieldMetrik['modelField']] = []
             totalHelperAbstractText[fieldMetrik['modelField']] = []
@@ -668,7 +678,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 if textualMetriks:
                     paperContent = paperContent + " " + abstractText.text
 
-
         for sectionCount, section in enumerate(paper.content):
             if sectionCount == len(sectionHelper):
                 sectionHelper.append([])
@@ -711,7 +720,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 if textualMetriks:
                     paperContent = paperContent + " " + sectionText.text
 
-
             tables = section.tables
             if tableCount:
                 resultsTableCount['sectioned']['sectionText'][sectionCount].append(createNewValueAndPaperDict(
@@ -741,7 +749,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                 if countPictureDescription != []:
                     resultsPictureDescLengthCount['sectioned']['sectionText'][sectionCount].append(
                         createNewValueAndPaperDict(statistics.mean(countPictureDescription), paper))
-
 
             for subsectionCount, subsection in enumerate(section.subsection):
                 if subsectionCount == len(subsectionHelper):
@@ -943,7 +950,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         for wordFreq in counterMostCommonKeywords:
             resultsMostCommonKeywords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
         resultDict['mostCommonKeywords'][corpusIdentifier] = {'rawValues': resultsMostCommonKeywords, 'variant': variant,
-                                                            'paperCount': len(corpus)}
+                                                              'paperCount': len(corpus)}
     if mostCommonWords:
         paperContentsString = "" + (" ".join(paperContents))
         wordTokens = nltk.word_tokenize(paperContentsString)
@@ -1013,4 +1020,3 @@ def getStatisticalValuesForFieldMetriks(input):
                  'subsectionTitles': resultsArraySubsectionTitles, 'subsectionText': resultsArraySubsectionText}
     results = {'totals': totals, 'sectioned': sectioned}
     return results
-
