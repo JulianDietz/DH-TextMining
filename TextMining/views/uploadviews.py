@@ -82,7 +82,8 @@ def uploadImprovedPaper(request):
             print("validFile:" + filename)
             response['valid'] = 'true'
             response['filename'] = filename
-            currentJsonfiles.append(jsondata)
+            #currentJsonfiles.append(jsondata)
+            currentJsonfiles.append({'name': filename, 'file': jsondata})
         else:
             print("invalidFile:" + filename)
             response['valid'] = 'false'
