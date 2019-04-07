@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('textMining/helloWorld/', views.helloWorld),
+    path('', views.redirect_view),
     path('textMining/upload/', views.uploadFiles, name='upload'),
     path('textMining/uploadImprovedPaperAjax/', views.uploadImprovedPaper, name="improvedPaper"),
     path('textMining/completeUpload/', views.completeUpload, name='completeUpload'),
@@ -42,24 +42,3 @@ urlpatterns = [
     #test
     path('textMining/test/', views.testMethode, name='test'),
 ]
-
-'''
-    #path('textMining/<int:pk>/', views.changeCategory),
-
-    path('textMining/calculateMetriken/', generalviews.calculateMetriken),
-
-    path('textMining/calculateFreqWords/', generalviews.calculateFreqWords),
-
-    path('textMining', generalviews.showStartPage, name='home'),
-    path('textMining/vergleich/', generalviews.showVergleichPage, name='vergleich'),
-    path('textMining/results/', generalviews.showResults, name='results'),
-
-
-    path('textMining/results/download/', downloadviews.downloadResults, name='download'),
-    #path('textMining/results/download/', downloadviews.downloadResults2, name='download2'),
-
-
-    path('textMining/ajax/categorie', generalviews.ajaxCategorie, name='ajaxCateogrie'),
-    path('textMining/ajax/categorie', generalviews.ajaxAuthor, name='ajaxAuthor'),
-
-'''

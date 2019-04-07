@@ -37,8 +37,8 @@ KORPUS1 = None
 KORPUS2 = None
 
 
-def helloWorld(request):
-    return render(request, 'helloWorld.html')
+def redirect_view(request):
+    return redirect('corpusSelection')
 
 
 def results(request):
