@@ -2,6 +2,7 @@ from nltk.corpus import stopwords
 from TextMining.models import TextVariant
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem import PorterStemmer
+import nltk
 
 def stemText(paper):
     #Titel
@@ -42,7 +43,7 @@ def stemText(paper):
 #PorterStemmer nltk
 def getStemForTextsection(text):
     ps = PorterStemmer()
-    text_As_Array = RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg??
+    text_As_Array = nltk.word_tokenize(text) #RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg??
     textstemmed = ""
     #words = word_tokenize(sentence)
     for word in text_As_Array:

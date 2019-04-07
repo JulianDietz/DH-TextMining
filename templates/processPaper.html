@@ -10,21 +10,26 @@
 
     <div class="site-text-container">
         <p class="info-text">Es befinden sich <b>{{ numberPaper }}</b> Einträge in der Datenbank.</p>
-        <p class="info-text"> Beim Vorberechnen wird aus dem Text des Papers ein
+        <p class="info-text"> Beim Vorberechnen werden aus dem Text des Papers ein
             stopwortgefilteter Text und ein gestemmter Text, sowie einige Metriken vorberechnet.</p>
-        <p class="info-text"> Der Vorhang kann einige Zeit dauern... </p>
+        <p class="info-text"> Der Vorgang kann einige Zeit dauern... </p>
 
         <div class="spinner-border info-text hidden" role="status">
             <span class="sr-only">Loading...</span>
         </div>
 
         <div>
-            <p id='resultText' class="info-text hidden">Paper erfolgreich aufbreitet.</p>
+            <p id='resultText' class="info-text hidden">Paper erfolgreich vorberechnet.</p>
         </div>
 
         <div id="buttonContainer">
-            <button id="startCalculationButton" class="btn-dh-white">Paper vorbrechnen starten!</button>
+            <button id="startCalculationButton" class="btn-dh-white">Paper vorberechnen starten!</button>
         </div>
+
+        <div id="buttonContainerKorpusauswahl" class="hidden">
+            <a id="startCalculationButton" href="{% url 'corpusSelection' %}" class="btn-dh-white">Zur Korpusauswahl</a>
+        </div>
+
     </div>
 
     <script>
@@ -34,7 +39,9 @@
                 url: "{% url 'processPaper' %}", success: function (result) {
                     console.log(result);
                     $('.spinner-border').hide();
+                    $('#buttonContainer').hide();
                     $('#resultText').show();
+                    $('#buttonContainerKorpusauswahl').show();
                 }
             });
         });

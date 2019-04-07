@@ -531,7 +531,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     paperContents = []
     keywordContents = []
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',
-                '“', '”', '"', '(', ')', "'", '""', "''", '<', '>', '[', ']', ' ']
+                '“', '”', '"', '(', ')', "'", '""', "''", '<', '>', '[', ']', ' ', '%', '&', '§', "’"]
 
     resultsMostCommonWords = []
     resultsMostCommonKeywords = []
@@ -954,7 +954,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     if mostCommonWords:
         paperContentsString = "" + (" ".join(paperContents))
         wordTokens = nltk.word_tokenize(paperContentsString)
-        wordTokenFreqDist = nltk.FreqDist(item.capitalize() for item in wordTokens if item not in nonWords).most_common()
+        wordTokenFreqDist = nltk.FreqDist(item.capitalize() for item in wordTokens if item not in nonWords and not item.isdigit()).most_common()
         for wordFreq in wordTokenFreqDist:
             resultsMostCommonWords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
         resultDict['mostCommonWords'][corpusIdentifier] = {'rawValues': resultsMostCommonWords, 'variant': variant,
@@ -964,7 +964,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         paperContentsArray = [nltk.word_tokenize(item) for item in paperContents]
         combinedUniqueWordLists = []
         for paperContent in paperContentsArray:
-            uniqueWordList = list(set([item.capitalize() for item in paperContent if item not in nonWords]))
+            uniqueWordList = list(set([item.capitalize() for item in paperContent if item not in nonWords and not item.isdigit()]))
             combinedUniqueWordLists = combinedUniqueWordLists + uniqueWordList
         counterMostPresentWords = Counter(combinedUniqueWordLists).most_common()
         for wordFreq in counterMostPresentWords:
