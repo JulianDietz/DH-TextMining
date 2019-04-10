@@ -413,7 +413,7 @@ def getStatisticalValues(inputarray):
 # TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability, TTR
 def createNewValueAndPaperDict(value, paper):
     return {'value': value, 'name': paper.titleRaw.text, 'authors': [author.name for author in paper.authors],
-            'year': paper.metaData.yearOfArticle, 'paperID': str(paper.id)}
+            'year': paper.metaData.yearOfArticle, 'paperID': str(paper.id), 'URL': paper.metaData.URL}
 
 
 def createNewValueAndWordDict(value, word):
