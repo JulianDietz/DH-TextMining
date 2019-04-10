@@ -561,6 +561,8 @@ function returnGraphTextTotal(IDMetricEl, htmlEl, data, textVariants, graphType,
 }
 
 
+
+//Graphen angelehnt an https://www.d3-graph-gallery.com
 //General functions
 function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
     var margin = {top: 20, right: 60, bottom: 60, left: 60};
@@ -694,15 +696,10 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
         tooltip
             .html("<span style='color:grey'>Wert: </span>" + d.values.value +
                 "<span style='color:grey'> Titel: </span>" + d.values.name + " (" + d.values.year + ") " + d.values.authors[0] +
-                "<a style='color:grey' href='" + "https://www.google.de" + "'> (URL)</a>");
+                "<a href='" + d.values.URL + "'> (URL)</a>");
     };
 
     let mouseleave = function (d) {
-        /*tooltip
-            .transition()
-            .duration(200)
-            .style("opacity", 0)*/
-
         d3.select(this).style("stroke-width", "1px");
     };
 
