@@ -170,14 +170,10 @@ def getPaperType (htmlArticle):
 def getPaperURL (htmlfile):
     url = EMPTYJSONTAG
     urlEl = htmlfile.find("link", {"rel":"canonical"})
-    #print("urlelement")
-    #print(urlEl)
 
     if urlEl != None and urlEl != -1:
         url = str(urlEl["href"])
 
-    #print("Hier ist die URL")
-    #print(url)
     return url
 
 

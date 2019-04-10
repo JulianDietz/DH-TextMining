@@ -1,0 +1,44 @@
+.container {
+    width: 80%;
+    margin: 2em auto;
+    max-width: 1200px;
+}
+
+.section {
+    display: grid;
+    grid: auto /200px 1fr;
+    grid-gap: 0 2em;
+    border-bottom: 1px solid black;
+    padding-bottom: .5em;
+    margin-top: .5em;
+}
+
+.section:last-child {
+    margin-bottom: 0px;
+}
+
+.section > p {
+    grid-column: 2/3;
+}
+
+.section > div.subsection {
+    grid-column: 2/3;
+}
+
+.sectionTitle {
+    grid-column: 1 / 2;
+    text-align: right;
+    align-self: start;
+    position: -webkit-sticky;
+    top: 1em;
+}
+
+p.subHeader {
+    font-weight: bold;
+    margin-bottom: .1em;
+}
+
+.subHeaderFirst {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}

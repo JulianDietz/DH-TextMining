@@ -63,6 +63,9 @@ def results(request):
     return render(request, 'results/results.html', metricList)
 
 
+def showInfo(request):
+    return render(request, 'infopage/info.html')
+
 def corpusSelection(request):
     return render(request, 'corpusSelection/corpusSelection.html')
 

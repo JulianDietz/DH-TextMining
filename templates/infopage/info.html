@@ -1,0 +1,92 @@
+{% extends 'index.html' %}
+
+{% block body %}
+
+    {% load static %}
+    <link href='{% static "css/infopage.css" %}' rel="stylesheet">
+
+    <h3 class="page-header">Info</h3>
+
+
+    <!-- Template
+    <div class="section">
+            <h2 class="sectionTitle">Erster Tipp</h2>
+            <p>text</p>
+       </div>
+       -->
+
+    <div class="container">
+        <div class="section">
+            <h2 class="sectionTitle">Dokumente eintragen</h2>
+            <div>
+                <p class="subHeaderFirst">Allgemein</p>
+                <p>Die Datenbank verfügt über den OMICS-2018-Archiv Korpus. Darüber hinaus können nutzereigenen Dokumente hochgeladen werden.</p>
+                <p class="subHeader">JSON-Format</p>
+                <p>Alle Dokumente müssen einem JSON-Schema entsprechen</p>
+                <p class="subHeader">Upload</p>
+                <p>Die Dokumente müssen in einem ersten Schritt in das System geladen werden. Dazu muss <a href="{% url "upload" %}">"JSON-Dkoumente in die Datenbank übertragen"</a> aufgerufen werden.
+                </p>
+                <p class="subHeader">Eintragen in die Datenbank</p>
+                <p>Der Prozess gibt Ihnen den nächsten Schritt vor. Nach dem Hochladen werden die Dokumente in die Datenbank eingetragen. Hierbei werden die Felder des JSON-Dokuments
+                erstmals ausgelesen. Dieser Vorgang kann je nach Anzahl an Dokumenten mehrere Minuten andauern.</p>
+                <p class="subHeader">Vorberechnung</p>
+                <p>Im letzten Schritt werden die Dokumente vorberechnet. Dazu zählen einige Metriken, sowie die Textvarianten. Dieser Schritt ist am rechenintensivsten </p>
+            </div>
+        </div>
+        <div class="section">
+            <h2 class="sectionTitle">Korpusauswahl</h2>
+            <div>
+                <p class="subHeaderFirst">Korpus: Sammlung von Dokumenten</pclass>
+                <p class="subHeader">Korpora</p>
+                <p>Es können maximal 2 Korpora analysiert werden. Das zweite Korpus lässt sich über den FAB-Button rechts hinzufügen oder entfernen. Es sollte stets das erste Korpus priorisiert
+                    werden.</p>
+                <p class="subHeader">Filter</p>
+                <p>Filter können über "Suchfeld hinzufügen" kombiniert werden. Ein Feld durchsucht dabei ein Attribut. Mit Komma können Werte in einem Feld ODER-verknüpft werden. Fügt man ein
+                    Feld mit dem gleichen Attribut hinzu, so werden diese UND-verknüpft. Über den "-"-Knopf kann ein Suchfeld entfernt werden.</p>
+                <p>Nach dem Filtern können alle verfügbaren Paper angezeigt werden. In der darauf erscheinenden Liste können dann noch einzelne Dokumente abgewählt werden, um diese von
+                    der Analyse auszuschließen.</p>
+            </div>
+        </div>
+        <div class="section">
+            <h2 class="sectionTitle">Metriken</h2>
+            <div>
+                <p class="subHeaderFirst">Metriken allgemein</p>
+                <p>Das Tool verfügt über 20 Metriken. Diese werden durch das Aufklappen ausgerechnet. Dabei erscheint eine Stoppuhr. Ist das Ergebnis bereit, wird die durch einen Haken
+                    angezeigt.<br>
+                    Einige Metriken können je nach Textvariante andere Ergebnisse liefern. Diese Metriken verfügen dann über Auswahlfelder für jeden Korpus. Nach dem Ändern einer Variante
+                    wird der Haken entfernt, um anzuzeigen, dass die dargestellten Daten nicht mehr der Auswahl entsprechen. Über den Neuberechnen-Knopf können die Daten dann mit der neuen Auswahl
+                    erneut
+                    berechnet werden und die Anzeige wird angepasst.</p>
+                <p class="subHeader">Für das gesamte Dokument</p>
+                <p>Diese Metriken werden für das gesamte Dokument berechnet. Jedes Dokument wird mit einer Zahl repräsentiert.</p>
+                <p class="subHeader">Für Abschnitte im Dokument</p>
+                <p>Diese Metriken werden für das gesamte Dokument berechnet. Dabei werden die Abschnitte getrennt voneinander berechnet. In einer Gesamt-Anzeige werden die
+                    Durchschnitte aller gleichen Bereiche angezeigt.</p>
+                <p>Abschnitte werden hierbei lediglich augrund ihrer Nummer in ihrer Ebene verglichen. So werden alle 1. Subsektionen verglichen, unbeachtet ihrer Eltern-Sektion.</p>
+                <p class="subHeader">Für den gesamten Korpus</p>
+                <p>Ergebnisse werden für den gesamten Korpus berechnet</p>
+            </div>
+        </div>
+        <div class="section">
+            <h2 class="sectionTitle">Graphen</h2>
+            <div>
+                <p class="subHeaderFirst">Graphen allgemein</p>
+                <p>Die Daten einer Metrik werden je nach Art anders dargestellt. Alle Einzeldaten können nach dem Zeichnen über die TSV-Datei der Metrik heruntergeladen werden.</p>
+                <p class="subHeader">Boxplot</p>
+                <p>Ein Boxplot zeigt die Verteilung einzelner Werte auf einer gesamten Skala über 5 Punkte an.<br>
+                    Diese Punkte sind Median, unteres und oberes Quartiel, sowie der 1,5-fache Interquartilsabstand, gemessen von beiden Quartilen. Punkte innerhalb der Box beschreiben 50 Prozent der
+                    Daten, Punkte außerhalb des IQR werden Ausreißer genannt.</p>
+                <p>Im Tool werden zusätzliche die konkreten Datenpunkte eingetragen. Diese können mit der Maus angewählt werden, um zusätzliche Informationen über ein Dokument zu erhalten. Mit einer
+                    Flächenauswahl kann dann die Anzahl der Punkte in einem Bereich angezeigt werden. Beide Korpora teilen sich eine Skala.</p>
+                <p class="subHeader">Lollipop-Graph</p>
+                <p>Dieser Graph ähnelt einem horizontalen Balkendiagramm, wobei der Fokus auf der Höhe bzw. Breite des Balkens liegt. Ein Punkt repräsentiert einen Datenpunkt, meist ein Wort.
+                    Die Grafik zeigt nur die häufigsten Daten und ist somit nach unten abgeschnitten. In der TSV-Datei der Metrik sind jedoch alle Datenpunkte aufgelistet.</p>
+                <p class="subHeader">Wortwolke</p>
+                <p>Die Wortwolke stellt die häufigsten Ergebisse für beide Korpora dar. Die Darstellung erfolgt hierbei nicht getrennt, um Unterschiede einfacher zu erkennen.
+                    Beide Korpora teilen sich die Größenskala.
+                    Je größer ein Wort, desto häufiger tritt es im Korpus auf.</p>
+            </div>
+        </div>
+    </div>
+
+{% endblock body %}

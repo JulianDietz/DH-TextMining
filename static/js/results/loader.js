@@ -692,14 +692,16 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
             .duration(200)
             .style("opacity", 1);
         tooltip
-            .html("<span style='color:grey'>Wert: </span>" + d.values.value + "<span style='color:grey'> Titel: </span>" + d.values.name + " (" + d.values.year + ") " + d.values.authors[0]);
+            .html("<span style='color:grey'>Wert: </span>" + d.values.value +
+                "<span style='color:grey'> Titel: </span>" + d.values.name + " (" + d.values.year + ") " + d.values.authors[0] +
+                "<a style='color:grey' href='" + "https://www.google.de" + "'> (URL)</a>");
     };
 
     let mouseleave = function (d) {
-        tooltip
+        /*tooltip
             .transition()
             .duration(200)
-            .style("opacity", 0)
+            .style("opacity", 0)*/
 
         d3.select(this).style("stroke-width", "1px");
     };
@@ -1081,6 +1083,9 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
     dataCorpusRight = dataCorpusRight.slice(0, 24);
 
     dataPoints = dataCorpusLeft.concat(dataCorpusRight);
+    dataPoints.sort(function (a, b) {
+        return b.values.value - a.values.value;
+    });
 
     //tooltip
     let tooltip = container
@@ -1263,7 +1268,7 @@ function createCSVdownloadfromArray(metricID, dataArray) {
 
             //append additional information depending on section or total
             if (element.section == undefined && element.sectionNum == undefined) {
-                csv_header += delimiter + "corpus" + delimiter +"variant" + "\r\n";
+                csv_header += delimiter + "corpus" + delimiter + "variant" + "\r\n";
             } else {
                 csv_header += delimiter + "corpus" + delimiter + "variant" + delimiter + "area" + delimiter + "areaNum" + "\r\n";
             }
