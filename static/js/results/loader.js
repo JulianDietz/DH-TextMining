@@ -26,6 +26,7 @@ $(document).ready(function () {
                         $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
                     },
                     success: function (response) {
+                        console.log(JSON.parse(response));
 
                         onSuccess(JSON.parse(response));
                     }
@@ -617,7 +618,7 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
         .interpolator(d3.interpolateInferno)
         .domain([min, max])
 
-    // Show the main vertical line
+    // Show the main vertical line with IQR
     svg
         .selectAll("vertLines")
         .data(statisticsData)

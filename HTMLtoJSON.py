@@ -9,8 +9,8 @@ EMPTYJSONTAG = ""
 
 
 def parseHTML():
-    htmlfilesdirectory = 'corpusRawHTMLNew'
-    outputdirectory = 'outputNew'
+    htmlfilesdirectory = 'CorpusRaw'
+    outputdirectory = 'OutputJSON'
     source = 'omics'
     # open file
     categoryArray=[]
@@ -178,7 +178,8 @@ def getPaperURL (htmlfile):
 
 
 def getYear(htmlfile):
-    year = EMPTYJSONTAG
+    #Apply to relevant Corpus
+    year = "2018"
     yearEl=htmlfile.find("meta", {"name": "citation_year"})
     if yearEl != None and yearEl != -1:
         year = str(yearEl["content"])
