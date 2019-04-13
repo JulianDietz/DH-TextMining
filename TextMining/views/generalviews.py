@@ -102,7 +102,8 @@ def readJsonFiles(request):
 
 def processPaperView(request):
     numberPaper = Paper.objects.all().count()
-    context = {'numberPaper': numberPaper}
+    numberRehashed = Paper.objects.all().filter(isRehashed=True).count()
+    context = {'numberPaper': numberPaper, 'numberRehashed': numberRehashed}
     return render(request, 'processPaper.html', context)
 
 
