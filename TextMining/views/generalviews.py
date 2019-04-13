@@ -170,7 +170,7 @@ def filterDB(querydata):
             # papers = papers.filter(** {field: searchdata})
 
             searchArry = searchdata.split(',')
-            searchArry = [x.strip(' ') for x in searchArry]
+            searchArry = [x.strip(' ').capitalize()  for x in searchArry]
             searchArry = list(filter(None, searchArry))
             print(searchArry)
             if searchArry:
@@ -179,9 +179,9 @@ def filterDB(querydata):
                     papers = papers.filter(query)
                 if field == 'category':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
-                                   map(lambda query: Q(metaData__category__in=query), searchArry))
+                                   map(lambda query: Q(metaData__category__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__category__in=searchdata)
+                    #papers = papers.filter(metaData__category__icontains='Biochemistry')
                 if field == 'organization':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__organization__icontains=query), searchArry))
@@ -189,7 +189,7 @@ def filterDB(querydata):
                     # papers = papers.filter(metaData__organization__icontains=searchdata)
                 if field == 'keywords':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
-                                   map(lambda query: Q(metaData__keywords__in=query), searchArry))
+                                   map(lambda query: Q(metaData__keywords__icontains=query), searchArry))
                     papers = papers.filter(query)
                     # papers = papers.filter(metaData__keywords__in=searchdata)
                 if field == 'journal':
