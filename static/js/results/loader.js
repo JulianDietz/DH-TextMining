@@ -26,8 +26,6 @@ $(document).ready(function () {
                         $this.next().children(".indicator").attr("src", "/static/img/results/stopwatch.png");
                     },
                     success: function (response) {
-                        console.log(JSON.parse(response));
-
                         onSuccess(JSON.parse(response));
                     }
                 });
@@ -697,7 +695,7 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
         tooltip
             .html("<span style='color:grey'>Wert: </span>" + d.values.value +
                 "<span style='color:grey'> Titel: </span>" + d.values.name + " (" + d.values.year + ") " + d.values.authors[0] +
-                "<a href='" + d.values.URL + "'> (URL)</a>");
+                (d.values.URL ? "<a href='" + d.values.URL + "'> (URL)</a>" : ""));
     };
 
     let mouseleave = function (d) {

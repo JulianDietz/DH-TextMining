@@ -21,10 +21,16 @@
         overridestartAjaxFilter();
         function overridestartAjaxFilter() {
             $('#container').submit(function (event) {
+
+                console.log("Hello");
+
                 event.preventDefault();
                 $('#addCorpusButton').hide();
                 $('.addSearchDataFieldButton').hide();
                 $('.removeSearchDataFieldButton').hide();
+
+                $('.searchDataUserInput').prop("readonly", true);
+                $('.searchDataSelector').prop("readonly", true);
 
                 $.ajax({
                     url: $('#container').attr('action'),

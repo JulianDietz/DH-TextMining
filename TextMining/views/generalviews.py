@@ -109,7 +109,7 @@ def processPaperView(request):
 # Aufbereiten der Text Stopwortfiltern und lemmatisieren
 def processPaper(request):
     print("Paper werden aufbreitet....")
-    paperlist = Paper.objects.all()
+    paperlist = Paper.objects.all().timeout(False)
     for paper in paperlist:
         print('Paper: ' + paper.titleRaw.text)
         metriken.removeStopwords(paper)  # MET_text_to_STOP_text
