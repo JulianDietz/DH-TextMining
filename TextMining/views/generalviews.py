@@ -975,6 +975,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         resultDict['mostCommonKeywords'][corpusIdentifier] = {'rawValues': resultsMostCommonKeywords, 'variant': variant,
                                                               'paperCount': len(corpus)}
         '''''
+        keywordContents = [keyword for keyword in keywordContents if keyword not in nonWords]
         counterMostCommonKeywords = Counter(keywordContents).most_common()
         for wordFreq in counterMostCommonKeywords:
             resultsMostCommonKeywords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
