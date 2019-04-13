@@ -65,11 +65,15 @@
                 htmldata += '<tr><td><input type="checkbox" name="' + korpusid + '" value="' + paper._id.$oid + '" checked /></td>' +
                     '<td>' + paper.titleRaw.text.substring(0, 30)  + '...</td><td>';
                 //for (let i = 0; i < paper.authors.length; i++) {
-                    let autor = paper.authors[0];
-                    if (1 !== paper.authors.length) {
-                        htmldata += autor.name + ' et al.'
-                    } else {
-                        htmldata += autor.name
+                    if(paper.authors.length!==0) {
+                        let autor = paper.authors[0];
+                        if (1 !== paper.authors.length) {
+                            htmldata += autor.name + ' et al.'
+                        } else {
+                            htmldata += autor.name
+                        }
+                    }else{
+                        htmldata += 'Unbekannter Autor'
                     }
                 //}
                 htmldata += '</td></tr>';

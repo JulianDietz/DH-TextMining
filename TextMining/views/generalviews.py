@@ -102,7 +102,8 @@ def readJsonFiles(request):
 
 def processPaperView(request):
     numberPaper = Paper.objects.all().count()
-    context = {'numberPaper': numberPaper}
+    numberRehashed = Paper.objects.all().filter(isRehashed=True).count()
+    context = {'numberPaper': numberPaper, 'numberRehashed': numberRehashed}
     return render(request, 'processPaper.html', context)
 
 
@@ -111,10 +112,11 @@ def processPaper(request):
     print("Paper werden aufbreitet....")
     paperlist = Paper.objects.all().timeout(False)
     for paper in paperlist:
-        print('Paper: ' + paper.titleRaw.text)
-        metriken.removeStopwords(paper)  # MET_text_to_STOP_text
-        metriken.stemText(paper)  # MET_text_to_STEM_text
-        metriken.calculateAllMetrics(paper)
+        if not paper.isRehashed:
+            print('Paper: ' + paper.titleRaw.text)
+            metriken.removeStopwords(paper)  # MET_text_to_STOP_text
+            metriken.stemText(paper)  # MET_text_to_STEM_text
+            metriken.calculateAllMetrics(paper)
 
     print("Paper sind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
@@ -169,7 +171,7 @@ def filterDB(querydata):
             # papers = papers.filter(** {field: searchdata})
 
             searchArry = searchdata.split(',')
-            searchArry = [x.strip(' ') for x in searchArry]
+            searchArry = [x.strip(' ').capitalize()  for x in searchArry]
             searchArry = list(filter(None, searchArry))
             print(searchArry)
             if searchArry:
@@ -178,9 +180,9 @@ def filterDB(querydata):
                     papers = papers.filter(query)
                 if field == 'category':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
-                                   map(lambda query: Q(metaData__category__in=query), searchArry))
+                                   map(lambda query: Q(metaData__category__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__category__in=searchdata)
+                    #papers = papers.filter(metaData__category__icontains='Biochemistry')
                 if field == 'organization':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__organization__icontains=query), searchArry))
@@ -188,7 +190,7 @@ def filterDB(querydata):
                     # papers = papers.filter(metaData__organization__icontains=searchdata)
                 if field == 'keywords':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
-                                   map(lambda query: Q(metaData__keywords__in=query), searchArry))
+                                   map(lambda query: Q(metaData__keywords__icontains=query), searchArry))
                     papers = papers.filter(query)
                     # papers = papers.filter(metaData__keywords__in=searchdata)
                 if field == 'journal':

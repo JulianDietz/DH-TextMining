@@ -158,35 +158,28 @@ def calculateAllMetrics(paper):
 
     addTotalsForAveragedMetriks(paper,paperText,abstractTitles,abstractText,sectionTitles,sectionText,
                                 subsectionTitles,subsectionText)
+    paper.isRehashed = True
 
     paper.save()
 
 def addMetricForPart(part):
-    if not paperIsRehashed(part, 'metrik'):
-        metrikCharCountWhiteSpace = MET_char_count_WhiteSpace(part.text)
-        metrikCharCountNoWhiteSpace = MET_char_count_No_WhiteSpace(part.text)
-        metrikWordCount = MET_word_count(part.text)
-        metrikPunctCount = MET_punctuation_count(part.text)
-        metrikCitationCount = MET_citation_count(part.text)
-        metrikAverageWordLength = MET_average_word_length(part.text)
-        metrikAverageSentenceLength = MET_average_sentence_length(part.text, metrikWordCount)
+    metrikCharCountWhiteSpace = MET_char_count_WhiteSpace(part.text)
+    metrikCharCountNoWhiteSpace = MET_char_count_No_WhiteSpace(part.text)
+    metrikWordCount = MET_word_count(part.text)
+    metrikPunctCount = MET_punctuation_count(part.text)
+    metrikCitationCount = MET_citation_count(part.text)
+    metrikAverageWordLength = MET_average_word_length(part.text)
+    metrikAverageSentenceLength = MET_average_sentence_length(part.text, metrikWordCount)
 
-        metrik = Metric(charCountWhiteSpace=metrikCharCountWhiteSpace,
-                        charCountNoWhiteSpace=metrikCharCountNoWhiteSpace,
-                        wordCount=metrikWordCount,
-                        punctCount=metrikPunctCount,
-                        citationCount=metrikCitationCount,
-                        averageWordLength=metrikAverageWordLength,
-                        averageSentenceLength=metrikAverageSentenceLength)
-        part.metrik = metrik
+    metrik = Metric(charCountWhiteSpace=metrikCharCountWhiteSpace,
+                    charCountNoWhiteSpace=metrikCharCountNoWhiteSpace,
+                    wordCount=metrikWordCount,
+                    punctCount=metrikPunctCount,
+                    citationCount=metrikCitationCount,
+                    averageWordLength=metrikAverageWordLength,
+                    averageSentenceLength=metrikAverageSentenceLength)
+    part.metrik = metrik
 
-
-#checks if section has StemmedText with this method
-def paperIsRehashed(section,fieldname):
-    if section[fieldname]:
-        return True
-    else:
-        return False
 
 
 def createTotalsDict():
