@@ -155,4 +155,5 @@ class Paper(Document):
     abstract = EmbeddedDocumentListField('Abstract')
     content = EmbeddedDocumentListField('Section')
     totalValuesForAveragedMetriks = EmbeddedDocumentField('TotalValuesForAveragedMetriks')
+    isRehashed = BooleanField()
 

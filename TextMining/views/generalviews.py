@@ -111,10 +111,11 @@ def processPaper(request):
     print("Paper werden aufbreitet....")
     paperlist = Paper.objects.all().timeout(False)
     for paper in paperlist:
-        print('Paper: ' + paper.titleRaw.text)
-        metriken.removeStopwords(paper)  # MET_text_to_STOP_text
-        metriken.stemText(paper)  # MET_text_to_STEM_text
-        metriken.calculateAllMetrics(paper)
+        if not paper.isRehashed:
+            print('Paper: ' + paper.titleRaw.text)
+            metriken.removeStopwords(paper)  # MET_text_to_STOP_text
+            metriken.stemText(paper)  # MET_text_to_STEM_text
+            metriken.calculateAllMetrics(paper)
 
     print("Paper sind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
