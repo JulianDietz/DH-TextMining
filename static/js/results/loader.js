@@ -1092,8 +1092,8 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
 
     // Color scale
     let myColor = d3.scaleSequential()
-        .interpolator(d3.interpolateWarm)
-        .domain([0, 2]);
+        .interpolator(d3.interpolateCool)
+        .domain([0, 3]);
 
     let mouseover = function (d) {
         d3.select(this).style("stroke-width", "2px");
@@ -1116,7 +1116,7 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
     };
 
     let fontScale = d3.scaleLinear()
-        .range([10, 30])
+        .range([15, 45])
         .domain([dataPoints[dataPoints.length - 1].values.value, dataPoints[0].values.value]);
 
     let layout = d3.layout.cloud()
