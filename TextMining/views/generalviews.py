@@ -630,8 +630,8 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             for author in authors:
                 university = author.university
                 if university:
-                    if university not in universities:
-                        universities.append(university)
+                    if university.name not in universities:
+                        universities.append(university.name)
                     country = university.country
                     if country:
                         if country not in countries:
