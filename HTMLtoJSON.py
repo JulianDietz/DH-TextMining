@@ -132,7 +132,6 @@ def getallReferences(htmlArticle):
 
     return references
 
-
 def getKeywords(htmlfile):
     #print("keywords")
     keywords=[]
@@ -148,7 +147,6 @@ def getKeywords(htmlfile):
     #print(keywords)
     return keywords
 
-
 def getJournalTitle (htmlfile):
     journalTitle = EMPTYJSONTAG
     titleEl = htmlfile.find("meta" ,{"name":"citation_journal_title"})
@@ -156,7 +154,6 @@ def getJournalTitle (htmlfile):
        journalTitle = titleEl['content']
 
     return journalTitle
-
 
 def getPaperType (htmlArticle):
     paperType = EMPTYJSONTAG
@@ -175,7 +172,6 @@ def getPaperURL (htmlfile):
         url = str(urlEl["href"])
 
     return url
-
 
 def getYear(htmlfile):
     #Apply to relevant Corpus
@@ -221,8 +217,6 @@ def getIssue(htmlfile):
     if IssueEl != None and IssueEl != -1:
         Issue = str(IssueEl["content"])
     return Issue
-
-
 
 def getImpactFactor(htmlfile):
     impactFactor=htmlfile.find('meta' ,{'name':'journal_impact_factor'})['content']
@@ -374,16 +368,6 @@ def getAuthors(htmlArticle):
             author['authorIndex'] = index = index + 1
 
             finding = authorEl.next_element.next_element.find('a')
-
-            #print("finding")
-            #print(authorEl)
-            #if finding != None and finding != -1:
-                #print("das ist finding")
-                #print(finding)
-                #if "contents" in finding:
-                    #print("Hier ist Contents")
-                    #print(finding.contents)
-            #print("finding ENDE")
 
             #Autoren sind nummeriert
             if finding != None and finding != -1 and authorEl.next_sibling and "contents" in finding and str(finding.contents[0]) != '*':
