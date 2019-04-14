@@ -695,7 +695,7 @@ function drawBoxplotGraph(metricID, container, statisticsData, dataPoints) {
         tooltip
             .html("<span style='color:grey'>Wert: </span>" + d.values.value +
                 "<span style='color:grey'> Titel: </span>" + d.values.name + " (" + d.values.year + ") " + d.values.authors[0] +
-                (d.values.URL ? "<a href='" + d.values.URL + "'> (URL)</a>" : ""));
+                (d.values.URL ? "<a target='_blank' href='" + d.values.URL + "'> (URL)</a>" : ""));
     };
 
     let mouseleave = function (d) {
@@ -787,7 +787,7 @@ function drawLollipopGraph(metricID, container, statisticsData, dataPoints) {
         return a.values.value - b.values.value;
     });
 
-    dataPoints = dataPoints.slice(dataPoints.length < 22 ? 0 : dataPoints.length - 21, dataPoints.length - 1);
+    dataPoints = dataPoints.slice(dataPoints.length < 22 ? 0 : dataPoints.length - 21, dataPoints.length);
 
     //Create domain
     let domainY = dataPoints.map(function (d) {
@@ -1054,6 +1054,8 @@ function drawWordCloudGraph(metricID, container, statisticsData, dataPoints) {
 
     let height = 400 - margin.bottom - margin.top;
     let width = 960 - margin.right - margin.left
+
+    console.log(dataPoints);
 
     let svg = container.append("div")
         .classed("graphContainer", true)
