@@ -180,7 +180,7 @@ def filterDB(querydata):
                     papers = papers.filter(query)
                 if field == 'category':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
-                                   map(lambda query: Q(metaData__category__icontains= "Veterinary Sciences"), searchArry))
+                                   map(lambda query: Q(metaData__category__icontains=query), searchArry))
                     papers = papers.filter(query)
                     #papers = papers.filter(metaData__category__icontains='Biochemistry')
                 if field == 'organization':
