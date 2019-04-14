@@ -166,14 +166,18 @@ def filterDB(querydata):
             query = querydata[number]
             field = query['optionfield']
             searchdata = query['inputfield']
-            print('search for ' + field + " equals " + searchdata)
+            #print('search for ' + field + " equals " + searchdata)
+
             # field='metaData__'+field+'__contains'
             # papers = papers.filter(** {field: searchdata})
 
             searchArry = searchdata.split(',')
-            searchArry = [x.strip(' ').capitalize()  for x in searchArry]
+            searchArry = [x.strip(' ') for x in searchArry]
+            for index,entry in enumerate(searchArry):
+                entry = [word.capitalize() for word in entry.split(' ')]
+                searchArry[index] = ' '.join(entry)
             searchArry = list(filter(None, searchArry))
-            print(searchArry)
+            #print(searchArry)
             if searchArry:
                 if field == 'authors':
                     query = reduce(lambda q1, q2: q1.__or__(q2), map(lambda query: Q(authors__name__icontains=query), searchArry))
@@ -182,42 +186,34 @@ def filterDB(querydata):
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__category__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    #papers = papers.filter(metaData__category__icontains='Biochemistry')
                 if field == 'organization':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__organization__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__organization__icontains=searchdata)
                 if field == 'keywords':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__keywords__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__keywords__in=searchdata)
                 if field == 'journal':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__journal__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__journal__icontains=searchdata)
                 if field == 'source':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__source__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__source__icontains=searchdata)
                 if field == 'yearOfArticle':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__yearOfArticle__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__yearOfArticle__icontains=searchdata)
                 if field == 'language':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__language__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__language__icontains=searchdata)
                 if field == 'title':
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__title__icontains=query), searchArry))
                     papers = papers.filter(query)
-                    # papers = papers.filter(metaData__title__icontains=searchdata)
         ##nur titel und id....
         return papers.to_json()
     else:
