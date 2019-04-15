@@ -5,7 +5,7 @@ Frei zugängliche wissenschaftliche Textsorten verschiedener Fachbereiche solle 
 
 Die Anwendung erfordert [Python3](https://www.python.org/downloads/) (Version 3.7) und eine lokale [MongoDB](https://docs.mongodb.com/manual/administration/install-community/) Installation.
 
-### Empfolener Editor:
+### Empfohlener Editor:
 * [Pycharm](https://www.jetbrains.com/pycharm/)
 
 ### Verwendete Bibliotheken:
