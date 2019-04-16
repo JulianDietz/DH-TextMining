@@ -67,6 +67,6 @@ def resolveHTMLError(invalidHTML):
     return validHTML
 
 source='omics'
-outdir='New2'
+outdir='CorpusRaw'
 outpath=os.path.join(outdir, source)
 runCrawler()

@@ -30,3 +30,9 @@ PyCharm fragt beim ersten Run nach einem Root-Folder. Dieser ist der gesamte Ord
 Schritt1: MongoDB mit dem Befehl "mongod" im Terminal starten \
 Schritt2: Django starten im Projektordner mit dem Befehl "python(3) manage.py runserver 8000" \
 Schritt3: im Browser url: http://127.0.0.1:8000/ öffnen
+
+
+### Crawler und Parser
+Zum erneuten crawlen der Daten die Datei `crawler.py` ausführen. Die gecrawlten Dateien befinden sich im CorpusRaw-Ordner.
+Zum parsen dieser Ergebnisse die Datei `HTMLtoJSON.py` ausführen. Die geparsten JSON-Dateien befinden sich im OutputJSON-Ordner.
+Ein bereits geparster Ordner mit JSON-Dateien liegt der Abgabe im Google-Drive bei.
