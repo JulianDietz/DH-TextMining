@@ -37,7 +37,4 @@ urlpatterns = [
     path('textMining/processPaper/', views.processPaper, name='processPaper'),
     path('textMining/getCalculation/', views.calculateMetrik, name='calculateMetrik'),
     path('textMining/downloadCorpus/<str:Corpus>', views.downloadResults, name='downloadKorpus'),
-
-    # test
-    path('textMining/test/', views.testMethode, name='test'),
 ]
