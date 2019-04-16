@@ -1,21 +1,17 @@
 import re
 
-#TODO die auch wie die anderen metriken mit nltk word sequenzieren und dann länge wie bei average Word length berechnen?
-#Stopwortliste nltk(english) word to lowercase
+
+# Berechnet die Anzahl an Zeichen in dem übergebenem Text
 def MET_char_count_WhiteSpace(text):
-    #Remove quotes
+    #Entfernt Zitate
     text_without_quotes = re.sub(r"(\s\[[^]]*\])", "", text)
-    #Count the text length
     countWithWhitespace = len(text_without_quotes)
     return countWithWhitespace
 
 
-#Stopwortliste nltk(english) word to lowercase
+# Berechnet die Anzahl an Zeichen ohne Leerzeichen in dem übergebenem Text
 def MET_char_count_No_WhiteSpace(text):
-    #Remove quotes
+    # Entfernt Zitate
     text_without_quotes = re.sub(r"(\s\[[^]]*\])", "", text)
-    #Join the text and count length
     countNoWhitespace = len("".join(text_without_quotes.split()))
-
-    #print (countNoWhitespace)
     return countNoWhitespace

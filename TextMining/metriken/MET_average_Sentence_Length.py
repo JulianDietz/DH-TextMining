@@ -1,6 +1,6 @@
 import nltk
 
-
+# Berechnet die durchschnittliche Satzlänge in Wörtern für den übergebenen Text
 def MET_average_sentence_length(text, wordCount):
     sentTokens = nltk.sent_tokenize(text)
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',

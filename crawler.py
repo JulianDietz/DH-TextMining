@@ -2,13 +2,11 @@ from bs4 import BeautifulSoup
 import requests
 import os
 
+# Der Crawler holt nach deren Kategorien geoordnet alle Paper aus dem OMICS-Online Archiv aus dem Jahr 2018
 def getJournalsFromCategoriesPage(categoryurl,categoryName):
-    #print(categoryurl)
     r = requests.get(categoryurl)
     journalpage = BeautifulSoup(r.text, 'html.parser')
-    #print(r.text)
     for journal in journalpage.findAll('td', attrs={'valign': 'middle'}):
-        #print(journal)
         journallink=journal.find('a')
         if journallink:
             impactFactor=None
@@ -17,20 +15,16 @@ def getJournalsFromCategoriesPage(categoryurl,categoryName):
                 impactFactor=impactFactor.contents[0]
             else:
                 impactFactor="<<empty>>"
-            print('JounalImpactFactor:'+impactFactor)
-            print('Journaltitel:'+journallink['title'])
-            #print(journallink['href'])
             getArchiveList(journallink['href'],categoryName,impactFactor)
 
 def getArchiveList(journallink,categoryName,impactFactor):
-    #print('link')
     r = requests.get(journallink)
     journalpage = BeautifulSoup(r.text, 'html.parser')
     for listitem in journalpage.findAll('li',{"class": "nav-item"}):
         link=listitem.find('a')
         if link.text=="Archive":
             getPaperlist(link['href'],categoryName,impactFactor)
-            #print('archivelink found:'+link['href'])
+
 
 def getPaperlist(journalarchive,categoryName,impactFactor):
     r = requests.get(journalarchive)
@@ -39,8 +33,8 @@ def getPaperlist(journalarchive,categoryName,impactFactor):
         card=year.find('strong')
         if card.text=="2018":
             for paperlistlink in year.parent.find('nav').findAll('a'):
-                print('Paperlist'+paperlistlink['href'])
                 savePaper(paperlistlink['href'],categoryName,impactFactor)
+
 
 def savePaper(paperlistlink,categoryName,impactFactor):
     r = requests.get(paperlistlink)
@@ -48,7 +42,6 @@ def savePaper(paperlistlink,categoryName,impactFactor):
     for paperEntry in paperlist.findAll('div',{'class':"row"}):
         for link in paperEntry.findAll('a'):
             if link.text=="Peer-reviewed Full Article":
-                print('Article link found:'+link['href'])
                 global outpath
                 r = requests.get(link['href'])
                 fullpath=os.path.join(outpath,categoryName)
@@ -57,20 +50,16 @@ def savePaper(paperlistlink,categoryName,impactFactor):
                 name=link['href'].split('/')[len(link['href'].split('/'))-1]
                 file=open(os.path.join(fullpath,name), 'w', encoding="utf-8")
                 validHTML=resolveHTMLError(r.text)
-                #paper=BeautifulSoup(validHTML, 'html.parser')
                 validHTML='<meta name="journal_impact_factor" content='+impactFactor+'/>'+validHTML
-                #paper.html.append(BeautifulSoup('<meta name="journal_impact_factor" content='+impactFactor+'/>', 'html.parser'))
-                file.write(str(validHTML))#validHTML
+                file.write(str(validHTML))
                 file.close()
 
 def runCrawler():
     r = requests.get('https://www.omicsonline.org')
     htmlfile = BeautifulSoup(r.text, 'html.parser')
-    print(htmlfile)
     for titel in htmlfile.findAll('h6'):
         if titel.text == "Journals by Subject":
             for category in titel.parent.parent.findAll('a'):
-                print('category: '+category['title'])
                 getJournalsFromCategoriesPage(category['href'],category['title'])
 
 def resolveHTMLError(invalidHTML):

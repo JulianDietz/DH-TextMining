@@ -1,5 +1,6 @@
 import nltk
 
+# Berechnet die Anzahl an Wörtern in dem übergebenem Text
 def MET_word_count(text):
     wordTokens = nltk.word_tokenize(text)
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',

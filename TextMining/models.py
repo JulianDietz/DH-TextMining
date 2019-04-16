@@ -1,9 +1,6 @@
-from django.db import models
-
-# Create your models here.
 from mongoengine import *
 
-# http://docs.mongoengine.org
+
 connect('textmining')
 
 
@@ -91,7 +88,7 @@ class Metadata(EmbeddedDocument):
     URL=StringField()
     paperType=StringField()
     language = StringField()
-    publicationtype=StringField()#online oder paper
+    publicationtype=StringField()
     #Bibtexfelder
     citekey = StringField()
     entrytype = StringField()

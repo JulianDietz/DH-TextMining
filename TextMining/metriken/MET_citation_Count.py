@@ -1,6 +1,7 @@
 import re
 
-#Count punctuation without citations
+# Berechnet die Anzahl an Zitaten im Text. Zitate der Form [2,4,7] zählen dabei als 3 Zitate
+# Zitate der Form [1-6] zählen als 6 Zitate
 def MET_citation_count(text):
     finding = re.findall(r"(\[\d+(,*-?\d*)*\])", text)
     quoteCount = 0

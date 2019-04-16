@@ -1,11 +1,12 @@
 from TextMining.metriken import MET_char_count_WhiteSpace, MET_char_count_No_WhiteSpace, MET_word_count, \
     MET_punctuation_count, MET_citation_count, MET_average_word_length, MET_average_sentence_length
-from TextMining.models import Metric, TotalValues
+from TextMining.models import Metric
 import TextMining.models
 
+# Loopt über alle Bereiche des Papers, und berechnet alle dafür  verfügbaren Metriken
 def calculateAllMetrics(paper):
     splitters = ['.','!','?']
-    #Total text to compute averaged metriks
+    # Hilfsvariablen zum Berechnen der Totalen Metriken für Bereiche des Papers
     paperText = createTotalsDict()
     abstractTitles = createTotalsDict()
     abstractText = createTotalsDict()
@@ -36,7 +37,6 @@ def calculateAllMetrics(paper):
         abstractText['Raw'].append(section.textRaw.text)
         abstractText['NltkStem'].append(section.textNltkStem.text)
 
-        #fails for section.titleRaw.text="" ?
         if len(section.titleRaw.text) > 0:
             if section.titleRaw.text[-1] not in splitters:
                 paperText['Raw'].append(section.titleRaw.text + ".")
@@ -186,7 +186,8 @@ def createTotalsDict():
     return {'Raw': [], 'NltkStem': [], 'NltkStw': []}
 
 
-
+# Die Metriken hier basieren auf Durchschnittswerten des Textes, und müssen deshalb über den gesamten,
+# zusammengefügten Text berechnet werden
 def addTotalsForAveragedMetriks(paper,paperText,abstractTitles,abstractText,sectionTitles,sectionText,
                                 subsectionTitles,subsectionText):
 

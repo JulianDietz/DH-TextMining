@@ -1,6 +1,7 @@
 import nltk
 from statistics import mean
 
+# Berechnet die durchschnittliche Wortlänge in Zeichen für den übergebenen Text
 def MET_average_word_length(text):
     wordTokens = nltk.word_tokenize(text)
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',

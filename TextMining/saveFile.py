@@ -1,20 +1,8 @@
-# from .models import Metric,Text, Subsection, Reference, References, Paper, Author, Metadata, Authors, University, Abstract, \
-#    Picture, Pictures, Table, Tables
 from .models import Paper, Metadata, Author, University, Abstract, Table, Picture, TextVariant, Subsection, Section, \
     Reference
 
-
-# mongo
-# show dbs
-# use textmining
-# db.dropDatabase()
-
-# db.paper.find()
-
+# Speichert Paper-JSON in der Datenbank
 def savePaper(paperJson):
-    print('Paper in der Datenbank speichern')
-    print(paperJson)
-
     paperDB = Paper()
     paperDB.titleRaw=TextVariant(text=paperJson['metaData']['title'])
     # AutorenListe
@@ -64,7 +52,6 @@ def savePaper(paperJson):
             Abstract(titleRaw=TextVariant(text=abstractPart['title']), textRaw=TextVariant(text=abstractPart['text'])))
 
     # References
-    # TODO year integer?
     if paperJson.get('references'):
         for reference in paperJson['references']['referencesList']:
             paperDB.references.append(Reference(index=reference['referenceIndex'],
@@ -74,7 +61,7 @@ def savePaper(paperJson):
 
     # Content
     for textsection in paperJson['text']:
-        # TABLEs
+        # Tables
         arrayTables = []
         if textsection['tables']:
             for table in textsection['tables']['tablesList']:

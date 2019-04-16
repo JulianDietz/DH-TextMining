@@ -2,6 +2,7 @@ from nltk.corpus import stopwords
 from TextMining.models import TextVariant
 import nltk
 
+# Loopt über alle Bereiche eines Papers und speichert deren Text gestoppwortfiltert in der Datenbank
 def removeStopwords(paper):
     #Titel
     section=paper
@@ -37,9 +38,9 @@ def removeStopwords(paper):
                 subsection.titleNltkStw = stopWordFilteredText_String
     paper.save()
 
-#Stopwortliste nltk(english) word to lowercase
+#Stopwortliste nltk(english)
 def getStopwordsForTextsection(text):
-    text_As_Array = nltk.word_tokenize(text) #RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg???!?!????
+    text_As_Array = nltk.word_tokenize(text)
     textnostop = ""
     for word in text_As_Array:
         word = str(word).lower()
@@ -47,7 +48,7 @@ def getStopwordsForTextsection(text):
             textnostop += " " + word
     return textnostop
 
-#checks if section has StemmedText with this method
+# Überprüft ob der Abschnitt schon gestoppwortfiltert gespeichert wurde
 def paperIsRehashed(section,fieldname):
     if section[fieldname]:
         return True

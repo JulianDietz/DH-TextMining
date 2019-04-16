@@ -1,38 +1,25 @@
 # -*- coding: utf-8 -*-
-# Create your views here.
 from functools import reduce
-from statistics import mean
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 from collections import Counter
-
-import nltk
-from TextMining.models import Paper, Metadata
-import json
+from mongoengine.queryset.visitor import Q
 from django.shortcuts import redirect
 from os import listdir, system
 from os.path import join
 from TextMining import metriken
 from TextMining.saveFile import savePaper
 from scipy import stats
+from TextMining.models import Paper
+
+import nltk
+import json
 import os
 import math
-
-import TextMining.models
-from mongoengine.queryset.visitor import Q
 import numpy as np
 import statistics
 
-# currentJsonfiles=[]
-
-'''init ntlk run:
-import nltk
-nltk.download('stopwords')
-nltk.download('punkt')
-
-'''
 KORPUS1 = None
 KORPUS2 = None
 
@@ -41,30 +28,9 @@ def redirect_view(request):
     return redirect('corpusSelection')
 
 
-def results(request):
-    metricList = {
-        "metrics": [{"metric": "authorCount", "dataDisplayType": "numeric-total", "germanTitle": "Autorenanzahl"},
-                    {"metric": "punctCount", "dataDisplayType": "numeric-section", "germanTitle": "Satzzeichenanzahl"},
-                    {"metric": "referenceCount", "dataDisplayType": "numeric-total", "germanTitle": "Referenzenanzahl"},
-                    {"metric": "charCountNoWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl"},
-                    {"metric": "charCountWhiteSpace", "dataDisplayType": "numeric-section", "germanTitle": "Zeichenanzahl mit Leerzeichen"},
-                    {"metric": "wordCount", "dataDisplayType": "numeric-section", "germanTitle": "Wortanzahl"},
-                    {"metric": "citationCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl der Zitate"},
-                    {"metric": "universityCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Universitäten"},
-                    {"metric": "countryCount", "dataDisplayType": "numeric-total", "germanTitle": "Anzahl beteiligter Länder"},
-                    {"metric": "keywordCount", "dataDisplayType": "numeric-total", "germanTitle": "Keywordanzahl"},
-                    {"metric": "tableCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenanzahl"},
-                    {"metric": "pictureCount", "dataDisplayType": "numeric-total", "germanTitle": "Bilderanzahl"},
-                    {"metric": "tableDescriptionLengthCount", "dataDisplayType": "numeric-total", "germanTitle": "Tabellenbeschriftungslängen"},
-                    {"metric": "pictureDescriptionLengthCount", "dataDisplayType": "numeric-total", "germanTitle": "Bildbeschriftungslängen"},
-                    {"metric": "keywordFrequency", "dataDisplayType": "numeric-total", "germanTitle": "Keywordauftreten"},
-                    {"metric": "mostfrequentWordsDisplay", "dataDisplayType": "text-section", "germanTitle": "Häufigste Wörter"}]}
-
-    return render(request, 'results/results.html', metricList)
-
-
 def showInfo(request):
     return render(request, 'infopage/info.html')
+
 
 def corpusSelection(request):
     return render(request, 'corpusSelection/corpusSelection.html')
@@ -79,24 +45,21 @@ def readJsonFilesView(request):
 
 
 def readJsonFiles(request):
-    # loads all Json files....
+    # Wird per AJAX-Request aufgerufen, lädt alle JSON-Dateien und speichert diese in der Datenbank
     readpath = "./static/uploadFiles"
     onlyOne = False
     counter = 0
     for filename in listdir(readpath):
         if not onlyOne:
-            if filename != ".DS_Store":  # file.endswith('.json')
-                # print(filename)
+            if filename != ".DS_Store":
                 filepath = join(readpath, filename)
                 file = open(filepath, 'r', encoding='utf-8', errors="ignore")
                 paperJson = json.load(file)
                 paper = savePaper(paperJson)
                 counter += 1
-                # TODO file.close dazu, geht unter mac auch noch?
                 file.close()
                 os.remove(filepath)
         onlyOne = False
-
     return JsonResponse({'sucess': 'Super!!!!!'})
 
 
@@ -106,29 +69,24 @@ def processPaperView(request):
     context = {'numberPaper': numberPaper, 'numberRehashed': numberRehashed}
     return render(request, 'processPaper.html', context)
 
-
-# Aufbereiten der Text Stopwortfiltern und lemmatisieren
+# Aufbereiten der Texte mit stopwortfiltern oder stemmen
 def processPaper(request):
     print("Paper werden aufbreitet....")
     paperlist = Paper.objects.all().timeout(False)
     for paper in paperlist:
         if not paper.isRehashed:
             print('Paper: ' + paper.titleRaw.text)
-            metriken.removeStopwords(paper)  # MET_text_to_STOP_text
-            metriken.stemText(paper)  # MET_text_to_STEM_text
+            metriken.removeStopwords(paper)
+            metriken.stemText(paper)
             metriken.calculateAllMetrics(paper)
-
-    print("Paper sind aufbereitet und vorberechnet")
     return JsonResponse({'sucess': 'Super!!!!!'})
 
-
+# Filtert Paper aus der Datenbank je nach gewählten Parametern
 def getSelectedPaper(request):
     if (request.method == "POST"):
-        # split requestdata
         corpus1 = {}
         corpus2 = {}
         querydata = request.POST
-        print(querydata)
         for key in querydata:
             if 'CorpusID_1' in key and not 'textVarSelect' in key:
                 number = key.replace('_CorpusID_1', '').replace('optionfield_', '').replace('inputfield_', '')
@@ -146,9 +104,7 @@ def getSelectedPaper(request):
                     corpus2[number]['optionfield'] = querydata[key]
                 if 'inputfield' in key:
                     corpus2[number]['inputfield'] = querydata[key]
-        print(corpus1)
-        print(corpus2)
-        ####### filterDBs
+        ####### Filtert DB
         paperCorpus1 = filterDB(corpus1)
         paperCorpus2 = filterDB(corpus2)
         return JsonResponse({'sucess': True, 'corpus1': paperCorpus1, 'corpus2': paperCorpus2})
@@ -159,6 +115,7 @@ def getSelectedPaper(request):
 
 # http://docs.mongoengine.org/guide/querying.html
 # https://stackoverflow.com/questions/8189702/mongodb-using-an-or-clause-in-mongoengine
+# Filtert Paper aus der Datenbank je nach gewählten Parametern
 def filterDB(querydata):
     if querydata:
         papers = Paper.objects.all()
@@ -166,18 +123,12 @@ def filterDB(querydata):
             query = querydata[number]
             field = query['optionfield']
             searchdata = query['inputfield']
-            #print('search for ' + field + " equals " + searchdata)
-
-            # field='metaData__'+field+'__contains'
-            # papers = papers.filter(** {field: searchdata})
-
             searchArry = searchdata.split(',')
             searchArry = [x.strip(' ') for x in searchArry]
             for index,entry in enumerate(searchArry):
                 entry = [word.capitalize() for word in entry.split(' ')]
                 searchArry[index] = ' '.join(entry)
             searchArry = list(filter(None, searchArry))
-            #print(searchArry)
             if searchArry:
                 if field == 'authors':
                     query = reduce(lambda q1, q2: q1.__or__(q2), map(lambda query: Q(authors__name__icontains=query), searchArry))
@@ -214,15 +165,13 @@ def filterDB(querydata):
                     query = reduce(lambda q1, q2: q1.__or__(q2),
                                    map(lambda query: Q(metaData__title__icontains=query), searchArry))
                     papers = papers.filter(query)
-        ##nur titel und id....
         return papers.to_json()
     else:
         return ''
 
-
+# Ruft Ergebnisseite mit den ausgewählten Korpora und initialen Textvarianten auf
 def startAnalyse(request):
     if (request.method == "POST"):
-        print(request.POST)
         global KORPUS1
         global KORPUS2
         if request.POST.get('Korpus1'):
@@ -309,12 +258,7 @@ def startAnalyse(request):
     if (request.method == "GET"):
         return redirect('corpusSelection')
 
-
-# Testen obs klappt
-def startDB(request):
-    system('mongod')
-
-
+# Lädt aud den Filtern resultierenden Korpus herunter
 def downloadResults(request, Corpus):
     if request.method == 'GET':
         global KORPUS1
@@ -330,51 +274,19 @@ def downloadResults(request, Corpus):
         response['Content-Disposition'] = 'attachment; filename="' + korpusname + '.json"'
         return response
 
-
+# Wird aus der Ergebnisseite heraus über ein AJAX-Request aufgerufen, gibt die Endergebnisse
+# für die Analyse einer ausgewählten Metrik zurück
 def calculateMetrik(request):
     if request.method == "GET":
-        print(request.GET)
         fieldname = request.GET.get('fieldname')
         variante1 = request.GET.get('Korpus1_variante')
         variante2 = request.GET.get('Korpus2_variante')
-        print('fieldname:' + fieldname)
         if fieldname:
             bool = True
             response = analyseCorpora(variante1, variante2, KORPUS1, KORPUS2, **{fieldname: bool})
         return JsonResponse(response, safe=False)
 
-
-# TODO brauchen wir so sachen wie distinct über alle, oder sowas wie wieviel Paper pro Uni oder nicht?
-def getTotalAmountOfDistinctAuthors(corpus):
-    return len(corpus.distinct('authors.name'))
-
-
-def getTotalAmountOfDistinctReferences(corpus):
-    return len(corpus.distinct('references.name'))
-
-
-def getTotalAmountOfDistinctUniversities(corpus):
-    return len(corpus.distinct('authors.university.name'))
-
-
-def getTotalAmountOfDistinctCountries(corpus):
-    return len(corpus.distinct('authors.university.country'))
-
-
-def getTotalAmountOfDistinctKeywords(corpus):
-    return len(corpus.distinct('metaData.keywords'))
-
-
-def testMethode(request):
-    print(analyseCorpora('Raw', 'Raw', Paper.objects.all(), Paper.objects.all(), charCountWhiteSpace=False, charCountNoWhiteSpace=False,
-                         wordCount=False, punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
-                         universityCount=False, countryCount=False, keywordCount=False, tableCount=False,
-                         pictureCount=False, tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
-                         averageWordLength=False, averageSentenceLength=False, mostCommonWords=False,
-                         mostCommonKeywords=True, mostPresentWords=False, typeTokenRatio=False))
-    return render(request, 'index.html')
-
-
+# Berechnet die statistischen Werte aus den Arrays mit den Einzelwerten bei der Auswertung von Metriken
 def getStatisticalValues(inputarray):
     if inputarray == [] or inputarray is None:
         sum = None
@@ -408,16 +320,18 @@ def getStatisticalValues(inputarray):
             'upperQuartile': upperQuartile, 'minimum': min, 'maximum': max, 'count': count, 'std': std}
 
 
-# TODO durchschnittliche Wortlänge, durchschnittliche Satzlänge, häufigste Wörter, Most Present Words (TF), Häufigste Keywords, Readability, TTR
+# Teil des Ergebnis-Dictionnaires, übergibt für jeden Einzelwert bei der Auswertung von Metriken eininge Daten
+# des zugehörigen Papers
 def createNewValueAndPaperDict(value, paper):
     return {'value': value, 'name': paper.titleRaw.text, 'authors': [author.name for author in paper.authors],
             'year': paper.metaData.yearOfArticle, 'paperID': str(paper.id), 'URL': paper.metaData.URL}
 
-
+# Teil des Ergebnis-Dictionnaires, übergibt für gesamttextuellle Metriken die Wörter und deren zugehörigen Wert
 def createNewValueAndWordDict(value, word):
     return {'value': value, 'name': word}
 
-
+# Teil des Ergebnis-Dictionnaires, übergibt für die einzelnen Teile eines Papers jeweils ein Array
+# mit Einzelwerten im Korpus, und ein Array mit Durchschnitts-Werten für die gesamten Abschnitte
 def createNewMetrikDict():
     totals = {'paperTitles': [], 'paperText': [], 'abstractTitles': [], 'abstractText': [],
               'sectionTitles': [], 'sectionText': [], 'subsectionTitles': [], 'subsectionText': []}
@@ -426,23 +340,30 @@ def createNewMetrikDict():
     return {'totals': totals, 'sectioned': sectioned}
 
 
-# Tables und Pictures sind nur für jede Sektion gespeichert, und daher eine "abgespeckte" Variante der FieldMetriks ohne
-# Abstracts und Subsections sowie ohne Titel
+# Tables und Pictures sind nur für jede Sektion gespeichert, und daher eine "abgespeckte" Variante der FieldMetriks
+# ohne Abstracts und Subsections sowie ohne Titel
 def createNewTableOrPicturesMetrikDict():
     totals = {'sectionText': []}
     sectioned = {'sectionText': []}
     return {'totals': totals, 'sectioned': sectioned}
 
 
+# Berechnet alle übergebenen Metriken. Wird aktuell immer nur mit einer übergebenen Metrik aufgerufen.
+# Wurde allerdings so konzipiert, dass man nur einen Loop über alle Paper-Objects braucht, falls man schon zu Beginn
+# angeben könnte, welche Metriken man alle ausgerechnet haben will, falls das Programm irgendwann
+# um diese Funktionalität erweitert werden sollte.
 def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=False, charCountNoWhiteSpace=False, wordCount=False,
                    punctCount=False, citationCount=False, authorCount=False, referenceCount=False,
                    universityCount=False, countryCount=False, keywordCount=False, tableCount=False, pictureCount=False,
                    tableDescriptionLengthCount=False, pictureDescriptionLengthCount=False,
                    averageWordLength=False, averageSentenceLength=False, mostCommonWords=False, mostCommonKeywords=False,
                    mostPresentWords=False, typeTokenRatio=False):
+
+    # Alle Metriken, welche für Abschnitte des Papers berechnet werden
     sectionedMetriks = {('charCountWhiteSpace', charCountWhiteSpace), ('charCountNoWhiteSpace', charCountNoWhiteSpace),
                         ('wordCount', wordCount), ('punctCount', punctCount), ('citationCount', citationCount),
                         ('averageWordLength', averageWordLength), ('averageSentenceLength', averageSentenceLength)}
+    # Abschnitte des Papers
     sectionedParts = {'abstractTitles', 'abstractText', 'sectionTitles', 'sectionText', 'subsectionTitles', 'subsectionText'}
 
     # Tables und Pictures werden nur für Sektionen erfasst, und dort nur im Text => abgespeckte Variante der sectionedMetriks
@@ -451,7 +372,7 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=Fal
                                  ('pictureDescriptionLengthCount', pictureDescriptionLengthCount)}
 
     valueParts = {'rawValues', 'statisticalValues'}
-
+    # Zu berechnende Metriken werden leer dem Ergebnis zugeführt
     results = {}
     if charCountWhiteSpace:
         results['charCountWhiteSpace'] = {}
@@ -494,6 +415,7 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=Fal
     if typeTokenRatio:
         results['typeTokenRatio'] = {}
 
+    # Berechnet gewählte Metriken für die existierenden Korpora
     if corpus1:
         corpusIdentifier = "Corpus1"
         results = getMetriks(corpus1, variant1, corpusIdentifier, results, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
@@ -511,7 +433,8 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=Fal
                              tableDescriptionLengthCount, pictureDescriptionLengthCount,
                              averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
                              mostPresentWords, typeTokenRatio)
-    # Gleicht Länge der Ausgabe bei 2 Corpora aneinander an
+    # Gleicht Länge der Ausgabe bei 2 Korpora aneinander an indem es nichtexistente Abschnitte mit leeren Arrays auffüllt,
+    # da dies die spätere Anzeige erleichtert
     if corpus1 and corpus2:
         for metrik in sectionedMetriks:
             if metrik[1]:
@@ -523,7 +446,6 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=Fal
                         while len(results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part]) < \
                                 len(results[metrik[0]]['Corpus1'][valuePart]['sectioned'][part]):
                             results[metrik[0]]['Corpus2'][valuePart]['sectioned'][part].append([])
-        ##Gleicht Länge der Ausgabe bei 2 Corpora aneinander an
         for metrik in partiallySectionedMetriks:
             if metrik[1]:
                 for valuePart in valueParts:
@@ -533,18 +455,17 @@ def analyseCorpora(variant1, variant2, corpus1, corpus2, charCountWhiteSpace=Fal
                     while len(results[metrik[0]]['Corpus2'][valuePart]['sectioned']['sectionText']) < \
                             len(results[metrik[0]]['Corpus1'][valuePart]['sectioned']['sectionText']):
                         results[metrik[0]]['Corpus2'][valuePart]['sectioned']['sectionText'].append([])
-    with open('data.txt', 'w') as outfile:
-        json.dump(results, outfile)
     return json.dumps(results)
 
-
-# TODO raw values wie autoren mit rawValues : [{'wort': x, 'Häufigkeit':y},{...}] siehe mail
+# Berechnet die Metriken aus den in der DB hinterlegten Werten
 def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpace, charCountNoWhiteSpace, wordCount,
                punctCount, citationCount, authorCount, referenceCount,
                universityCount, countryCount, keywordCount, tableCount, pictureCount,
                tableDescriptionLengthCount, pictureDescriptionLengthCount,
                averageWordLength, averageSentenceLength, mostCommonWords, mostCommonKeywords,
                mostPresentWords, typeTokenRatio):
+
+    # Hilfsvariablen für die Länge der Abstracts, Sectionen und Subsectionen
     abstractHelper = []
     sectionHelper = []
     subsectionHelper = []
@@ -555,6 +476,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     resultsCountryCount = []
     resultsKeywordCount = []
 
+    # Speichert aller Paper und Keywords in einem Array
     paperContents = []
     keywordContents = []
     nonWords = ['.', ',', '\\', '/', '#', '!', '?', '^', '&', '*', ';', ':', '{', '}', '=', '-', '_', '`', '~',
@@ -565,14 +487,14 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     resultsMostPresentWords = []
     resultsTypeTokenRatio = []
 
-    # liste für jede Sektion mit Werten Anzahl Tables/Pictures
+    # Liste für jede Sektion mit Werten Anzahl Tables/Pictures
     resultsTableCount = createNewTableOrPicturesMetrikDict()
     resultsPictureCount = createNewTableOrPicturesMetrikDict()
-    # liste für jede Sektion mit Liste an Werten der Beschreibungslänge
+    # Liste für jede Sektion mit Liste an Werten der Beschreibungslänge
     resultsTableDescLengthCount = createNewTableOrPicturesMetrikDict()
     resultsPictureDescLengthCount = createNewTableOrPicturesMetrikDict()
 
-    # normale (Count)-Metriken, deren durchschnittlicher Wert in allen Sektionen
+    # Normale (Count)-Metriken, deren durchschnittlicher Wert in allen Sektionen
     # aus den Werten der einzelnen Sektionen berechnet werden kann
     FieldMetriks = [{'condition': charCountWhiteSpace, 'modelField': "charCountWhiteSpace", 'values': createNewMetrikDict()},
                     {'condition': charCountNoWhiteSpace, 'modelField': "charCountNoWhiteSpace", 'values': createNewMetrikDict()},
@@ -581,7 +503,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                     {'condition': citationCount, 'modelField': "citationCount", 'values': createNewMetrikDict()}]
 
     # Durchschnittsmetriken, deren durchschnittlicher Wert in allen Sektionen
-    # nicht aus den Werten der einzelnen Sektionen berechnet werden kann und deshalb aus der db kommt
+    # nicht aus den Werten der einzelnen Sektionen berechnet werden kann, und deshalb aus der DB kommt
     FieldMetriksWithTotalsInDB = [
         {'condition': averageWordLength, 'modelField': "averageWordLength",
          'values': createNewMetrikDict(), 'totalsDBField': 'totalsAverageWordLength'},
@@ -604,7 +526,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         textualMetriks = False
 
     for paper in corpus:
-        # Helper zum berechnen des gesamten durchschnitts für sektionierte Metriken
+        # Hilfsvariablen zum Berechnen des gesamten Durchschnitts für sektionierte Metriken
         totalHelperSectionTitles = {}
         totalHelperSectionText = {}
         totalHelperSubsectionTitles = {}
@@ -615,7 +537,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         totalHelperPictureCount = []
         totalHelperTableDescCount = []
         totalHelperPictureDescCount = []
-        # Gesamter Text des Papers zum berechnen der häufigsten Wörter, Most Present Words, TTR
+        # Gesamter Text des Papers zum Berechnen der häufigsten Wörter, Most Present Words, TTR
         paperContent = ""
 
         # Allgemeine Metriken, bezogen auf ganzes Paper
@@ -647,6 +569,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         if referenceCount:
             resultsReferenceCount.append(createNewValueAndPaperDict(len(paper.references), paper))
 
+        # Sektionierte Metriken, bezogen auf dei jeweils zugehörigen Abschnitte
         paperTitle = getattr(paper, "title" + variant)
         if paperTitle:
             paperTitleMetrik = getattr(paperTitle, 'metrik')
@@ -753,7 +676,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                     len(tables), paper))
                 totalHelperTableCount.append(len(tables))
             if tableDescriptionLengthCount:
-                # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
                 countTableDescription = []
                 for table in tables:
                     countTableDescription.append(len(table.description))
@@ -768,7 +690,6 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                                                                                                                 paper))
                 totalHelperPictureCount.append(len(pictures))
             if pictureDescriptionLengthCount:
-                # TODO Juli hat den an " " gesplittet, hatte das nen Grund? len(table.tableDescription.split(' '))
                 countPictureDescription = []
                 for picture in pictures:
                     countPictureDescription.append(len(picture.description))
@@ -844,7 +765,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                            totalHelperSectionText[fieldMetrik['modelField']] + \
                            totalHelperSubsectionTitles[fieldMetrik['modelField']] + \
                            totalHelperSubsectionText[fieldMetrik['modelField']]
-            # addiert metriken für alle Bereiche des Papers um für gesamtes Paper zu berechnen
+            # Addiert metriken für alle Bereiche des Papers um für gesamtes Paper zu berechnen
             if totalContent != []:
                 fieldMetrik['values']['totals']['paperText'].append(createNewValueAndPaperDict(
                     sum(totalContent), paper))
@@ -887,8 +808,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
         # Text speichern falls Textmetriken berechnet werden müssen
         if textualMetriks:
             paperContents.append(paperContent)
-        # typeTokenRatio für das Paper berechnen
-        # TODO Statt gesamtes Paper auch sectioned machen?
+        # Type-Token-Ratio für das Paper berechnen
         if typeTokenRatio:
             wordTokens = nltk.word_tokenize(paperContent)
             wordTokensWithoutNonWords = [item.capitalize() for item in wordTokens if item not in nonWords]
@@ -959,20 +879,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
                                                                      'statisticalValues': getStatisticalValuesForFieldMetriks(fieldMetrik['values']), 'variant': variant}
 
     # Berechnen und Ausgeben der Ergebnisse für Textmetriken über den gesamten Korpus
-    # TODO Keywords als ganzes betrachten, oder sowas wie "Area of Interest" in drei aufspalten wie aktuell?
-    # TODO wenn so wie jetzt dann Stoppwortfiltern, wenn zusammen dann statt nltk tokenizer liste und Counter verwenden
-    # TODO paperCount ist länge corpus, bei sektionsmetriken ist nicht immer alles len corpus sondern len existente sektionszahl...passt?
-    # TODO Statt gesamtes Paper sectioned machen?
     if mostCommonKeywords:
-        '''''
-        keywordContents = "" + (" ".join(keywordContents))
-        wordTokens = nltk.word_tokenize(keywordContents)
-        wordTokenFreqDist = nltk.FreqDist(item.capitalize() for item in wordTokens if item not in nonWords).most_common()
-        for wordFreq in wordTokenFreqDist:
-            resultsMostCommonKeywords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
-        resultDict['mostCommonKeywords'][corpusIdentifier] = {'rawValues': resultsMostCommonKeywords, 'variant': variant,
-                                                              'paperCount': len(corpus)}
-        '''''
         keywordContents = [keyword for keyword in keywordContents if keyword not in nonWords]
         counterMostCommonKeywords = Counter(keywordContents).most_common()
         for wordFreq in counterMostCommonKeywords:
@@ -987,7 +894,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
             resultsMostCommonWords.append(createNewValueAndWordDict(wordFreq[1], wordFreq[0]))
         resultDict['mostCommonWords'][corpusIdentifier] = {'rawValues': resultsMostCommonWords, 'variant': variant,
                                                            'paperCount': len(corpus)}
-    # TODO absolute oder prozentuale Häufigkeit?
+
     if mostPresentWords:
         paperContentsArray = [nltk.word_tokenize(item) for item in paperContents]
         combinedUniqueWordLists = []
@@ -1002,6 +909,7 @@ def getMetriks(corpus, variant, corpusIdentifier, resultDict, charCountWhiteSpac
     return resultDict
 
 
+# Loop und fügt statistische Werte für Bilder un Tabellen, welche nur auf Sektions-Level existieren, zum Ergebnis hinzu
 def getStatisticalValuesForTableAndPictureMetriks(input):
     resultsArraySectionText = []
 
@@ -1013,7 +921,7 @@ def getStatisticalValuesForTableAndPictureMetriks(input):
     results = {'totals': totals, 'sectioned': sectioned}
     return results
 
-
+# Loop und fügt statistische Werte für normale Feld-Metriken zum Ergebnis hinzu
 def getStatisticalValuesForFieldMetriks(input):
     resultsArrayAbstractTitles = []
     resultsArrayAbstractText = []

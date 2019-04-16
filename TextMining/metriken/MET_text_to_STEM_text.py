@@ -1,9 +1,8 @@
-from nltk.corpus import stopwords
 from TextMining.models import TextVariant
-from nltk.tokenize import RegexpTokenizer
 from nltk.stem import PorterStemmer
 import nltk
 
+# Loopt über alle Bereiche eines Papers und speichert deren Text gestemmt in der Datenbank
 def stemText(paper):
     #Titel
     section=paper
@@ -43,14 +42,13 @@ def stemText(paper):
 #PorterStemmer nltk
 def getStemForTextsection(text):
     ps = PorterStemmer()
-    text_As_Array = nltk.word_tokenize(text) #RegexpTokenizer(r'\w+').tokenize(text) #Satzzeichen weg??
+    text_As_Array = nltk.word_tokenize(text)
     textstemmed = ""
-    #words = word_tokenize(sentence)
     for word in text_As_Array:
         textstemmed += " " + ps.stem(word)
     return textstemmed
 
-#checks if section has StemmedText with this method
+# Überprüft ob der Abschnitt schon gestemmt gespeichert wurde
 def paperIsRehashed(section,fieldname):
     if section[fieldname]:
         return True
