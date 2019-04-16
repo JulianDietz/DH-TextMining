@@ -64,7 +64,6 @@
             for (let paper of papers) {
                 htmldata += '<tr><td><input type="checkbox" name="' + korpusid + '" value="' + paper._id.$oid + '" checked /></td>' +
                     '<td>' + paper.titleRaw.text.substring(0, 30)  + '...</td><td>';
-                //for (let i = 0; i < paper.authors.length; i++) {
                     if(paper.authors.length!==0) {
                         let autor = paper.authors[0];
                         if (1 !== paper.authors.length) {
@@ -75,7 +74,6 @@
                     }else{
                         htmldata += 'Unbekannter Autor'
                     }
-                //}
                 htmldata += '</td></tr>';
             }
             return htmldata
@@ -88,7 +86,6 @@
         }
 
         function sendPaperlist() {
-            //console.log('send paperlist');
             let korpus1data = [];
             $.each($("input[name='Korpus1']:checked"), function () {
                 korpus1data.push($(this).val());
@@ -97,7 +94,6 @@
             $.each($("input[name='Korpus2']:checked"), function () {
                 korpus2data.push($(this).val());
             });
-            //window.location = '{% url 'startAnalyse' %}?Korpus1=' + korpus1data + '&Korpus2=' + korpus2data;
 
             let varianteKorpus1=$('#textVarSelect_CorpusID_1').val();
             let varianteKorpus2=$('#textVarSelect_CorpusID_2').val();

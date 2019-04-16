@@ -108,32 +108,26 @@
             console.log("create post is working!");
             $.ajax({
                 url: "{% url "improvedPaper" %}",
-                type: "POST", // http method
+                type: "POST",
                 data: {
                     filename: $(form).find('#filename').val(),
                     file: $(form).find('#file').val()
                 },
 
                 success: function (json) {
-                    console.log("response:");
-                    console.log(json['valid']);
                     if (json['valid'] == 'true') {
                         //console.log("File ist nun zum Upload bereit!");
                         showModal("Paper wurde erfolgreich zum Korpus hinzugefügt!", '');
                         $(form).parent().remove();
                         $('#table tr:last').after('<tr> <td><i class="far fa-check-circle"></i></td><td>' + json['filename'] + '</td></tr>');
-                        console.log(parseInt($('#invalidPaperNum').html()) - 1)
                         $('#invalidPaperNum').html(parseInt($('#invalidPaperNum').html()) - 1);
                         $('#validPaperNum').html(parseInt($('#validPaperNum').html()) + 1);
                         if ($('#invalidPaperNum').html() == 0) {
                             $('#invalidPaper').remove();
-                            //
                             $('hr').after('<a href="{% url "completeUpload" %}" class="btn-dh-white float-right" role="button">Paper hochladen</a>')
                         }
-                        //invalidPaper -1; vaild+1; invalidPaper==0 dann weg!
                     } else {
                         showModal("Paper fehlerhaft! Bitte bessern sie folgende Fehler aus, um einen fehlerfreien Upload zu ermöglichen. Wenn Sie das Paper nicht zum Korpus hinzufügen wollen, drücken Sie 'Paper hochladen ohne fehlerhafte Paper'", json['errors'][0]);
-                        console.log("file again not valid!");
                         $(form).find('#errorSektion').html('');
                         json['errors'].forEach(function (element) {
                             $(form).find('#errorSektion').append('<li>' + element + '</li>')
